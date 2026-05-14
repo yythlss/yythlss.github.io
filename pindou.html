@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色号查找工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        .container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        #colorInput {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #colorInput:focus {
+            border-color: #3498db;
+        }
+        #searchBtn {
+            padding: 0.8rem 1.5rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #searchBtn:hover {
+            background-color: #2980b9;
+        }
+        .result-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .result-text {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .error-text {
+            color: #e74c3c;
+        }
+        .tip {
+            margin-top: 1rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 色号查找工具</h1>
+        <div class="search-box">
+            <input type="text" id="colorInput" placeholder="输入色号，如 A26、B32、C24">
+            <button id="searchBtn">查找</button>
+        </div>
+        <div class="result-box">
+            <div class="result-text" id="result">请输入色号进行查询</div>
+        </div>
+        <div class="tip">提示：色号不区分大小写，输入 A26 或 a26 都可查询</div>
+    </div>
+
+    <script>
+        // 所有色号数据：色号 -> { 色盘号, 排数, 位置 }
+        const colorData = {
+            // 色盘10（第1个）
+            "A26": {plate:10, row:1, pos:1},
+            "A25": {plate:10, row:1, pos:2},
+            "A20": {plate:10, row:1, pos:3},
+            "A23": {plate:10, row:1, pos:4},
+            "G18": {plate:10, row:1, pos:5},
+            "H21": {plate:10, row:1, pos:6},
+            "B26": {plate:10, row:2, pos:1},
+            "B32": {plate:10, row:2, pos:2},
+            "B31": {plate:10, row:2, pos:3},
+            "B30": {plate:10, row:2, pos:4},
+            "B27": {plate:10, row:2, pos:5},
+            "B29": {plate:10, row:2, pos:6},
+            "C22": {plate:10, row:3, pos:1},
+            "C23": {plate:10, row:3, pos:2},
+            "C24": {plate:10, row:3, pos:3},
+            "C28": {plate:10, row:3, pos:4},
+            "C25": {plate:10, row:3, pos:5},
+            "C27": {plate:10, row:3, pos:6},
+            "H15": {plate:10, row:4, pos:1},
+            "H20": {plate:10, row:4, pos:2},
+            "H23": {plate:10, row:4, pos:3},
+            "H22": {plate:10, row:4, pos:4},
+            "C28": {plate:10, row:4, pos:5},
+            "C21": {plate:10, row:4, pos:6},
+
+            // 色盘5（第2个）
+            "A15": {plate:5, row:1, pos:1},
+            "A5": {plate:5, row:1, pos:2},
+            "A8": {plate:5, row:1, pos:3},
+            "A12": {plate:5, row:1, pos:4},
+            "A9": {plate:5, row:1, pos:5},
+            "G6": {plate:5, row:1, pos:6},
+            "A1": {plate:5, row:2, pos:1},
+            "B13": {plate:5, row:2, pos:2},
+            "B1": {plate:5, row:2, pos:3},
+            "B2": {plate:5, row:2, pos:4},
+            "B4": {plate:5, row:2, pos:5},
+            "B11": {plate:5, row:2, pos:6},
+            "H12": {plate:5, row:3, pos:1},
+            "C1": {plate:5, row:3, pos:2},
+            "B16": {plate:5, row:3, pos:3},
+            "B6": {plate:5, row:3, pos:4},
+            "C15": {plate:5, row:3, pos:5},
+            "B15": {plate:5, row:3, pos:6},
+            "C14": {plate:5, row:4, pos:1},
+            "D17": {plate:5, row:4, pos:2},
+            "D1": {plate:5, row:4, pos:3},
+            "C4": {plate:5, row:4, pos:4},
+            "C17": {plate:5, row:4, pos:5},
+            "C9": {plate:5, row:4, pos:6},
+
+            // 色盘1（第3个）
+            "B3": {plate:1, row:1, pos:1},
+            "C3": {plate:1, row:1, pos:2},
+            "D9": {plate:1, row:1, pos:3},
+            "E2": {plate:1, row:1, pos:4},
+            "G1": {plate:1, row:1, pos:5},
+            "A4": {plate:1, row:1, pos:6},
+            "B5": {plate:1, row:2, pos:1},
+            "C5": {plate:1, row:2, pos:2},
+            "D6": {plate:1, row:2, pos:3},
+            "E4": {plate:1, row:2, pos:4},
+            "G5": {plate:1, row:2, pos:5},
+            "A6": {plate:1, row:2, pos:6},
+            "B8": {plate:1, row:3, pos:1},
+            "C8": {plate:1, row:3, pos:2},
+            "D7": {plate:1, row:3, pos:3},
+            "F5": {plate:1, row:3, pos:4},
+            "G7": {plate:1, row:3, pos:5},
+            "A7": {plate:1, row:3, pos:6},
+            "H1": {plate:1, row:4, pos:1},
+            "H2": {plate:1, row:4, pos:2},
+            "H3": {plate:1, row:4, pos:3},
+            "H4": {plate:1, row:4, pos:4},
+            "H5": {plate:1, row:4, pos:5},
+            "H7": {plate:1, row:4, pos:6},
+
+            // 色盘11（第4个）
+            "F15": {plate:11, row:1, pos:1},
+            "F19": {plate:11, row:1, pos:2},
+            "G20": {plate:11, row:1, pos:3},
+            "E21": {plate:11, row:1, pos:4},
+            "E22": {plate:11, row:1, pos:5},
+            "D26": {plate:11, row:1, pos:6},
+            "F25": {plate:11, row:2, pos:1},
+            "F20": {plate:11, row:2, pos:2},
+            "G19": {plate:11, row:2, pos:3},
+            "F18": {plate:11, row:2, pos:4},
+            "G21": {plate:11, row:2, pos:5},
+            "E23": {plate:11, row:2, pos:6},
+            "D25": {plate:11, row:3, pos:1},
+            "D22": {plate:11, row:3, pos:2},
+            "D24": {plate:11, row:3, pos:3},
+            "C20": {plate:11, row:3, pos:4},
+            "B21": {plate:11, row:3, pos:5},
+            "B25": {plate:11, row:3, pos:6},
+            "H16": {plate:11, row:4, pos:1},
+            "B23": {plate:11, row:4, pos:2},
+            "C18": {plate:11, row:4, pos:3},
+            "B22": {plate:11, row:4, pos:4},
+            "C19": {plate:11, row:4, pos:5},
+            "C26": {plate:11, row:4, pos:6},
+
+            // 色盘9（第5个）
+            "H17": {plate:9, row:1, pos:1},
+            "H18": {plate:9, row:1, pos:2},
+            "H19": {plate:9, row:1, pos:3},
+            "E16": {plate:9, row:1, pos:4},
+            "F16": {plate:9, row:1, pos:5},
+            "F17": {plate:9, row:1, pos:6},
+            "D23": {plate:9, row:2, pos:1},
+            "E24": {plate:9, row:2, pos:2},
+            "E19": {plate:9, row:2, pos:3},
+            "E18": {plate:9, row:2, pos:4},
+            "E17": {plate:9, row:2, pos:5},
+            "E20": {plate:9, row:2, pos:6},
+            "B24": {plate:9, row:3, pos:1},
+            "A16": {plate:9, row:3, pos:2},
+            "A17": {plate:9, row:3, pos:3},
+            "A18": {plate:9, row:3, pos:4},
+            "F24": {plate:9, row:3, pos:5},
+            "F23": {plate:9, row:3, pos:6},
+            "A24": {plate:9, row:4, pos:1},
+            "A22": {plate:9, row:4, pos:2},
+            "A21": {plate:9, row:4, pos:3},
+            "F21": {plate:9, row:4, pos:4},
+            "F22": {plate:9, row:4, pos:5},
+            "A19": {plate:9, row:4, pos:6},
+
+            // 色盘4（第6个）
+            "E11": {plate:4, row:1, pos:1},
+            "E14": {plate:4, row:1, pos:2},
+            "F1": {plate:4, row:1, pos:3},
+            "A14": {plate:4, row:1, pos:4},
+            "M6": {plate:4, row:1, pos:5},
+            "M5": {plate:4, row:1, pos:6},
+            "E15": {plate:4, row:2, pos:1},
+            "F14": {plate:4, row:2, pos:2},
+            "F9": {plate:4, row:2, pos:3},
+            "F2": {plate:4, row:2, pos:4},
+            "G14": {plate:4, row:2, pos:5},
+            "M9": {plate:4, row:2, pos:6},
+            "E9": {plate:4, row:3, pos:1},
+            "E6": {plate:4, row:3, pos:2},
+            "F12": {plate:4, row:3, pos:3},
+            "F3": {plate:4, row:3, pos:4},
+            "F11": {plate:4, row:3, pos:5},
+            "M12": {plate:4, row:3, pos:6},
+            "D5": {plate:4, row:4, pos:1},
+            "E10": {plate:4, row:4, pos:2},
+            "F4": {plate:4, row:4, pos:3},
+            "F6": {plate:4, row:4, pos:4},
+            "G17": {plate:4, row:4, pos:5},
+            "H6": {plate:4, row:4, pos:6},
+
+            // 色盘6（第7个）
+            "H8": {plate:6, row:1, pos:1},
+            "G15": {plate:6, row:1, pos:2},
+            "A2": {plate:6, row:1, pos:3},
+            "H13": {plate:6, row:1, pos:4},
+            "G16": {plate:6, row:1, pos:5},
+            "H9": {plate:6, row:1, pos:6},
+            "H10": {plate:6, row:2, pos:1},
+            "M1": {plate:6, row:2, pos:2},
+            "G11": {plate:6, row:2, pos:3},
+            "G4": {plate:6, row:2, pos:4},
+            "M4": {plate:6, row:2, pos:5},
+            "H14": {plate:6, row:2, pos:6},
+            "M10": {plate:6, row:3, pos:1},
+            "M2": {plate:6, row:3, pos:2},
+            "G12": {plate:6, row:3, pos:3},
+            "M13": {plate:6, row:3, pos:4},
+            "M7": {plate:6, row:3, pos:5},
+            "H11": {plate:6, row:3, pos:6},
+            "M11": {plate:6, row:4, pos:1},
+            "M3": {plate:6, row:4, pos:2},
+            "G10": {plate:6, row:4, pos:3},
+            "M14": {plate:6, row:4, pos:4},
+            "M8": {plate:6, row:4, pos:5},
+            "M15": {plate:6, row:4, pos:6},
+
+            // 色盘8（第8个）
+            "P10": {plate:8, row:1, pos:1},
+            "R11": {plate:8, row:1, pos:2},
+            "Y2": {plate:8, row:1, pos:3},
+            "Y3": {plate:8, row:1, pos:4},
+            "Q2": {plate:8, row:1, pos:5},
+            "Y4": {plate:8, row:1, pos:6},
+            "Y5": {plate:8, row:2, pos:1},
+            "Y1": {plate:8, row:2, pos:2},
+            "R3": {plate:8, row:2, pos:3},
+            "R4": {plate:8, row:2, pos:4},
+            "R5": {plate:8, row:2, pos:5},
+            "R8": {plate:8, row:2, pos:6},
+            "R9": {plate:8, row:3, pos:1},
+            "R2": {plate:8, row:3, pos:2},
+            "R1": {plate:8, row:3, pos:3},
+            "R10": {plate:8, row:3, pos:4},
+            "R6": {plate:8, row:3, pos:5},
+            "R7": {plate:8, row:3, pos:6},
+            "D10": {plate:8, row:4, pos:1},
+            "R13": {plate:8, row:4, pos:2},
+            "Q5": {plate:8, row:4, pos:3},
+            "B9": {plate:8, row:4, pos:4},
+            "C12": {plate:8, row:4, pos:5},
+            "D4": {plate:8, row:4, pos:6},
+
+            // 色盘3（第9个）
+            "A3": {plate:3, row:1, pos:1},
+            "B20": {plate:3, row:1, pos:2},
+            "D16": {plate:3, row:1, pos:3},
+            "D8": {plate:3, row:1, pos:4},
+            "E1": {plate:3, row:1, pos:5},
+            "G2": {plate:3, row:1, pos:6},
+            "B18": {plate:3, row:2, pos:1},
+            "B10": {plate:3, row:2, pos:2},
+            "D11": {plate:3, row:2, pos:3},
+            "D12": {plate:3, row:2, pos:4},
+            "E12": {plate:3, row:2, pos:5},
+            "G3": {plate:3, row:2, pos:6},
+            "B14": {plate:3, row:3, pos:1},
+            "B19": {plate:3, row:3, pos:2},
+            "D2": {plate:3, row:3, pos:3},
+            "D20": {plate:3, row:3, pos:4},
+            "E5": {plate:3, row:3, pos:5},
+            "E10": {plate:3, row:3, pos:6},
+            "B17": {plate:3, row:4, pos:1},
+            "B7": {plate:3, row:4, pos:2},
+            "C16": {plate:3, row:4, pos:3},
+            "D14": {plate:3, row:4, pos:4},
+            "E13": {plate:3, row:4, pos:5},
+            "F7": {plate:3, row:4, pos:6},
+
+            // 色盘7（第10个）
+            "P18": {plate:7, row:1, pos:1},
+            "P16": {plate:7, row:1, pos:2},
+            "P3": {plate:7, row:1, pos:3},
+            "P12": {plate:7, row:1, pos:4},
+            "P1": {plate:7, row:1, pos:5},
+            "T1": {plate:7, row:1, pos:6},
+            "P7": {plate:7, row:2, pos:1},
+            "P17": {plate:7, row:2, pos:2},
+            "P6": {plate:7, row:2, pos:3},
+            "P13": {plate:7, row:2, pos:4},
+            "P9": {plate:7, row:2, pos:5},
+            "P11": {plate:7, row:2, pos:6},
+            "P4": {plate:7, row:3, pos:1},
+            "P5": {plate:7, row:3, pos:2},
+            "P15": {plate:7, row:3, pos:3},
+            "P14": {plate:7, row:3, pos:4},
+            "P2": {plate:7, row:3, pos:5},
+            "R12": {plate:7, row:3, pos:6},
+            "P23": {plate:7, row:4, pos:1},
+            "P22": {plate:7, row:4, pos:2},
+            "P21": {plate:7, row:4, pos:3},
+            "P20": {plate:7, row:4, pos:4},
+            "P19": {plate:7, row:4, pos:5},
+            "P8": {plate:7, row:4, pos:6},
+
+            // 色盘2（第11个）
+            "C2": {plate:2, row:1, pos:1},
+            "C13": {plate:2, row:1, pos:2},
+            "D19": {plate:2, row:1, pos:3},
+            "E8": {plate:2, row:1, pos:4},
+            "A13": {plate:2, row:1, pos:5},
+            "A11": {plate:2, row:1, pos:6},
+            "C10": {plate:2, row:2, pos:1},
+            "C6": {plate:2, row:2, pos:2},
+            "D18": {plate:2, row:2, pos:3},
+            "E3": {plate:2, row:2, pos:4},
+            "A10": {plate:2, row:2, pos:5},
+            "G9": {plate:2, row:2, pos:6},
+            "C11": {plate:2, row:3, pos:1},
+            "C7": {plate:2, row:3, pos:2},
+            "D21": {plate:2, row:3, pos:3},
+            "D13": {plate:2, row:3, pos:4},
+            "F13": {plate:2, row:3, pos:5},
+            "G13": {plate:2, row:3, pos:6},
+            "B12": {plate:2, row:4, pos:1},
+            "D3": {plate:2, row:4, pos:2},
+            "D15": {plate:2, row:4, pos:3},
+            "E7": {plate:2, row:4, pos:4},
+            "F8": {plate:2, row:4, pos:5},
+            "G8": {plate:2, row:4, pos:6}
+        };
+
+        const input = document.getElementById('colorInput');
+        const btn = document.getElementById('searchBtn');
+        const result = document.getElementById('result');
+
+        function searchColor() {
+            const val = input.value.trim().toUpperCase();
+            if (!val) {
+                result.textContent = "请输入色号";
+                result.className = "result-text error-text";
+                return;
+            }
+
+            const data = colorData[val];
+            if (data) {
+                result.innerHTML = `色号 <strong>${val}</strong> 位于：<br>色盘${data.plate}，第${data.row}排第${data.pos}个`;
+                result.className = "result-text";
+            } else {
+                result.textContent = `未找到色号 ${val}，请检查输入是否正确`;
+                result.className = "result-text error-text";
+            }
+        }
+
+        btn.addEventListener('click', searchColor);
+        input.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                searchColor();
+            }
+        });
+    </script>
+</body>
+</html>
