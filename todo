@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办清单 - 仿Microsoft To Do</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #202124;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #0078d4;
+            color: white;
+            padding: 16px 20px;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header svg {
+            width: 24px;
+            height: 24px;
+        }
+        .add-todo {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .add-todo input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 15px;
+            outline: none;
+        }
+        .add-todo input:focus {
+            border-color: #0078d4;
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+        .add-btn {
+            padding: 12px 20px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .add-btn:hover {
+            background-color: #005a9e;
+        }
+        .todo-list {
+            list-style: none;
+        }
+        .todo-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        .todo-item:hover {
+            background-color: #f8f9fa;
+        }
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dadce0;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .todo-checkbox.checked {
+            background-color: #0078d4;
+            border-color: #0078d4;
+        }
+        .todo-checkbox.checked svg {
+            width: 12px;
+            height: 12px;
+            fill: white;
+        }
+        .todo-text {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .todo-text.checked {
+            text-decoration: line-through;
+            color: #80868b;
+        }
+        .delete-btn {
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: #80868b;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .delete-btn:hover {
+            background-color: #e9ecef;
+            color: #d93025;
+        }
+        .empty-tip {
+            padding: 40px 20px;
+            text-align: center;
+            color: #80868b;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 21V13H17V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 3V7H15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            我的待办清单
+        </div>
+        <div class="add-todo">
+            <input type="text" id="todo-input" placeholder="添加新的待办事项...">
+            <button class="add-btn" id="add-btn">添加</button>
+        </div>
+        <ul class="todo-list" id="todo-list">
+            <li class="empty-tip" id="empty-tip">暂无待办事项，添加你的第一个任务吧～</li>
+        </ul>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const todoInput = document.getElementById('todo-input');
+        const addBtn = document.getElementById('add-btn');
+        const todoList = document.getElementById('todo-list');
+        const emptyTip = document.getElementById('empty-tip');
+
+        // 从本地存储加载待办事项
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+
+        // 渲染待办清单
+        function renderTodos() {
+            // 清空列表（除了空提示）
+            todoList.innerHTML = '';
+
+            // 如果没有待办，显示空提示
+            if (todos.length === 0) {
+                todoList.innerHTML = '<li class="empty-tip" id="empty-tip">暂无待办事项，添加你的第一个任务吧～</li>';
+                return;
+            }
+
+            // 渲染每个待办项
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.innerHTML = `
+                    <div class="todo-checkbox ${todo.completed ? 'checked' : ''}" data-index="${index}">
+                        ${todo.completed ? '<svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+                    </div>
+                    <span class="todo-text ${todo.completed ? 'checked' : ''}">${todo.text}</span>
+                    <button class="delete-btn" data-index="${index}">×</button>
+                `;
+                todoList.appendChild(li);
+            });
+
+            // 绑定复选框和删除按钮事件
+            bindEvents();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 复选框点击事件（标记完成/未完成）
+            document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    todos[index].completed = !todos[index].completed;
+                    // 保存到本地存储
+                    localStorage.setItem('todos', JSON.stringify(todos));
+                    // 重新渲染
+                    renderTodos();
+                });
+            });
+
+            // 删除按钮点击事件
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    // 删除对应待办
+                    todos.splice(index, 1);
+                    // 保存到本地存储
+                    localStorage.setItem('todos', JSON.stringify(todos));
+                    // 重新渲染
+                    renderTodos();
+                });
+            });
+        }
+
+        // 添加待办事项
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (text === '') {
+                alert('请输入待办事项内容！');
+                return;
+            }
+            // 添加到待办数组
+            todos.push({
+                text: text,
+                completed: false
+            });
+            // 保存到本地存储
+            localStorage.setItem('todos', JSON.stringify(todos));
+            // 清空输入框
+            todoInput.value = '';
+            // 重新渲染
+            renderTodos();
+        }
+
+        // 绑定添加按钮事件
+        addBtn.addEventListener('click', addTodo);
+
+        // 回车添加待办
+        todoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        // 初始渲染
+        renderTodos();
+    </script>
+</body>
+</html>
