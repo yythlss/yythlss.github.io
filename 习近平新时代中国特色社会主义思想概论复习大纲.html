@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>习近平新时代中国特色社会主义思想概论 期末复习大纲</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-alt: #162032;
+    --accent: #ef4444;
+    --accent2: #f97316;
+    --accent3: #eab308;
+    --accent4: #22c55e;
+    --accent5: #3b82f6;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border: #334155;
+    --highlight: rgba(239,68,68,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.8;
+  }
+  .hero {
+    background: linear-gradient(135deg, #7f1d1d 0%, #0f172a 50%, #1a1040 100%);
+    padding: 60px 20px 50px; text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(239,68,68,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(249,115,22,0.06) 0%, transparent 50%);
+  }
+  .hero h1 {
+    font-size: 2.4em; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; position: relative; margin-bottom: 10px;
+  }
+  .hero .subtitle { color: var(--text-dim); font-size: 1.1em; position: relative; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+  /* TOC */
+  .toc { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px 35px; margin-bottom: 40px; }
+  .toc h2 { font-size: 1.4em; margin-bottom: 18px; color: var(--accent); }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .toc a {
+    color: var(--text); text-decoration: none; padding: 12px 16px; border-radius: 10px;
+    background: var(--card-alt); border: 1px solid transparent; transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px; font-size: 0.95em;
+  }
+  .toc a:hover { border-color: var(--accent); background: var(--highlight); transform: translateX(4px); }
+  .toc .ch-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px; font-weight: 700; font-size: 0.85em; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white;
+  }
+
+  /* Chapter */
+  .chapter { background: var(--card); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 30px; overflow: hidden; }
+  .chapter-header {
+    padding: 25px 30px; cursor: pointer; display: flex; align-items: center; gap: 16px;
+    user-select: none; transition: background 0.2s;
+  }
+  .chapter-header:hover { background: rgba(255,255,255,0.02); }
+  .chapter-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 48px; height: 48px; border-radius: 12px; font-weight: 800; font-size: 1.2em; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white;
+  }
+  .chapter-title { font-size: 1.25em; font-weight: 700; flex: 1; }
+  .chapter-page { color: var(--text-dim); font-size: 0.85em; }
+  .chevron { transition: transform 0.3s; color: var(--text-dim); font-size: 1.2em; }
+  .chapter.open .chevron { transform: rotate(180deg); }
+  .chapter-body { display: none; padding: 0 30px 30px; }
+  .chapter.open .chapter-body { display: block; }
+
+  /* Content */
+  .section { margin-bottom: 24px; }
+  .section-title {
+    font-size: 1.1em; font-weight: 700; color: var(--accent);
+    padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .point {
+    background: var(--card-alt); border-radius: 10px; padding: 16px 20px;
+    margin-bottom: 12px; border-left: 3px solid var(--accent5);
+  }
+  .point.highlight { border-left-color: var(--accent); background: rgba(239,68,68,0.05); }
+  .point.key { border-left-color: var(--accent3); background: rgba(234,179,8,0.05); }
+  .point p { margin-bottom: 8px; }
+  .point p:last-child { margin-bottom: 0; }
+  .point ul { padding-left: 20px; margin-top: 8px; }
+  .point li { margin-bottom: 6px; }
+  .tag {
+    display: inline-block; font-size: 0.75em; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; margin-right: 6px; vertical-align: middle;
+  }
+  .tag-red { background: rgba(239,68,68,0.2); color: #fca5a5; }
+  .tag-yellow { background: rgba(234,179,8,0.2); color: #fde047; }
+  .tag-blue { background: rgba(59,130,246,0.2); color: #93c5fd; }
+  .tag-green { background: rgba(34,197,94,0.2); color: #86efac; }
+  .supplement {
+    background: rgba(59,130,246,0.08); border: 1px dashed rgba(59,130,246,0.3);
+    border-radius: 10px; padding: 14px 18px; margin-top: 12px; font-size: 0.95em;
+  }
+  .supplement::before { content: '📌 补充：'; font-weight: 700; color: var(--accent5); }
+
+  /* Back to top */
+  .back-top {
+    position: fixed; bottom: 30px; right: 30px;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4em; box-shadow: 0 4px 15px rgba(239,68,68,0.3);
+    opacity: 0; transition: opacity 0.3s, transform 0.3s;
+    z-index: 100;
+  }
+  .back-top.visible { opacity: 1; }
+  .back-top:hover { transform: translateY(-3px); }
+
+  footer { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 0.9em; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8em; }
+    .chapter-header { padding: 18px 16px; }
+    .chapter-body { padding: 0 16px 20px; }
+    .toc { padding: 20px; }
+    .toc-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>习近平新时代中国特色社会主义思想概论</h1>
+  <p class="subtitle">期末复习大纲 · 14 个核心考点</p>
+</div>
+
+<div class="container">
+
+  <!-- 目录 -->
+  <div class="toc">
+    <h2>📑 目录</h2>
+    <div class="toc-grid">
+      <a href="#ch1"><span class="ch-num">1</span>社会主要矛盾变化是关系全局的历史性变化</a>
+      <a href="#ch2"><span class="ch-num">2</span>在中华大地上全面建成小康社会</a>
+      <a href="#ch3"><span class="ch-num">3</span>中国式现代化的本质要求</a>
+      <a href="#ch4"><span class="ch-num">4</span>中国式现代化创造了人类文明新形态</a>
+      <a href="#ch5"><span class="ch-num">5</span>人民立场是中国共产党的根本政治立场</a>
+      <a href="#ch6"><span class="ch-num">6</span>新时代全面深化改革开放是一场深刻革命</a>
+      <a href="#ch7"><span class="ch-num">7</span>坚持和完善社会主义基本经济制度</a>
+      <a href="#ch8"><span class="ch-num">8</span>全过程人民民主是社会主义民主政治的本质属性</a>
+      <a href="#ch9"><span class="ch-num">9</span>积极发展基层民主</a>
+      <a href="#ch10"><span class="ch-num">10</span>文化是民族生存和发展的重要力量</a>
+      <a href="#ch11"><span class="ch-num">11</span>大力加强马克思主义理论建设</a>
+      <a href="#ch12"><span class="ch-num">12</span>让人民生活幸福是"国之大者"</a>
+      <a href="#ch13"><span class="ch-num">13</span>绿水青山就是金山银山</a>
+      <a href="#ch14"><span class="ch-num">14</span>推进祖国完全统一</a>
+    </div>
+  </div>
+
+  <!-- 第1题 -->
+  <div class="chapter open" id="ch1">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">1</span>
+      <span class="chapter-title">社会主要矛盾变化是关系全局的历史性变化</span>
+      <span class="chapter-page">P25</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <p style="margin-bottom:16px;color:var(--text-dim)">能否准确认识和把握社会主要矛盾及其变化，关系到党和国家事业能否沿着正确方向前进。</p>
+
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span>（1）根据经济社会发展变化，适时对社会主要矛盾作出科学判断，并在此基础上提出党的中心任务，是推动党和国家事业不断向前发展的宝贵经验。</p>
+        <p>党的十八大以来，我们党及时作出我国社会主要矛盾已经转化为<strong>人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾</strong>的重大战略判断。</p>
+      </div>
+
+      <div class="point">
+        <p>（2）新时代我国社会主要矛盾的变化，反映了社会发展的客观实际，明确了解决当代中国发展主要问题的根本着力点。</p>
+        <p>人民对美好生活的向往总体上已经从"有没有"转向"好不好"。发展不平衡不充分问题，成为满足人民日益增长的美好生活需要的主要制约因素。</p>
+      </div>
+
+      <div class="point">
+        <p>（3）新时代我国社会主要矛盾的变化，是关系全局的历史性变化，对党和国家工作提出了许多新要求：</p>
+        <ul>
+          <li>要在继续推动发展的基础上，着力解决好发展不平衡不充分问题，大力提升发展质量和效益，更好满足人民在经济、政治、文化、社会、生态等方面日益增长的需要，更好推动人的全面发展、社会全面进步；</li>
+          <li>要有全局观，紧紧围绕主要矛盾，优先解决主要矛盾和矛盾的主要方面，以此带动其他矛盾的解决。</li>
+        </ul>
+      </div>
+
+      <div class="point key">
+        <p><span class="tag tag-yellow">注意</span>（4）新时代我国社会主要矛盾的变化，是在社会主义初级阶段中发生的变化，<strong>没有改变</strong>对我国社会主义所处历史阶段的判断。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第2题 -->
+  <div class="chapter" id="ch2">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">2</span>
+      <span class="chapter-title">在中华大地上全面建成小康社会</span>
+      <span class="chapter-page">P37~38</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <p style="margin-bottom:16px;color:var(--text-dim)">经过全党全国各族人民持续奋斗，我们实现了第一个百年奋斗目标，在中华大地上全面建成了小康社会，历史性地解决了绝对贫困问题。</p>
+
+      <div class="point">
+        <p>（1）实现中华民族伟大复兴是一个接续推进的历史过程：</p>
+        <ul>
+          <li>改革开放之初，我们党提出从解决温饱、实现小康进而基本实现现代化的"三步走"发展战略；</li>
+          <li>进入新世纪，在人民生活总体上达到小康水平之后，我们党进一步提出在本世纪头20年全面建设惠及十几亿人口的更高水平的小康社会。</li>
+        </ul>
+      </div>
+
+      <div class="point">
+        <p>（2）进入新时代，全面建成小康社会到了需要一鼓作气、决胜冲刺的关键时期。以习近平同志为核心的党中央锚定全面建成小康社会目标，统筹推进"五位一体"总体布局，打赢<strong>防范化解重大风险、精准脱贫、污染防治</strong>三大攻坚战。</p>
+      </div>
+
+      <div class="supplement">
+        "全面建成小康社会"内涵："小康"讲的是发展水平，"全面"讲的是发展的平衡性、协调性、可持续性。这赋予了"全面建成小康社会"更高的标准、更丰富的内涵、更全面的要求。
+      </div>
+
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span>（3）全面建成小康社会的重大意义：</p>
+        <ul>
+          <li><strong>A</strong> 全面建成小康社会，是我国社会主义现代化进程中的一座重要里程碑；</li>
+          <li><strong>B</strong> 全面建成小康社会，成效卓著、成果丰硕、成色十足。社会实现全面进步，人民民主不断扩大，文化更加繁荣，民生福祉显著提升，绿色发展方式逐步形成；</li>
+          <li><strong>C</strong> 全面建成小康社会，高质量完成了社会主义现代化建设"三步走"战略的第二步，使中华民族伟大复兴向前迈出新的一大步；
+            <ul>
+              <li>如期全面建成小康社会，兑现了党向人民、向历史作出的庄严承诺，践行了党为中国人民谋幸福、为中华民族谋复兴的初心使命；</li>
+              <li>标志着第一个百年奋斗目标胜利实现，国家更富强、人民更幸福、社会更稳定、环境更优美；</li>
+              <li>极大彰显了中国特色社会主义制度的优势，极大提升了民族自信心自豪感；</li>
+            </ul>
+          </li>
+          <li><strong>D</strong> 全面建成小康社会，探索了人类解决贫困问题的新路径。打赢脱贫攻坚战使近1亿人摆脱贫困，创造了规模最大、持续时间最长、惠及人口最多的减贫奇迹，为人类解决贫困问题提供了中国智慧和中国方案。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第3题 -->
+  <div class="chapter" id="ch3">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">3</span>
+      <span class="chapter-title">中国式现代化的本质要求</span>
+      <span class="chapter-page">P47</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span>（1）具体内容（九条）：</p>
+        <ul>
+          <li>①坚持中国共产党领导；</li>
+          <li>②坚持中国特色社会主义；</li>
+          <li>③实现高质量发展；</li>
+          <li>④发展全过程人民民主；</li>
+          <li>⑤丰富人民精神世界；</li>
+          <li>⑥实现全体人民共同富裕；</li>
+          <li>⑦促进人与自然和谐共生；</li>
+          <li>⑧推动构建人类命运共同体；</li>
+          <li>⑨创造人类文明新形态。</li>
+        </ul>
+      </div>
+
+      <div class="point">
+        <p>（2）重要意义：</p>
+        <ul>
+          <li>①符合人类现代化的一般规律；</li>
+          <li>②阐明了中国式现代化的内在规定性；</li>
+          <li>③明确了中国式现代化的领导力量、发展道路和根本方向、总体布局和战略要求，以及对人类文明和世界发展的重大意义；</li>
+          <li>④是推进中国式现代化的重要遵循。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第4题 -->
+  <div class="chapter" id="ch4">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">4</span>
+      <span class="chapter-title">中国式现代化创造了人类文明新形态</span>
+      <span class="chapter-page">P48~49</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <p style="margin-bottom:16px;color:var(--text-dim)">中国式现代化深深植根于中华优秀传统文化，体现科学社会主义的先进本质，借鉴吸收一切人类优秀文明成果，代表人类文明进步的发展方向，是一种全新的人类文明形态。</p>
+
+      <div class="point">
+        <p>①中国式现代化提供了一种全新的现代化模式。人类走向现代化并不是只有一条路，西方的现代化暴露出许多问题，并不能奉为圭臬。中国式现代化打破了"现代化=西方化"的迷思，展现了不同于西方现代化的新图景；</p>
+      </div>
+
+      <div class="point">
+        <p>②中国式现代化是对西方式现代化理论和实践的重大超越。中国式现代化作为科学社会主义的最新成果，打破了只有走资本主义道路才能实现现代化的神话，有效避免了西方现代化的矛盾弊端，是对世界现代化理论和实践的重大创新；</p>
+      </div>
+
+      <div class="point">
+        <p>③中国式现代化为广大发展中国家提供了全新选择。坚持从本国实际出发，独立自主制定现代化路线；坚持依靠本国力量和人民辛勤劳动；积极学习借鉴人类优秀文明成果，把发展命运掌握在自己手中。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第5题 -->
+  <div class="chapter" id="ch5">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">5</span>
+      <span class="chapter-title">人民立场是中国共产党的根本政治立场</span>
+      <span class="chapter-page">P78~79</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <p style="margin-bottom:16px;color:var(--text-dim)">人民立场是中国共产党的根本政治立场，是我们党区别于其他政党的显著标志。坚持这一根本立场，就要坚持以人民为中心的执政理念，将其贯穿于党和国家事业发展各方面。</p>
+
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span>①坚持人民立场，就要始终牢记党的初心和使命。</p>
+        <p>为中国人民谋幸福，为中华民族谋复兴是中国共产党人的初心和使命。</p>
+        <ul>
+          <li>要以坚定的理想信念坚守初心，牢记人民对美好生活的向往就是我们的奋斗目标；</li>
+          <li>要以真挚的人民情怀滋养初心，时刻不忘我们党来自人民、根植人民，人民群众的支持和拥护是我们胜利前进不竭力量源泉；</li>
+          <li>要以牢固的公仆意识践行初心，永远铭记共产党人是人民的勤务员。</li>
+        </ul>
+      </div>
+
+      <div class="point">
+        <p>②坚持人民立场，就要始终保持党同人民群众的血肉联系。保持党同人民群众的血肉联系关系到党的生死存亡、兴旺发达。要牢固树立群众观点，始终同人民群众打成一片，虚心向群众学习，与群众有福同享、有难同当；</p>
+      </div>
+
+      <div class="point">
+        <p>③坚持人民立场，就要热爱人民、尊重人民、敬畏人民。心中装着人民，诚心诚意做人民的小学生，反映人民意愿、回应人民诉求。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第6题 -->
+  <div class="chapter" id="ch6">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">6</span>
+      <span class="chapter-title">新时代全面深化改革开放是一场深刻革命</span>
+      <span class="chapter-page">P93~95</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">（1）为什么说"新时代全面深化改革开放是一场深刻革命"</div>
+        <div class="point">
+          <p>①新时代全面深化改革开放，就其艰巨性、复杂性和系统性来说，是一场深刻的革命。这场革命取得了历史性成就，对中国特色社会主义事业发展产生了重大而深远的影响；</p>
+        </div>
+        <div class="point">
+          <p>②全面深化改革开放是涉险滩、闯难关的变革。新时代的改革开放既深刻又复杂，各领域改革紧密联系、相互交融，任何一个领域的改革都会牵动其他领域，必须勇于破除一切不合时宜的思维定势和固有观念，深入贯彻新理念新思想新战略，形成勇于变革、勇于突破、勇于创新的新思维方式。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（2）如何推进全面深化改革开放？</div>
+        <div class="point">
+          <p>面对改革开放进入攻坚期和深水区的新形势、新要求，以习近平同志为核心的党中央以巨大的政治勇气打响改革攻坚战，加强党对全面深化改革开放的集中统一领导，以全局观念和系统思维谋划推进改革，冲破思想观念束缚，突破利益固化藩篱，坚决破除各方面体制机制弊端，着力解决新矛盾、应对新挑战，把全面深化改革开放引向深入。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（3）新时代全面深化改革开放的意义</div>
+        <div class="point">
+          <p>①全面深化改革开放是在多年改革开放基础上的深化，是一场全面、系统、整体的制度创新。必须着眼改革的关联性、系统性、可行性，全面系统整体推进各方面改革，使社会主义制度的优越性得到更好发挥；</p>
+        </div>
+        <div class="point">
+          <p>②新时代的改革开放是全方位、深层次、根本性的，取得的成就是历史性、革命性、开创性的成就。放眼全世界，没有哪个国家和政党能有这样的政治气魄和历史担当，体现了中国特色社会主义制度的鲜明特征和显著优势。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第7题 -->
+  <div class="chapter" id="ch7">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">7</span>
+      <span class="chapter-title">坚持和完善社会主义基本经济制度</span>
+      <span class="chapter-page">P119~125</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span>①社会主义基本经济制度包括：</p>
+        <ul>
+          <li>公有制为主体、多种所有制经济共同发展；</li>
+          <li>按劳分配为主体、多种分配方式并存；</li>
+          <li>社会主义市场经济体制。</li>
+        </ul>
+      </div>
+
+      <div class="point">
+        <p>②坚持和完善社会主义基本经济制度是实现高质量发展的保障；</p>
+      </div>
+
+      <div class="point key">
+        <p><span class="tag tag-yellow">注意</span>③坚持"两个毫不动摇"：毫不动摇巩固和发展公有制经济，毫不动摇鼓励、支持、引导非公有制经济发展；</p>
+      </div>
+
+      <div class="point">
+        <p>④坚持按劳分配为主体、多种分配方式并存。基本分配制度是由我国社会主义性质和基本国情决定的。要坚持和完善基本分配制度，让一切生产要素活力竞相迸发，让一切创造社会财富的源泉充分涌流；</p>
+      </div>
+
+      <div class="point">
+        <p>⑤构建高水平社会主义市场经济体制。关键是要处理好政府和市场的关系，使市场在资源配置中起决定性作用，更好发挥政府作用；要建设统一开放、竞争有序、制度完备、治理完善的高标准市场体系；推进宏观经济治理体系和治理能力现代化；依法规范和引导资本健康发展。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第8题 -->
+  <div class="chapter" id="ch8">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">8</span>
+      <span class="chapter-title">全过程人民民主是社会主义民主政治的本质属性</span>
+      <span class="chapter-page">P164~169</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <p style="margin-bottom:16px;color:var(--text-dim)">全过程人民民主，是中国共产党团结带领人民追求民主、发展民主、实现民主的伟大创造，是党不断推进中国民主理论创新、制度创新、实践创新的经验结晶。</p>
+
+      <div class="section">
+        <div class="section-title">（1）全过程人民民主是社会主义民主政治的伟大创造</div>
+        <div class="point">
+          <p>①全过程人民民主植根于我国社会主义民主的长期实践，是中国特色社会主义民主政治理论和实践的重大成果；</p>
+        </div>
+        <div class="point">
+          <p>②全过程人民民主是新时代我国民主政治领域具有重大创新意义的标志性成果；</p>
+        </div>
+        <div class="point highlight">
+          <p><span class="tag tag-red">重点</span>③全过程人民民主实现了<strong>过程民主和成果民主、程序民主和实质民主、直接民主和间接民主、人民民主和国家意志</strong>相统一。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（2）全过程人民民主是全链条、全方位、全覆盖的民主</div>
+        <div class="point">
+          <p>全过程人民民主，既有完整的制度程序，也有完整的参与实践，把民主选举、民主协商、民主决策、民主管理、民主监督贯通起来，涵盖经济、政治、文化、社会、生态文明等各个方面，聚焦国家发展大事、社会治理难事、百姓日常琐事，具有时间上的连续性、内容上的整体性、运行上的协同性、人民参与上的广泛性和持续性。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（3）全过程人民民主是最广泛、最真实、最管用的民主</div>
+        <div class="point">
+          <p>评判一种民主形式好不好，实践最有说服力，人民最有发言权。全过程人民民主既能确保人民充分享有各方面权利，又能有效促进国家治理高效和社会和谐稳定，维护和保障人民群众的根本利益，是最广泛、最真实、最管用的民主。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第9题 -->
+  <div class="chapter" id="ch9">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">9</span>
+      <span class="chapter-title">积极发展基层民主</span>
+      <span class="chapter-page">P173~174</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">（1）重要性</div>
+        <div class="point">
+          <p>①基层民主是全过程人民民主的重要体现。包括村民委员会、社区居民委员会、职工代表大会等；</p>
+        </div>
+        <div class="point">
+          <p>②发展基层民主，是实现人民有效政治参与的重要渠道，是人民当家作主的有效途径，是社会主义民主最广泛的实践；</p>
+        </div>
+        <div class="point">
+          <p>③基层民主的建立和发展，保障了基层群众广泛、直接、有效行使民主权利，彰显了人民当家作主的广泛性、真实性、有效性；</p>
+        </div>
+        <div class="point">
+          <p>④人民群众通过民主实践，围绕涉及自身利益的实际问题，发表意见建议，进行广泛协商，利益得到协调，矛盾有效化解，为我国社会长期稳定提供了重要政治基础和制度保障；</p>
+        </div>
+      </div>
+
+      <div class="point key">
+        <p><span class="tag tag-yellow">注意</span>（2）做法：坚持和完善基层群众自治制度，要把党的领导贯穿基层群众自治全过程和各方面，确保基层民主建设始终沿着正确道路前进。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第10题 -->
+  <div class="chapter" id="ch10">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">10</span>
+      <span class="chapter-title">文化是民族生存和发展的重要力量</span>
+      <span class="chapter-page">P201~206</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">（1）文化繁荣兴盛是实现中华民族伟大复兴的必然要求</div>
+        <div class="point">
+          <p>国家强大、民族兴盛、社会发展，不仅需要高度发达的物质文明，也需要高度繁荣的精神文明。</p>
+        </div>
+        <div class="point">
+          <p>①文化繁荣兴盛是实现中华民族伟大复兴的精神支撑。只有推动文化繁荣兴盛，才能充分发挥文化在价值塑造、共识凝聚方面的重要作用，为全面推进中华民族伟大复兴提供更为主动、更为强大的精神力量；</p>
+        </div>
+        <div class="point">
+          <p>②文化繁荣兴盛是建设社会主义现代化强国的应有之义。只有推动文化繁荣兴盛，才能为推进中国式现代化建设、实现第二个百年奋斗目标提供思想保证、舆论支持、精神动力和文化条件；</p>
+        </div>
+        <div class="point">
+          <p>③文化繁荣兴盛是满足人民日益增长的美好生活需要的内在要求。只有推动文化繁荣兴盛，才能更好满足人民群众多样化、多层次、多方面的精神文化需求，增强人民精神力量，促进人的全面发展；</p>
+        </div>
+        <div class="point">
+          <p>④文化繁荣兴盛是在世界文化激荡中站稳脚跟的前提基础。只有推动文化繁荣兴盛，才能形成与我国综合国力和国际地位相适应的国家文化软实力，增强中华文化影响力和吸引力；</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（2）坚定中国特色社会主义文化自信（前提）</div>
+        <div class="point highlight">
+          <p><span class="tag tag-red">重点</span>文化自信是更基础、更广泛、更深厚的自信，是一个国家、一个民族发展中最基本、最深沉、最持久的力量。</p>
+        </div>
+        <div class="point">
+          <p>①中华优秀传统文化是我们坚定文化自信的<strong>深厚基础</strong>。这是我们区别于其他国家和民族的根本特征，也铸就了中华民族一以贯之的文化自信；</p>
+        </div>
+        <div class="point">
+          <p>②党带领人民在伟大斗争中孕育的革命文化和社会主义先进文化是我们坚定文化自信的<strong>坚强基石</strong>；</p>
+        </div>
+        <div class="point">
+          <p>③中国特色社会主义伟大实践是我们坚定文化自信的<strong>现实基础</strong>；</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（3）坚持中国特色社会主义文化发展道路（怎么做）</div>
+        <div class="point">
+          <p>中国特色社会主义文化发展道路，是推动社会主义文化繁荣兴盛的唯一正确道路。</p>
+        </div>
+        <div class="point">
+          <p>①坚持举旗帜、聚民心、育新人、兴文化、展形象；</p>
+        </div>
+        <div class="point">
+          <p>②坚持"二为"方向、"双百"方针。坚持为人民服务、为社会主义服务的根本方向，是决定社会主义文化事业前途命运的关键。坚持百花齐放、百家争鸣；</p>
+        </div>
+        <div class="point">
+          <p>③激发全民族文化创新创造活力。坚持不忘本来、吸收外来、面向未来，立足中国特色社会主义伟大实践，使中国特色社会主义文化始终保持旺盛的生机活力，使精神文化产品和社会文化生活更加丰富多彩。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第11题 -->
+  <div class="chapter" id="ch11">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">11</span>
+      <span class="chapter-title">大力加强马克思主义理论建设</span>
+      <span class="chapter-page">P208~210</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">（1）为什么要大力加强马克思主义理论建设？</div>
+        <div class="point">
+          <p>加强马克思主义理论建设，是不断巩固马克思主义在意识形态领域的指导地位、不断巩固全党全国人民团结奋斗的共同思想基础的必然要求。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（2）如何大力加强马克思主义理论建设？</div>
+        <div class="point">
+          <p>①要加强马克思主义理论学习宣传教育，深化马克思主义理论研究和建设，加快构建中国特色哲学社会科学，为党和国家事业发展提供坚实的思想保证、精神力量和理论支撑；</p>
+        </div>
+        <div class="point highlight">
+          <p><span class="tag tag-red">重点</span>②坚持用马克思主义特别是中国化时代化的马克思主义武装全党、教育人民、指导实践。<strong>习近平新时代中国特色社会主义思想是马克思主义中国化时代化最新成果</strong>，是当今时代最现实、最鲜活的马克思主义；</p>
+        </div>
+        <div class="point">
+          <p>③深化马克思主义理论研究和建设。推进理论的体系化、学理化，重点研究阐释习近平新时代中国特色社会主义思想的原理性成果、原创性贡献；</p>
+        </div>
+        <div class="point">
+          <p>④加快构建中国特色哲学社会科学。坚持以马克思主义为指导，构建中国特色、中国风格、中国气派的学科体系、学术体系、话语体系。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第12题 -->
+  <div class="chapter" id="ch12">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">12</span>
+      <span class="chapter-title">让人民生活幸福是"国之大者"</span>
+      <span class="chapter-page">P225~230</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="section">
+        <div class="section-title">（1）民生是人民幸福之基（为什么）</div>
+        <div class="point">
+          <p>①治国有常，利民为本。民生事关人民的生存生活生计，事关民心所向、民情所系、民意所指；</p>
+        </div>
+        <div class="point">
+          <p>②增进民生福祉是坚持立党为公、执政为民的本质要求。中国共产党始终坚守为中国人民谋幸福、为中华民族谋复兴的初心使命；</p>
+        </div>
+        <div class="point">
+          <p>③增进民生福祉是社会主义生产的根本目的。社会主义社会是人民当家作主的社会，社会主义生产要以增进民生福祉为根本目的，只有让人民共享经济、政治、文化、社会、生态等各方面发展成果，才能不断提高人民素质，促进人的全面发展；</p>
+        </div>
+        <div class="point">
+          <p>④增进民生福祉是全面建设社会主义现代化国家的应有之义。中国式现代化是造福人民的现代化，要求把不断增进民生福祉放在更加突出的位置；</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（2）人民获得感幸福感安全感更加充实、更有保障、更可持续</div>
+        <div class="point">
+          <p>①党的十八大以来，注重加强普惠性、基础性、兜底性民生建设，坚决打赢脱贫攻坚战，扎实推进共同富裕，不断增强人民获得感、幸福感、安全感；</p>
+        </div>
+        <div class="point">
+          <p>②打赢脱贫攻坚战，消除绝对贫困，是全面建成小康社会的底线任务，是必须抓紧抓好第一民生工程；</p>
+        </div>
+        <div class="point">
+          <p>③聚焦民生重点领域，在收入分配、就业、教育、社会保障、医疗卫生、住房保障等方面推出一系列重大举措，推动人民生活全方位改善；</p>
+        </div>
+        <div class="point">
+          <p>④经过接续奋斗，幼有所育、学有所教、劳有所得、病有所医、老有所养、住有所居、弱有所扶得到更好实现。</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">（3）坚持在发展中增进民生福祉（怎么做）</div>
+        <div class="point highlight">
+          <p><span class="tag tag-red">重点</span>发展是解决民生问题的"总钥匙"，民生是发展的"指南针"，要在发展过程中始终注重民生、保障民生、改善民生。</p>
+        </div>
+        <div class="point">
+          <ul>
+            <li>①正确把握民生和发展的关系，是保障和改善民生的重要前提；</li>
+            <li>②坚守底线、突出重点、完善制度、引导预期，是保障和改善民生的工作思路；</li>
+            <li>③解决人民群众最关心最直接最现实的利益问题，是保障和改善民生的重中之重；</li>
+            <li>④坚持尽力而为、量力而行，是保障和改善民生的重要方针；</li>
+            <li>⑤坚持人人尽责、人人享有，让所有劳动者在推动发展中分享发展成果，是保障和改善民生重要原则。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第13题 -->
+  <div class="chapter" id="ch13">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">13</span>
+      <span class="chapter-title">绿水青山就是金山银山</span>
+      <span class="chapter-page">P244~245</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="point">
+        <p>①生态环境问题归根到底是经济发展方式和生活方式问题。绿水青山就是金山银山，这是重要的发展理念，也是推进现代化建设的重大原则。这一理念，阐明了经济发展与生态环境保护之间的关系，揭示了保护生态环境就是保护生产力、改善生态环境就是发展生产力的道理，指明了实现发展和保护协同共生的新路径；</p>
+      </div>
+
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span>②生态环境保护和经济发展是辩证统一、相辅相成的关系。发展经济不能对资源和生态环境竭泽而渔，生态环境保护也不是舍弃经济发展而缘木求鱼，而是要坚持在发展中保护、在保护中发展。不能把生态环境保护和经济发展割裂开来，更不能对立起来；</p>
+      </div>
+
+      <div class="point">
+        <p>③绿水青山既是自然财富、生态财富，又是社会财富、经济财富。绿水青山是人民群众健康的重要保障，是人民群众的共有财富。坚持生态优先、绿色发展，把生态环境优势转化为生态农业、生态工业、生态旅游等生态经济优势，绿水青山就变成了金山银山；</p>
+      </div>
+
+      <div class="point key">
+        <p><span class="tag tag-yellow">注意</span>④处理好绿水青山和金山银山的关系，关键在人，关键在思路。新时代，我国经济已由高速增长阶段转向高质量发展阶段，生态环境的支撑作用越来越明显。必须要处理好高质量发展和高水平保护的关系，通过高水平环境保护，不断塑造发展的新动能、新优势，着力构建绿色低碳循环经济体系，有效降低发展的资源环境代价，持续增强发展的潜力和后劲。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第14题 -->
+  <div class="chapter" id="ch14">
+    <div class="chapter-header" onclick="toggle(this)">
+      <span class="chapter-num">14</span>
+      <span class="chapter-title">推进祖国完全统一</span>
+      <span class="chapter-page">P308~313</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="chapter-body">
+      <div class="point">
+        <p><span class="tag tag-blue">A</span>解决台湾问题、实现祖国完全统一，是党矢志不渝的历史任务，是全体中华儿女的共同愿望，是实现中华民族伟大复兴的必然要求。党的十八大以来，以习近平同志为核心的党中央积极推进对台工作理论和实践创新，形成新时代党解决台湾问题的总体方略，牢牢把握两岸关系主导权和主动权，扎实推进祖国统一进程；</p>
+      </div>
+
+      <div class="point highlight">
+        <p><span class="tag tag-red">重点</span><span class="tag tag-blue">B</span>实现祖国完全统一是中华民族伟大复兴的必然要求。民族复兴、国家统一是大势所趋、大义所在、民心所向；台湾前途在于国家统一，台湾同胞福祉系于民族复兴；统一是历史大势，是正道；"台独"是历史逆流，是绝路，台湾问题因民族弱乱而产生，必将随着民族复兴而解决；</p>
+      </div>
+
+      <div class="point">
+        <p><span class="tag tag-blue">C</span>坚持贯彻新时代党解决台湾问题的总体方略。随着国际国内形势的深刻复杂变化，解决台湾问题、实现祖国完全统一，必须有新的思路和方略。</p>
+      </div>
+
+      <div class="supplement">
+        新时代党解决台湾问题的总体方略（十个"坚持"）：
+        <ul>
+          <li>①坚持党中央对对台工作的集中统一领导；</li>
+          <li>②坚持在中华民族伟大复兴进程中推进祖国统一；</li>
+          <li>③坚持在祖国大陆发展进步基础上解决台湾问题；</li>
+          <li>④坚持"和平统一、一国两制"基本方针；</li>
+          <li>⑤坚持一个中国原则和"九二共识"；</li>
+          <li>⑥坚持推动两岸关系和平发展、融合发展；</li>
+          <li>⑦坚持团结台湾同胞、争取台湾民心；</li>
+          <li>⑧坚持粉碎"台独"分裂图谋；</li>
+          <li>⑨坚持反对外部势力干涉；</li>
+          <li>⑩坚持决不承诺放弃使用武力。</li>
+        </ul>
+      </div>
+
+      <div class="point">
+        <p><span class="tag tag-blue">D</span>牢牢把握两岸关系主导权和主动权：</p>
+        <ul>
+          <li>①"和平统一、一国两制"方针是实现两岸统一的最佳方式；</li>
+          <li>②促进两岸经济文化交流合作，深化两岸各领域融合发展；</li>
+          <li>③坚持以最大诚意、尽最大努力争取和平统一的前景，但决不承诺放弃使用武力。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" id="backTop">↑</button>
+
+<footer>
+  <p>仅供学习参考 · 资料来源于课程复习大纲</p>
+</footer>
+
+<script>
+function toggle(header) {
+  header.parentElement.classList.toggle('open');
+}
+// Back to top button
+window.addEventListener('scroll', () => {
+  document.getElementById('backTop').classList.toggle('visible', window.scrollY > 400);
+});
+// Open first chapter by default
+</script>
+
+</body>
+</html>
