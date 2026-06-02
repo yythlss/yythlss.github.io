@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代检测技术 - 复习知识点</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --secondary: #059669;
+            --secondary-light: #d1fae5;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+            line-height: 1.7;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .toc {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .toc h2 {
+            color: var(--primary);
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-light);
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            transition: all 0.2s;
+            background: var(--gray-50);
+        }
+
+        .toc-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .toc-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .chapter {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-light);
+        }
+
+        .chapter-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.3em;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .chapter-header h2 {
+            color: var(--gray-900);
+            font-size: 1.5em;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: var(--primary);
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            padding-left: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .section h4 {
+            color: var(--gray-700);
+            font-size: 1.05em;
+            margin: 15px 0 8px;
+        }
+
+        .knowledge-card {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .knowledge-card.important {
+            border-left-color: var(--danger);
+            background: var(--danger-light);
+        }
+
+        .knowledge-card.formula {
+            border-left-color: var(--purple);
+            background: var(--purple-light);
+        }
+
+        .knowledge-card.tip {
+            border-left-color: var(--secondary);
+            background: var(--secondary-light);
+        }
+
+        .knowledge-card.example {
+            border-left-color: var(--warning);
+            background: var(--warning-light);
+        }
+
+        .card-label {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-label.important { background: var(--danger); color: white; }
+        .card-label.formula { background: var(--purple); color: white; }
+        .card-label.tip { background: var(--secondary); color: white; }
+        .card-label.example { background: var(--warning); color: white; }
+
+        .formula-block {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            font-family: "Courier New", monospace;
+            font-size: 0.95em;
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .highlight {
+            background: linear-gradient(transparent 60%, #fef08a 60%);
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        tr:nth-child(even) { background: var(--gray-50); }
+        tr:hover { background: var(--primary-light); }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .comparison-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid var(--gray-200);
+        }
+
+        .comparison-item h5 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 2px 4px 2px 0;
+        }
+
+        .tag-blue { background: var(--primary-light); color: var(--primary); }
+        .tag-green { background: var(--secondary-light); color: var(--secondary); }
+        .tag-red { background: var(--danger-light); color: var(--danger); }
+        .tag-purple { background: var(--purple-light); color: var(--purple); }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8em; }
+            .chapter { padding: 20px; }
+            .toc-grid { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body { background: white; }
+            .chapter { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+            header { color: var(--gray-900); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📘 现代检测技术</h1>
+    <p>期末复习知识点总结 · 全九章核心内容</p>
+</header>
+
+<div class="container">
+
+<!-- 目录 -->
+<nav class="toc">
+    <h2>📑 目录导航</h2>
+    <div class="toc-grid">
+        <a href="#ch1" class="toc-item"><span class="toc-num">1</span>传感器概述</a>
+        <a href="#ch2" class="toc-item"><span class="toc-num">2</span>传感器基本特性</a>
+        <a href="#ch3" class="toc-item"><span class="toc-num">3</span>电阻式传感器</a>
+        <a href="#ch4" class="toc-item"><span class="toc-num">4</span>电容式传感器</a>
+        <a href="#ch5" class="toc-item"><span class="toc-num">5</span>电感式传感器</a>
+        <a href="#ch6" class="toc-item"><span class="toc-num">6</span>磁电/磁敏式传感器</a>
+        <a href="#ch7" class="toc-item"><span class="toc-num">7</span>压电式传感器</a>
+        <a href="#ch8" class="toc-item"><span class="toc-num">8</span>光电传感器</a>
+        <a href="#ch9" class="toc-item"><span class="toc-num">9</span>新型光电传感器</a>
+    </div>
+</nav>
+
+<!-- 第1章 -->
+<section id="ch1" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">1</span>
+        <h2>传感器概述</h2>
+    </div>
+
+    <div class="section">
+        <h3>1.1 传感器的定义与组成</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">核心概念</span>
+            <h4>传感器定义（GB7665—87）</h4>
+            <p>能够感受<span class="highlight">规定的被测量</span>并按照<span class="highlight">一定规律</span>转换成<span class="highlight">可用输出信号</span>的器件和装置。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>传感器组成三要素</h4>
+            <div class="formula-block">
+                被测量 → [敏感元件] → [转换元件] → [基本电路] → 电量输出
+            </div>
+            <ul>
+                <li><strong>敏感元件</strong>：感受被测量，输出与被测量有确定关系的物理量</li>
+                <li><strong>转换元件</strong>：将敏感元件输出的非电物理量转换为电参量（R、C、L）</li>
+                <li><strong>基本电路</strong>：将电参量接入电路转换成电量（电压、电流）</li>
+            </ul>
+            <p><strong>核心部分是转换元件</strong>，决定传感器的工作原理。</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>1.2 传感器技术三大支柱</h3>
+        <div class="knowledge-card tip">
+            <span class="card-label tip">重点记忆</span>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h5>🔍 传感器技术</h5>
+                    <p>信息采集 — 相当于人的<strong>"感官"</strong></p>
+                </div>
+                <div class="comparison-item">
+                    <h5>📡 通信技术</h5>
+                    <p>信息传输 — 相当于人的<strong>"神经"</strong></p>
+                </div>
+                <div class="comparison-item">
+                    <h5>💻 计算机技术</h5>
+                    <p>信息处理 — 相当于人的<strong>"大脑"</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>1.3 传感器分类方法</h3>
+        <table>
+            <tr><th>分类依据</th><th>类别</th></tr>
+            <tr><td>检测范畴</td><td>物理量传感器、化学量传感器、生物量传感器</td></tr>
+            <tr><td>输出信号</td><td>模拟传感器、数字传感器</td></tr>
+            <tr><td>结构</td><td>结构型、物性型、复合型</td></tr>
+            <tr><td>功能</td><td>单功能、多功能、智能传感器</td></tr>
+            <tr><td>转换原理</td><td>机—电、光—电、热—电、磁—电</td></tr>
+            <tr><td>能源</td><td>有源传感器、无源传感器</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>1.4 传感器发展趋势</h3>
+        <div class="knowledge-card">
+            <ul>
+                <li><strong>新型传感器</strong>：高灵敏度、红外、光纤、微生物、仿生传感器</li>
+                <li><strong>集成化</strong>：多功能器件集成到一个传感器上，实现小型化</li>
+                <li><strong>智能化</strong>：带微处理器，兼有信息检测、存储和处理功能</li>
+                <li><strong>数字化和网络化</strong>：物联网（IoT）基础</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 第2章 -->
+<section id="ch2" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">2</span>
+        <h2>传感器基本特性</h2>
+    </div>
+
+    <div class="section">
+        <h3>2.1 静态特性指标</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">必考</span>
+            <p>静态特性：<span class="highlight">线性度、迟滞、重复性、灵敏度、分辨率、漂移、稳定性</span></p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>（1）线性度</h4>
+            <p>实际特性曲线与拟合直线的最大偏差程度。</p>
+            <div class="formula-block">
+                γ<sub>L</sub> = ±(ΔL<sub>max</sub> / y<sub>FS</sub>) × 100%
+            </div>
+            <p>拟合方法：理论拟合、端点连线拟合、最小二乘法拟合（精度最高）</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>（2）迟滞</h4>
+            <p>正、反行程期间输出特性曲线不重合的现象。</p>
+            <div class="formula-block">
+                γ<sub>H</sub> = ±(ΔH<sub>max</sub> / y<sub>FS</sub>) × 100%
+            </div>
+            <p>产生原因：弹性元件滞后、铁磁体/铁电体的磁滞/电滞现象。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>（3）重复性</h4>
+            <p>同一方向多次测量时输出特性不一致的程度。</p>
+            <div class="formula-block">
+                γ<sub>R</sub> = ±(2~3)σ<sub>max</sub> / y<sub>FS</sub> × 100%
+            </div>
+        </div>
+
+        <div class="knowledge-card formula">
+            <span class="card-label formula">公式</span>
+            <h4>（4）灵敏度</h4>
+            <div class="formula-block">
+                线性传感器：S = Δy / Δx （常数）<br>
+                非线性传感器：S = dy / dx （变量）
+            </div>
+            <p>单位：mV/mm（位移）、mV/℃（温度）等</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>（5）分辨率与阈值</h4>
+            <ul>
+                <li><strong>分辨率</strong>：传感器能检测到的最小输入增量</li>
+                <li><strong>阈值</strong>：输入小到某种程度输出不再变化的值</li>
+            </ul>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>（6）漂移</h4>
+            <p>输入量不变而输出量发生改变。包括：</p>
+            <ul>
+                <li><strong>零点漂移</strong>与<strong>灵敏度漂移</strong></li>
+                <li>分为<strong>时间漂移（时漂）</strong>和<strong>温度漂移（温漂）</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>2.2 动态特性</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">核心</span>
+            <h4>传递函数</h4>
+            <div class="formula-block">
+                H(s) = Y(s) / X(s) = (b<sub>m</sub>s<sup>m</sup> + ... + b<sub>0</sub>) / (a<sub>n</sub>s<sup>n</sup> + ... + a<sub>0</sub>)
+            </div>
+            <p>初始条件为零时，输出拉氏变换与输入拉氏变换之比。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>一阶系统</h4>
+            <div class="formula-block">
+                H(s) = k / (τs + 1)<br>
+                阶跃响应：y(t) = k(1 - e<sup>-t/τ</sup>)<br>
+                频率响应：A(ω) = 1/√(1+ω²τ²)　　φ(ω) = -arctan(ωτ)
+            </div>
+            <p><strong>关键参数</strong>：时间常数 τ，τ越小响应越快，频带越宽。</p>
+            <p>t = τ时达到63.2%；t = 4τ时达到98.2%（工程上认为已稳定）。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>二阶系统</h4>
+            <div class="formula-block">
+                H(s) = kω<sub>n</sub><sup>2</sup> / (s<sup>2</sup> + 2ξω<sub>n</sub>s + ω<sub>n</sub><sup>2</sup>)
+            </div>
+            <p><strong>关键参数</strong>：固有频率 ω<sub>n</sub>、阻尼比 ξ</p>
+            <table>
+                <tr><th>阻尼比</th><th>响应特性</th></tr>
+                <tr><td>ξ = 0</td><td>零阻尼，等幅振荡</td></tr>
+                <tr><td>ξ < 1</td><td>欠阻尼，衰减振荡</td></tr>
+                <tr><td>ξ = 1</td><td>临界阻尼，响应时间最短</td></tr>
+                <tr><td>ξ > 1</td><td>过阻尼，稳定时间较长</td></tr>
+            </table>
+            <p><span class="highlight">实际取 ξ = 0.6～0.8</span>，过冲量不太大，稳定时间不太长。</p>
+            <p><span class="highlight">ω<sub>n</sub> ≥ (3～5)ω（信号频率）</span>，避免共振。</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>2.3 误差理论基础</h3>
+        <div class="knowledge-card">
+            <h4>误差分类</h4>
+            <table>
+                <tr><th>类型</th><th>定义</th><th>消除方法</th></tr>
+                <tr><td>系统误差</td><td>服从确定规律的误差</td><td>修正值法、对称法、替代法、对照法</td></tr>
+                <tr><td>随机误差</td><td>随机变化的误差</td><td>多次测量取平均值</td></tr>
+                <tr><td>粗大误差</td><td>人为疏忽引起的显著误差</td><td>拉依达准则（3σ准则）剔除</td></tr>
+            </table>
+        </div>
+
+        <div class="knowledge-card formula">
+            <span class="card-label formula">公式</span>
+            <h4>相对误差类型</h4>
+            <div class="formula-block">
+                实际相对误差：γ<sub>A</sub> = Δx / A × 100%<br>
+                示值相对误差：γ<sub>x</sub> = Δx / x × 100%<br>
+                满度相对误差：γ<sub>n</sub> = Δx / y<sub>FS</sub> × 100%（用于确定精度等级）
+            </div>
+        </div>
+
+        <div class="knowledge-card tip">
+            <span class="card-label tip">重点</span>
+            <h4>贝塞尔公式</h4>
+            <div class="formula-block">
+                σ̂ = √[Σv<sub>i</sub><sup>2</sup> / (n-1)]
+            </div>
+            <p>用残差近似代替随机误差求标准差估计值。测量次数一般取 n = 10～20。</p>
+        </div>
+    </div>
+</section>
+
+<!-- 第3章 -->
+<section id="ch3" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">3</span>
+        <h2>电阻式传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>3.1 金属丝电阻应变片</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">核心原理</span>
+            <h4>电阻应变效应</h4>
+            <p>导体在外力作用下产生机械形变时阻值发生变化。</p>
+            <div class="formula-block">
+                ΔR/R = Δl/l - ΔS/S + Δρ/ρ = (1 + 2μ + λE)ε = k<sub>0</sub>ε
+            </div>
+            <p>其中 k<sub>0</sub> ≈ 1 + 2μ ≈ 1.5～2（金属应变片）</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>应变片结构</h4>
+            <ul>
+                <li><strong>敏感栅</strong>：高阻金属丝/金属箔</li>
+                <li><strong>基片</strong>：绝缘材料</li>
+                <li><strong>盖片</strong>：保护层</li>
+            </ul>
+            <p>类型：<span class="highlight">丝式、箔式（最常用）、薄膜型</span></p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>主要特性</h4>
+            <ul>
+                <li><strong>横向效应</strong>：圆弧部分使灵敏系数下降，箔式应变片可减小此误差</li>
+                <li><strong>机械滞后</strong>：加载和卸载时残余应变未释放</li>
+                <li><strong>蠕变</strong>：恒力作用下应变电阻值随时间变化</li>
+                <li><strong>温度误差</strong>：环境温度变化引起的附加电阻变化</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>3.2 测量电路——电桥</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">必考</span>
+            <h4>直流电桥</h4>
+            <div class="formula-block">
+                平衡条件：R<sub>1</sub>·R<sub>3</sub> = R<sub>2</sub>·R<sub>4</sub>
+            </div>
+        </div>
+
+        <table>
+            <tr><th>桥路类型</th><th>工作臂数</th><th>输出电压</th><th>灵敏度</th><th>特点</th></tr>
+            <tr>
+                <td><strong>单臂桥</strong></td>
+                <td>1个</td>
+                <td>U<sub>o</sub> = KεU<sub>i</sub>/4</td>
+                <td>S = U<sub>i</sub>/4</td>
+                <td>输出小，有非线性</td>
+            </tr>
+            <tr>
+                <td><strong>半桥（差动）</strong></td>
+                <td>2个</td>
+                <td>U<sub>o</sub> = KεU<sub>i</sub>/2</td>
+                <td>S = U<sub>i</sub>/2</td>
+                <td>灵敏度翻倍，非线性改善</td>
+            </tr>
+            <tr>
+                <td><strong>全桥（差动）</strong></td>
+                <td>4个</td>
+                <td>U<sub>o</sub> = KεU<sub>i</sub></td>
+                <td>S = U<sub>i</sub></td>
+                <td>灵敏度最高，应尽量采用</td>
+            </tr>
+        </table>
+
+        <div class="knowledge-card tip">
+            <span class="card-label tip">关键结论</span>
+            <ul>
+                <li>差动测量可消除非线性误差</li>
+                <li>相邻桥臂应变极性一致→输出为两者之差；极性不同→输出为两者之和</li>
+                <li>供桥电压越高灵敏度越高，但温度误差越大（一般1～3V）</li>
+            </ul>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>温度补偿方法</h4>
+            <ul>
+                <li><strong>桥路补偿</strong>：相邻臂接补偿片（不受力，同温度场）</li>
+                <li><strong>差动桥自补偿</strong>：各臂同温度场，温度变化相减为零</li>
+                <li><strong>应变片自补偿</strong>：特殊材料使温度附加应变为零</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>3.3 应用</h3>
+        <div class="knowledge-card">
+            <ul>
+                <li><strong>力传感器</strong>：柱式、悬臂梁式（等截面/等强度）、轮辐式</li>
+                <li><strong>压力传感器</strong>：膜片式（径向应变ε<sub>r</sub>、切向应变ε<sub>t</sub>）</li>
+                <li><strong>加速度传感器</strong>：悬臂梁+质量块，频率范围10～60Hz</li>
+                <li><strong>电子皮带秤</strong>：Q = p × v，总量 = ∫Q dt</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>3.4 半导体压阻式传感器</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">对比</span>
+            <h4>金属应变片 vs 半导体应变片</h4>
+            <table>
+                <tr><th>特性</th><th>金属应变片</th><th>半导体应变片</th></tr>
+                <tr><td>灵敏系数</td><td>k ≈ 1.5～2</td><td>k = πE ≈ 100～200</td></tr>
+                <tr><td>主要变化</td><td>几何尺寸变化</td><td>电阻率变化（压阻效应）</td></tr>
+                <tr><td>温度稳定性</td><td>较好</td><td>差</td></tr>
+                <tr><td>非线性</td><td>小</td><td>大应变时严重</td></tr>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- 第4章 -->
+<section id="ch4" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">4</span>
+        <h2>电容式传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>4.1 工作原理与类型</h3>
+        <div class="knowledge-card formula">
+            <span class="card-label formula">基本公式</span>
+            <div class="formula-block">
+                C = εS/δ = ε<sub>0</sub>ε<sub>r</sub>S/δ
+            </div>
+            <p>改变 S → 变面积型；改变 δ → 变极距型；改变 ε → 变介质型</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>电容式传感器特点</h4>
+            <ul>
+                <li>输出阻抗高，功率小</li>
+                <li>极板静电引力小，可动质量小</li>
+                <li>固有频率高，动态响应好</li>
+                <li>可进行非接触测量</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>4.2 输出特性</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">重点</span>
+            <h4>变极距型（δ）</h4>
+            <div class="formula-block">
+                单极板：ΔC/C<sub>0</sub> = (Δδ/δ<sub>0</sub>)[1 + (Δδ/δ<sub>0</sub>) + (Δδ/δ<sub>0</sub>)² + ...]<br>
+                灵敏度：k<sub>0</sub> = 1/δ<sub>0</sub><br>
+                差动式：ΔC/C<sub>0</sub> = 2(Δδ/δ<sub>0</sub>)　灵敏度提高一倍<br>
+                差动非线性误差：γ<sub>L</sub> ≈ (Δδ/δ<sub>0</sub>)² × 100%
+            </div>
+            <p><span class="highlight">灵敏度与初始极距δ<sub>0</sub>成反比</span>，δ<sub>0</sub>小灵敏度高但测量范围小。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>变面积型（S）</h4>
+            <div class="formula-block">
+                ΔC/C<sub>0</sub> = -Δa/a　（线性关系）<br>
+                灵敏度：k<sub>0</sub> = εb/δ = 常数
+            </div>
+            <p><span class="highlight">输出特性为线性</span>，适合大位移测量。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>变介质型（ε）</h4>
+            <p>应用：测厚度、测位移、测液位（油量测量）、测温湿度</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>4.3 测量电路</h3>
+        <div class="knowledge-card">
+            <h4>主要电路类型</h4>
+            <ul>
+                <li><strong>变压器式交流电桥</strong>：差动电容接两桥臂，输出与位移成线性</li>
+                <li><strong>二极管双T型电路</strong>：U<sub>RL</sub> = MU<sub>E</sub>f(C<sub>1</sub>-C<sub>2</sub>)</li>
+                <li><strong>运算放大器式电路</strong>：U<sub>o</sub> = -U<sub>i</sub>C<sub>0</sub>δ/(εs)，解决非线性问题</li>
+                <li><strong>调频电路</strong>：电容变化→频率变化，需鉴频器</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>4.4 应用</h3>
+        <div class="knowledge-card">
+            <ul>
+                <li><strong>电容式压力传感器</strong>：膜片式差动结构，ΔC ∝ ΔP</li>
+                <li><strong>电容测厚仪</strong>：金属带材轧制厚度在线检测</li>
+                <li><strong>电容式加速度计</strong>：质量块+差动电容</li>
+                <li><strong>电容传声器</strong>：驻极体电容传声器（麦克风）</li>
+                <li><strong>电容式料位计</strong>：利用介电常数变化检测物位</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 第5章 -->
+<section id="ch5" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">5</span>
+        <h2>电感式传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>5.1 变磁阻式（自感式）传感器</h3>
+        <div class="knowledge-card formula">
+            <span class="card-label formula">核心公式</span>
+            <div class="formula-block">
+                L = N²μ<sub>0</sub>S<sub>0</sub> / (2δ<sub>0</sub>)
+            </div>
+            <p>改变气隙厚度δ → 变气隙型（灵敏度高，非线性严重）</p>
+            <p>改变截面积S → 变面积型（线性好，灵敏度低）</p>
+        </div>
+
+        <div class="knowledge-card important">
+            <span class="card-label important">差动式优势</span>
+            <ul>
+                <li>灵敏度提高一倍</li>
+                <li>非线性减小（多乘Δδ/δ因子，消除偶次项）</li>
+                <li>温度自补偿</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>5.2 差动变压器式（互感式）传感器</h3>
+        <div class="knowledge-card">
+            <h4>工作原理</h4>
+            <p>初级线圈加交流激励，两个次级线圈差动连接。铁芯位移改变互感M<sub>1</sub>、M<sub>2</sub>，输出电压反映位移大小和方向。</p>
+            <div class="formula-block">
+                U<sub>o</sub> = ω(M<sub>2</sub> - M<sub>1</sub>)U<sub>i</sub> / √(R<sub>1</sub><sup>2</sup> + (ωL<sub>1</sub>)<sup>2</sup>)
+            </div>
+        </div>
+
+        <div class="knowledge-card important">
+            <span class="card-label important">考点</span>
+            <h4>零点残余电压</h4>
+            <p>铁芯在中间位置时，理论上输出应为零，实际U<sub>o</sub> ≠ 0。</p>
+            <p><strong>原因</strong>：两次级线圈电气参数不完全对称、电源高次谐波、寄生电容。</p>
+            <p><strong>消除方法</strong>：串联电阻、并联电容、相敏检波电路。</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>5.3 电涡流式传感器</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">核心</span>
+            <h4>电涡流效应</h4>
+            <p>金属导体置于变化磁场中，导体内部产生闭合电流（涡流）。</p>
+            <p><strong>形成条件</strong>：①存在交变磁场 ②金属导体处于交变磁场中</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>等效阻抗</h4>
+            <div class="formula-block">
+                Z<sub>1</sub> = f(ρ, μ, x, ω)<br>
+                被测量（位移x、材料ρ/μ）→ 阻抗变化 → 电信号
+            </div>
+            <p>高频反射式：测位移、振动、转速、探伤</p>
+            <p>低频透射式：测金属板厚度</p>
+        </div>
+
+        <div class="knowledge-card tip">
+            <span class="card-label tip">应用</span>
+            <ul>
+                <li>非接触测位移、振动、转速</li>
+                <li>金属板厚度测量</li>
+                <li>电涡流探伤（表面裂纹检测）</li>
+                <li>轴心轨迹测量（两个90°探头）</li>
+                <li>转速测量：n = 60f/n<sub>齿</sub></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 第6章 -->
+<section id="ch6" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">6</span>
+        <h2>磁电/磁敏式传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>6.1 霍尔效应</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">核心公式</span>
+            <h4>霍尔电势</h4>
+            <div class="formula-block">
+                U<sub>H</sub> = K<sub>H</sub>·I·B<br>
+                K<sub>H</sub> = R<sub>H</sub>/d = ρμ/d （霍尔灵敏度）<br>
+                R<sub>H</sub> = 1/(ne) （霍尔常数）
+            </div>
+            <p>霍尔电势与电流I和磁场B的乘积成正比。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>霍尔元件材料选择</h4>
+            <ul>
+                <li><strong>金属</strong>：电子浓度n高→R<sub>H</sub>很小→灵敏度低 ✗</li>
+                <li><strong>绝缘体</strong>：电阻率ρ大但迁移率μ很小 ✗</li>
+                <li><strong>半导体</strong>：ρ较大、μ适中 → <span class="highlight">最适合作霍尔元件</span> ✓</li>
+                <li>多采用<strong>N型半导体</strong>（电子迁移率大于空穴）</li>
+                <li>厚度d越小灵敏度越高（d ≈ 1μm）</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>6.2 误差与补偿</h3>
+        <div class="knowledge-card">
+            <h4>不等位电势</h4>
+            <p>B=0时U<sub>H</sub>≠0的现象。原因：引出电极安装不对称、材料不均匀。</p>
+            <p>补偿：等效为电桥，在电阻大的桥臂并联电阻。</p>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>温度误差补偿</h4>
+            <p>恒流源供电 + 并联分流电阻R<sub>p</sub>（可选负温度系数）</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>6.3 应用</h3>
+        <div class="comparison-grid">
+            <div class="comparison-item">
+                <h5>📏 测位移</h5>
+                <p>在梯度磁场中，U<sub>H</sub>取决于位置</p>
+            </div>
+            <div class="comparison-item">
+                <h5>⚡ 测电流</h5>
+                <p>B∝I<sub>x</sub>，U<sub>H</sub> = K<sub>H</sub>I<sub>c</sub>K<sub>B</sub>I<sub>x</sub></p>
+            </div>
+            <div class="comparison-item">
+                <h5>🔄 测转速</h5>
+                <p>n = 60×f/n<sub>齿</sub></p>
+            </div>
+            <div class="comparison-item">
+                <h5>🚗 汽车点火</h5>
+                <p>霍尔式无触点电子点火装置</p>
+            </div>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>霍尔集成传感器</h4>
+            <ul>
+                <li><strong>线性型</strong>：输出电压与B成线性关系，用于测位移、振动、磁场</li>
+                <li><strong>开关型</strong>：高/低电平转换，有回差特性，用于测转速、无触点开关</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 第7章 -->
+<section id="ch7" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">7</span>
+        <h2>压电式传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>7.1 压电效应</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">核心概念</span>
+            <h4>正压电效应与逆压电效应</h4>
+            <ul>
+                <li><strong>正压电效应</strong>：外力→变形→内部极化→表面产生电荷（力→电）</li>
+                <li><strong>逆压电效应</strong>：施加电场→电介质形变（电→力）</li>
+            </ul>
+            <p>压电效应是<span class="highlight">可逆的</span>，压电元件可实现机电双向转换。</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>7.2 压电材料</h3>
+        <div class="knowledge-card">
+            <h4>石英晶体（单晶体）</h4>
+            <ul>
+                <li>化学式 SiO<sub>2</sub>，六面体结构</li>
+                <li>X轴（电轴）：纵向压电效应，q<sub>xx</sub> = d<sub>xx</sub>F<sub>x</sub></li>
+                <li>Y轴（机械轴）：横向压电效应</li>
+                <li>Z轴（光轴）：不产生压电效应</li>
+                <li>d<sub>xx</sub> = 2.31×10<sup>-12</sup> C/N</li>
+            </ul>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>压电陶瓷（多晶体）</h4>
+            <ul>
+                <li>钛酸钡(BaTiO<sub>3</sub>)、锆钛酸铅(PZT)</li>
+                <li>需人工极化后才具有压电效应</li>
+                <li>压电常数大，灵敏度高</li>
+                <li>稳定性不如石英晶体</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>7.3 测量电路</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">关键</span>
+            <h4>压电传感器等效电路</h4>
+            <ul>
+                <li>压电元件可等效为<strong>电荷源</strong>（并联电容）或<strong>电压源</strong>（串联电容）</li>
+                <li>输出阻抗高，必须配接<strong>高输入阻抗</strong>的前置放大器</li>
+                <li>两种前置放大器：<strong>电压放大器</strong>和<strong>电荷放大器</strong></li>
+            </ul>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>电荷放大器（推荐）</h4>
+            <p>输出电压与传感器电荷成正比，不受电缆电容影响。</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>7.4 应用</h3>
+        <div class="knowledge-card">
+            <ul>
+                <li><strong>动态力测量</strong>：机械冲击、振动</li>
+                <li><strong>压电加速度计</strong>：质量块+压电元件</li>
+                <li><strong>超声波换能器</strong>：利用逆压电效应发射超声波</li>
+                <li><strong>压电传声器</strong>：声电转换</li>
+                <li><strong>点火装置</strong>：燃气灶、打火机</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 第8章 -->
+<section id="ch8" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">8</span>
+        <h2>光电传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>8.1 光电效应</h3>
+        <div class="knowledge-card important">
+            <span class="card-label important">三种光电效应</span>
+            <table>
+                <tr><th>类型</th><th>原理</th><th>器件</th></tr>
+                <tr><td><strong>外光电效应</strong></td><td>光照射→电子逸出物体表面</td><td>光电管、光电倍增管</td></tr>
+                <tr><td><strong>内光电效应</strong></td><td>光照→半导体电导率增加</td><td>光敏电阻</td></tr>
+                <tr><td><strong>光生伏特效应</strong></td><td>光照→PN结产生电动势</td><td>光电池、光电二极管</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>8.2 光电器件</h3>
+        <div class="comparison-grid">
+            <div class="comparison-item">
+                <h5>光敏电阻</h5>
+                <p>内光电效应，光照→电阻减小，灵敏度高，响应慢</p>
+            </div>
+            <div class="comparison-item">
+                <h5>光电二极管</h5>
+                <p>光生伏特效应，反向工作，光电流与照度成正比</p>
+            </div>
+            <div class="comparison-item">
+                <h5>光电三极管</h5>
+                <p>有放大作用，灵敏度比光电二极管高</p>
+            </div>
+            <div class="comparison-item">
+                <h5>光电池</h5>
+                <p>大面积PN结，不需外加电源，短路电流与照度成正比</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>8.3 应用</h3>
+        <div class="knowledge-card">
+            <ul>
+                <li><strong>光电转速计</strong>：光脉冲计数</li>
+                <li><strong>光电编码器</strong>：角位移/角速度测量</li>
+                <li><strong>光纤传感器</strong>：利用光纤传光特性测量</li>
+                <li><strong>CCD图像传感器</strong>：图像采集</li>
+                <li><strong>光栅传感器</strong>：精密位移测量</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 第9章 -->
+<section id="ch9" class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">9</span>
+        <h2>新型光电传感器</h2>
+    </div>
+
+    <div class="section">
+        <h3>9.1 光纤传感器</h3>
+        <div class="knowledge-card">
+            <h4>光纤传光原理</h4>
+            <p>基于光的<strong>全反射</strong>原理。当入射角大于临界角时，光在纤芯与包层界面发生全反射，实现光的传输。</p>
+            <div class="formula-block">
+                数值孔径 NA = sinθ<sub>max</sub> = √(n<sub>1</sub><sup>2</sup> - n<sub>2</sub><sup>2</sup>)
+            </div>
+        </div>
+
+        <div class="knowledge-card">
+            <h4>光纤传感器分类</h4>
+            <ul>
+                <li><strong>功能型（FF型）</strong>：光纤本身就是敏感元件</li>
+                <li><strong>非功能型（NF型）</strong>：光纤仅作传光用，另加敏感元件</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>9.2 红外传感器</h3>
+        <div class="knowledge-card">
+            <h4>红外辐射特性</h4>
+            <ul>
+                <li>波长范围：0.75～1000μm</li>
+                <li>热效应显著</li>
+                <li>应用：测温、热成像、气体分析、遥控</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>9.3 超声波传感器</h3>
+        <div class="knowledge-card">
+            <h4>工作原理</h4>
+            <ul>
+                <li>利用<strong>压电效应</strong>实现电-声转换</li>
+                <li>频率 > 20kHz</li>
+                <li>应用：测距、测厚、探伤、液位测量</li>
+                <li>测距公式：d = v·t/2（v为声速，t为传播时间）</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 综合对比表 -->
+<section class="chapter">
+    <div class="chapter-header">
+        <span class="chapter-num">★</span>
+        <h2>各章传感器综合对比</h2>
+    </div>
+
+    <table>
+        <tr>
+            <th>传感器类型</th>
+            <th>工作原理</th>
+            <th>测量物理量</th>
+            <th>特点</th>
+        </tr>
+        <tr>
+            <td><strong>电阻应变式</strong></td>
+            <td>电阻应变效应</td>
+            <td>力、压力、位移、加速度</td>
+            <td>精度高、结构简单</td>
+        </tr>
+        <tr>
+            <td><strong>电容式</strong></td>
+            <td>电容量变化</td>
+            <td>位移、压力、液位、厚度</td>
+            <td>灵敏度高、可非接触</td>
+        </tr>
+        <tr>
+            <td><strong>电感式（自感）</strong></td>
+            <td>磁阻变化→电感变化</td>
+            <td>位移、压力</td>
+            <td>灵敏度高、输出大</td>
+        </tr>
+        <tr>
+            <td><strong>差动变压器</strong></td>
+            <td>互感变化</td>
+            <td>位移、振动</td>
+            <td>线性范围大、有零点残余电压</td>
+        </tr>
+        <tr>
+            <td><strong>电涡流式</strong></td>
+            <td>涡流效应</td>
+            <td>位移、转速、厚度、探伤</td>
+            <td>非接触、可靠性好</td>
+        </tr>
+        <tr>
+            <td><strong>霍尔式</strong></td>
+            <td>霍尔效应</td>
+            <td>磁场、电流、位移、转速</td>
+            <td>体积小、频带宽</td>
+        </tr>
+        <tr>
+            <td><strong>压电式</strong></td>
+            <td>压电效应</td>
+            <td>动态力、振动、加速度</td>
+            <td>频带宽、灵敏度高、只测动态</td>
+        </tr>
+        <tr>
+            <td><strong>光电式</strong></td>
+            <td>光电效应</td>
+            <td>光强、位移、转速</td>
+            <td>响应快、非接触</td>
+        </tr>
+    </table>
+</section>
+
+</div>
+
+<footer>
+    <p>📘 现代检测技术 · 期末复习知识点总结</p>
+    <p>祝考试顺利！🎓</p>
+</footer>
+
+</body>
+</html>
