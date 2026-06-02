@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高频电子线路 - 复习知识点与公式汇总</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2980b9;
+            --accent: #e74c3c;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #2c3e50;
+            --border: #dee2e6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            padding: 20px;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 15px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        .toc {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .toc h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.3em; }
+        .toc ol { padding-left: 25px; }
+        .toc li { margin: 6px 0; }
+        .toc a { color: var(--secondary); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .chapter {
+            background: var(--card);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .chapter-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 18px 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .chapter-content { padding: 25px; }
+        h3 {
+            color: var(--primary);
+            margin: 20px 0 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--border);
+            font-size: 1.15em;
+        }
+        h4 {
+            color: var(--secondary);
+            margin: 15px 0 8px;
+            font-size: 1.05em;
+        }
+        .formula-box {
+            background: #fef9e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px 20px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            overflow-x: auto;
+        }
+        .formula-box .label {
+            font-weight: bold;
+            color: #e67e22;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .formula {
+            font-size: 1.1em;
+            color: #333;
+            margin: 5px 0;
+        }
+        .key-point {
+            background: #eaf2f8;
+            border-left: 4px solid var(--secondary);
+            padding: 12px 18px;
+            margin: 10px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .key-point strong { color: var(--primary); }
+        ul, ol { padding-left: 25px; margin: 8px 0; }
+        li { margin: 4px 0; }
+        .highlight { color: var(--accent); font-weight: bold; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: center;
+        }
+        th {
+            background: var(--primary);
+            color: white;
+        }
+        tr:nth-child(even) { background: #f2f2f2; }
+        .note {
+            background: #fdedec;
+            border-left: 4px solid var(--accent);
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95em;
+        }
+        .summary-box {
+            background: #e8f8f5;
+            border: 1px solid #1abc9c;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        @media print {
+            body { padding: 10px; }
+            .chapter { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<h1>📡 高频电子线路 — 复习知识点与公式汇总</h1>
+<p class="subtitle">基于严国萍《通信电子线路》（第三版）及课程PPT整理 | 共7章核心内容</p>
+
+<!-- 目录 -->
+<div class="toc">
+<h2>📋 目录</h2>
+<ol>
+    <li><a href="#ch1">第1章 通信系统导论</a></li>
+    <li><a href="#ch2">第2章 通信电子线路分析基础</a></li>
+    <li><a href="#ch3">第3章 高频小信号放大器</a></li>
+    <li><a href="#ch4">第4章 谐振功率放大器</a></li>
+    <li><a href="#ch5">第5章 正弦波振荡器</a></li>
+    <li><a href="#ch6">第6章 调幅、检波与混频（频谱搬移电路）</a></li>
+    <li><a href="#ch7">第7章 角度调制与解调（频谱非线性变换电路）</a></li>
+    <li><a href="#formulas">附录：全书核心公式速查表</a></li>
+</ol>
+</div>
+
+<!-- ==================== 第1章 ==================== -->
+<div class="chapter" id="ch1">
+<div class="chapter-header">第1章 通信系统导论</div>
+<div class="chapter-content">
+
+<h3>1.1 通信系统的组成</h3>
+<div class="key-point">
+<strong>通信系统五大组成部分：</strong>输入变换装置 → 发送设备 → 传输信道 → 接收设备 → 输出变换装置
+</div>
+
+<h4>1.1.2 无线电发送设备</h4>
+<ul>
+    <li><strong>组成：</strong>高频振荡 → 缓冲 → 倍频 → 高频放大 → 调制 → 天线发射</li>
+    <li><strong>调制的目的：</strong>将低频信号"装载"到高频载波上，减小天线尺寸，区分不同电台</li>
+    <li><strong>调制方式：</strong>调幅(AM)、调频(FM)、调相(PM)</li>
+</ul>
+
+<h4>1.1.3 无线电接收设备（超外差式接收机）</h4>
+<div class="key-point">
+<strong>超外差接收机原理：</strong>f<sub>i</sub> = f<sub>o</sub> - f<sub>s</sub><br>
+<strong>组成：</strong>高频放大 → 混频 → 中频放大 → 检波 → 低频放大<br>
+<strong>优点：</strong>灵敏度高、选择性好、工作稳定、波段工作质量指标一致性好
+</div>
+
+<h3>1.2 信号的频谱表示法</h3>
+<ul>
+    <li>任何复杂信号可分解为不同频率正弦信号之和</li>
+    <li><strong>带宽：</strong>信号最高频率与最低频率之差</li>
+</ul>
+
+<h3>1.3 无线电波段划分</h3>
+<table>
+<tr><th>波段</th><th>频率范围</th><th>频段名称</th></tr>
+<tr><td>长波</td><td>30~300kHz</td><td>低频(LF)</td></tr>
+<tr><td>中波</td><td>0.3~1.5MHz</td><td>中频(MF)</td></tr>
+<tr><td>短波</td><td>1.5~30MHz</td><td>高频(HF)</td></tr>
+<tr><td>超短波</td><td>30~300MHz</td><td>甚高频(VHF)</td></tr>
+<tr><td>分米波</td><td>0.3~3GHz</td><td>特高频(UHF)</td></tr>
+<tr><td>厘米波</td><td>3~30GHz</td><td>超高频(SHF)</td></tr>
+</table>
+
+<h3>1.3.2 无线电波传播方式</h3>
+<ul>
+    <li><strong>地波：</strong>沿地面传播（长波、超长波）</li>
+    <li><strong>空间波：</strong>直线传播（超短波）</li>
+    <li><strong>天波：</strong>电离层反射（短波，300kHz~30MHz）</li>
+</ul>
+
+</div>
+</div>
+
+<!-- ==================== 第2章 ==================== -->
+<div class="chapter" id="ch2">
+<div class="chapter-header">第2章 通信电子线路分析基础</div>
+<div class="chapter-content">
+
+<h3>2.0 元件的高频特性</h3>
+<div class="key-point">
+<strong>高频特性总结：</strong><br>
+• <strong>电阻：</strong>高频时 = 电阻 + 分布电容(C<sub>R</sub>) + 引线电感(L<sub>R</sub>)<br>
+• <strong>电感：</strong>高频时 = 电感 + 损耗电阻(r) + 分布电容<br>
+• <strong>电容：</strong>高频时 = 电容 + 损耗电阻 + 分布电感<br>
+• <strong>集肤效应：</strong>频率越高，电流越向导线表面集中
+</div>
+
+<h3>2.1 选频网络</h3>
+
+<h4>2.1.1 串联谐振回路</h4>
+<div class="formula-box">
+<div class="label">回路阻抗</div>
+<div class="formula">Z = R + jX = R + j(ωL - 1/ωC)</div>
+</div>
+
+<div class="formula-box">
+<div class="label">谐振频率</div>
+<div class="formula">ω₀ = 1/√(LC)，f₀ = 1/(2π√(LC))</div>
+</div>
+
+<div class="formula-box">
+<div class="label">特性阻抗</div>
+<div class="formula">ρ = ω₀L = 1/(ω₀C) = √(L/C)</div>
+</div>
+
+<div class="formula-box">
+<div class="label">品质因数</div>
+<div class="formula">Q = ω₀L/R = 1/(ω₀CR) = ρ/R = (1/R)√(L/C)</div>
+</div>
+
+<div class="formula-box">
+<div class="label">谐振时电压关系（电压谐振）</div>
+<div class="formula">V<sub>L0</sub> = V<sub>C0</sub> = QV<sub>s</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">广义失谐系数</div>
+<div class="formula">ξ = X/R = (ωL - 1/ωC)/R ≈ Q·2Δω/ω₀</div>
+</div>
+
+<div class="formula-box">
+<div class="label">谐振曲线（归一化）</div>
+<div class="formula">N(f) = I/I₀ = 1/√(1 + ξ²) = 1/√[1 + (Q·2Δf/f₀)²]</div>
+</div>
+
+<div class="formula-box">
+<div class="label">通频带</div>
+<div class="formula">B = 2Δf₀.₇ = f₀/Q</div>
+</div>
+
+<div class="formula-box">
+<div class="label">矩形系数（单回路）</div>
+<div class="formula">K<sub>r0.1</sub> = BW₀.₁/BW₀.₇ = √(100-1) = 9.95</div>
+</div>
+
+<div class="formula-box">
+<div class="label">有载Q值</div>
+<div class="formula">Q<sub>L</sub> = ω₀L/(R + R<sub>S</sub> + R<sub>L</sub>)</div>
+</div>
+
+<h4>2.1.2 并联谐振回路</h4>
+<div class="formula-box">
+<div class="label">谐振频率</div>
+<div class="formula">ω<sub>p</sub> = 1/√(LC)，f<sub>p</sub> = 1/(2π√(LC))</div>
+</div>
+
+<div class="formula-box">
+<div class="label">谐振电阻</div>
+<div class="formula">R<sub>p</sub> = L/(RC) = Q²R = (ω₀L)²/R</div>
+</div>
+
+<div class="formula-box">
+<div class="label">品质因数</div>
+<div class="formula">Q<sub>p</sub> = R<sub>p</sub>/(ω<sub>p</sub>L) = ω<sub>p</sub>C·R<sub>p</sub> = R<sub>p</sub>/ρ</div>
+</div>
+
+<div class="formula-box">
+<div class="label">谐振时电流关系（电流谐振）</div>
+<div class="formula">I<sub>Cp</sub> = I<sub>Lp</sub> = Q<sub>p</sub>·I<sub>S</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">有载Q值</div>
+<div class="formula">Q<sub>L</sub> = Q<sub>0</sub> / (1 + R<sub>p</sub>/R<sub>S</sub> + R<sub>p</sub>/R<sub>L</sub>)</div>
+</div>
+
+<div class="key-point">
+<strong>串并联谐振回路对比要点：</strong><br>
+• 串联：阻抗最小(R)，电压谐振，f>f₀呈感性，f<f₀呈容性<br>
+• 并联：阻抗最大(R<sub>p</sub>)，电流谐振，f>f₀呈容性，f<f₀呈感性<br>
+• 通频带：B = f₀/Q（两者相同）
+</div>
+
+<h3>2.1.3 串并联阻抗等效互换与抽头变换</h3>
+<div class="formula-box">
+<div class="label">串→并联等效（Q>>1时）</div>
+<div class="formula">X<sub>并</sub> = X<sub>串</sub>，R<sub>并</sub> = Q²R<sub>串</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">抽头阻抗变换</div>
+<div class="formula">接入系数 p = V<sub>T</sub>/V（p<1）<br>R'<sub>S</sub> = R<sub>S</sub>/p²（低抽头→高抽头，电阻提高1/p²倍）<br>C'<sub>L</sub> = p²C<sub>L</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">插入损耗</div>
+<div class="formula">K<sub>l</sub>(dB) = 20lg[1/(1 - Q<sub>L</sub>/Q<sub>0</sub>)]</div>
+</div>
+
+<h3>2.1.4 耦合回路</h3>
+<div class="formula-box">
+<div class="label">耦合系数</div>
+<div class="formula">电感耦合：k = M/√(L₁L₂)，若L₁=L₂=L，则k=M/L<br>电容耦合：k = C<sub>M</sub>/(C+C<sub>M</sub>)</div>
+</div>
+
+<div class="formula-box">
+<div class="label">反射阻抗</div>
+<div class="formula">Z<sub>f1</sub> = (ωM)²/Z<sub>22</sub>（次级反射到初级）<br>Z<sub>f2</sub> = (ωM)²/Z<sub>11</sub>（初级反射到次级）<br>反射电阻永远为正，反射电抗与原回路电抗性质相反</div>
+</div>
+
+<div class="formula-box">
+<div class="label">耦合因数</div>
+<div class="formula">η = k/k<sub>c</sub> = kQ<br>η<1：弱耦合；η=1：临界耦合；η>1：强耦合</div>
+</div>
+
+<div class="formula-box">
+<div class="label">临界耦合系数</div>
+<div class="formula">k<sub>c</sub> = 1/Q（当Q₁=Q₂=Q时）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">耦合回路频率特性</div>
+<div class="formula">α = I₂/I₂<sub>max</sub> = 2η / √[(1+η²-ξ²)² + 4ξ²]</div>
+</div>
+
+<div class="formula-box">
+<div class="label">临界耦合时通频带</div>
+<div class="formula">2Δf₀.₇ = √2 · f₀/Q（比单回路宽√2倍）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">临界耦合时矩形系数</div>
+<div class="formula">K<sub>r0.1</sub> = √(100^(1/2)-1)·f₀/Q ≈ 3.16（远优于单回路的9.95）</div>
+</div>
+
+<h3>2.2 非线性电路分析基础</h3>
+
+<h4>2.2.2 非线性电路的分析方法</h4>
+
+<div class="formula-box">
+<div class="label">幂级数分析法</div>
+<div class="formula">i = a₀ + a₁v + a₂v² + a₃v³ + ...<br><br>当v = V₁cosω₁t + V₂cosω₂t时，产生的频率分量：<br>直流、ω₁、ω₂、2ω₁、2ω₂、ω₁±ω₂、3ω₁、3ω₂、2ω₁±ω₂、ω₁±2ω₂ ...<br><br><strong>结论：</strong>最高谐波次数不超过n；组合频率pω₁±qω₂满足p+q≤n</div>
+</div>
+
+<div class="formula-box">
+<div class="label">折线分析法（大信号）</div>
+<div class="formula">i<sub>c</sub> = 0（v<sub>BE</sub> < V<sub>BZ</sub>）<br>i<sub>c</sub> = g<sub>c</sub>(v<sub>BE</sub> - V<sub>BZ</sub>)（v<sub>BE</sub> > V<sub>BZ</sub>）<br>g<sub>c</sub>为跨导，V<sub>BZ</sub>为截止电压</div>
+</div>
+
+<div class="formula-box">
+<div class="label">线性时变参量分析法</div>
+<div class="formula">i(t) ≈ I₀(t) + g(t)·v₂(t)<br>g(t) = g₀ + g₁cosω₁t + g₂cos2ω₁t + ...<br><strong>频率变换：</strong>g<sub>n</sub>cos(nω₁t)·V₂cosω₂t → 产生(nω₁±ω₂)分量</div>
+</div>
+
+<h3>2.1.5 选择性滤波器</h3>
+<ul>
+    <li><strong>LC集中滤波器</strong>：带通滤波器</li>
+    <li><strong>石英晶体滤波器</strong>：Q值极高（几万~几百万），C₀>>C<sub>q</sub></li>
+    <li><strong>陶瓷滤波器</strong>：Q值几百</li>
+    <li><strong>声表面波滤波器(SAWF)</strong>：工作频率10MHz~1GHz，矩形系数可达1.2</li>
+</ul>
+
+</div>
+</div>
+
+<!-- ==================== 第3章 ==================== -->
+<div class="chapter" id="ch3">
+<div class="chapter-header">第3章 高频小信号放大器</div>
+<div class="chapter-content">
+
+<h3>3.1 概述</h3>
+<div class="key-point">
+<strong>质量指标：</strong><br>
+① <strong>增益</strong>：A<sub>V</sub>=V<sub>o</sub>/V<sub>i</sub>，A<sub>p</sub>=P<sub>o</sub>/P<sub>i</sub><br>
+② <strong>通频带</strong>：B=2Δf₀.₇（增益下降到0.707倍时的频率范围）<br>
+③ <strong>选择性</strong>：矩形系数K<sub>r</sub>、抑制比d<sub>n</sub><br>
+④ <strong>工作稳定性</strong><br>
+⑤ <strong>噪声系数</strong>：N<sub>F</sub> = (P<sub>si</sub>/P<sub>ni</sub>)/(P<sub>so</sub>/P<sub>no</sub>)
+</div>
+
+<h3>3.2 晶体管高频小信号等效电路</h3>
+
+<h4>3.2.1 Y参数等效电路</h4>
+<div class="formula-box">
+<div class="label">Y参数方程</div>
+<div class="formula">İ₁ = y<sub>ie</sub>V̇₁ + y<sub>re</sub>V̇₂<br>İ₂ = y<sub>fe</sub>V̇₁ + y<sub>oe</sub>V̇₂</div>
+</div>
+
+<h4>3.2.2 混合π等效电路</h4>
+<div class="key-point">
+<strong>主要参数：</strong><br>
+r<sub>bb'</sub>：基极电阻 | r<sub>b'e</sub>：发射结电阻 | C<sub>b'e</sub>：发射结电容<br>
+C<sub>b'c</sub>：集电结电容 | g<sub>m</sub>：跨导 = I<sub>c</sub>/26mV | g<sub>m</sub>v̇<sub>b'e</sub>：等效电流源
+</div>
+
+<div class="formula-box">
+<div class="label">Y参数与混合π参数的转换</div>
+<div class="formula">y<sub>ie</sub> = Y<sub>b'e</sub>/(1 + r<sub>bb'</sub>Y<sub>b'e</sub>)，Y<sub>b'e</sub> = jω(C<sub>b'e</sub>+C<sub>b'c</sub>)<br>y<sub>fe</sub> = g<sub>m</sub>/(1 + r<sub>bb'</sub>Y<sub>b'e</sub>)<br>y<sub>re</sub> = -jωC<sub>b'c</sub>/(1 + r<sub>bb'</sub>Y<sub>b'e</sub>)<br>y<sub>oe</sub> = jωC<sub>b'c</sub>(1 + g<sub>m</sub>r<sub>bb'</sub>/(1+r<sub>bb'</sub>Y<sub>b'e</sub>))</div>
+</div>
+
+<h4>3.2.4 晶体管高频参数</h4>
+<div class="formula-box">
+<div class="label">截止频率</div>
+<div class="formula">β = β₀/√(1+(f/f<sub>β</sub>)²)<br>f<sub>β</sub>：|β|下降到β₀/√2时的频率</div>
+</div>
+
+<div class="formula-box">
+<div class="label">特征频率</div>
+<div class="formula">f<sub>T</sub> = β₀·f<sub>β</sub> ≈ f<sub>β</sub>·√(β₀²-1)<br>|β|=1时的频率，β·f ≈ f<sub>T</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">最高振荡频率</div>
+<div class="formula">f<sub>max</sub> = (1/2π)√(g<sub>m</sub>/(4r<sub>bb'</sub>C<sub>b'e</sub>C<sub>b'c</sub>))<br>频率关系：f<sub>max</sub> > f<sub>T</sub> > f<sub>β</sub></div>
+</div>
+
+<h3>3.3 晶体管谐振放大器</h3>
+
+<h4>3.3.1 单级单调谐回路谐振放大器</h4>
+<div class="formula-box">
+<div class="label">谐振电压增益</div>
+<div class="formula">A<sub>V0</sub> = -p₁p₂y<sub>fe</sub> / g<sub>Σ</sub><br>g<sub>Σ</sub> = p₁²g<sub>oe</sub> + g<sub>p</sub> + p₂²g<sub>ie2</sub><br>C<sub>Σ</sub> = p₁²C<sub>oe</sub> + C + p₂²C<sub>ie2</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">通频带</div>
+<div class="formula">2Δf₀.₇ = f₀/Q<sub>L</sub><br><strong>带宽增益积为常数：</strong>A<sub>V0</sub>·2Δf₀.₇ = |y<sub>fe</sub>|/(2πC<sub>Σ</sub>)</div>
+</div>
+
+<div class="formula-box">
+<div class="label">矩形系数</div>
+<div class="formula">K<sub>r0.1</sub> = √(10²-1) ≈ 9.95（与单回路相同，选择性差）</div>
+</div>
+
+<h4>3.3.2 多级单调谐放大器</h4>
+<div class="formula-box">
+<div class="label">m级级联</div>
+<div class="formula">总增益：A<sub>m</sub> = A<sub>V1</sub>^m<br>通频带：(2Δf₀.₇)<sub>m</sub> = √(2^(1/m)-1) · (2Δf₀.₇)<sub>单级</sub><br>带宽缩减因子：X = √(2^(1/m)-1)</div>
+</div>
+
+<h3>3.4 谐振放大器的稳定性</h3>
+<div class="formula-box">
+<div class="label">自激条件</div>
+<div class="formula">(Y<sub>S</sub>+Y<sub>i</sub>)(y<sub>oe</sub>+Y'<sub>L</sub>) = y<sub>fe</sub>·y<sub>re</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">稳定系数</div>
+<div class="formula">S = (Y<sub>S</sub>+Y<sub>i</sub>)(y<sub>oe</sub>+Y'<sub>L</sub>)/(y<sub>fe</sub>·y<sub>re</sub>)<br>S=1自激；S<1更自激；S>>1稳定（工程取S=5~10）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">稳定电压增益</div>
+<div class="formula">(A<sub>V0</sub>)<sub>S</sub> = |y<sub>fe</sub>|/(2.5ω₀C<sub>re</sub>)（当S=5时）</div>
+</div>
+
+<div class="key-point">
+<strong>克服自激的方法：</strong><br>
+① <strong>中和法</strong>：外加反馈抵消y<sub>re</sub>的内反馈，C<sub>N</sub>≈(N₁/N₂)C<sub>b'c</sub><br>
+② <strong>失配法</strong>：使Y<sub>L</sub>或Y<sub>S</sub>增大，输出与输入不匹配，常用共发-共基级联
+</div>
+
+<h3>3.5 放大电路的噪声</h3>
+<div class="formula-box">
+<div class="label">电阻热噪声</div>
+<div class="formula">U²<sub>n</sub> = 4kTRB，I²<sub>n</sub> = 4kTGB<br>k = 1.38×10⁻²³ J/K（波尔兹曼常数）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">噪声系数</div>
+<div class="formula">N<sub>F</sub> = (P<sub>si</sub>/P<sub>ni</sub>)/(P<sub>so</sub>/P<sub>no</sub>) = 输入信噪比/输出信噪比<br>N<sub>F</sub>(dB) = 10lgN<sub>F</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">级联噪声系数</div>
+<div class="formula">N<sub>F</sub> = N<sub>F1</sub> + (N<sub>F2</sub>-1)/G<sub>P1</sub> + (N<sub>F3</sub>-1)/(G<sub>P1</sub>G<sub>P2</sub>) + ...<br><strong>结论：</strong>前级影响最大，应降低前级噪声系数并增大前级功率增益</div>
+</div>
+
+</div>
+</div>
+
+<!-- ==================== 第4章 ==================== -->
+<div class="chapter" id="ch4">
+<div class="chapter-header">第4章 谐振功率放大器</div>
+<div class="chapter-content">
+
+<h3>4.1 概述</h3>
+<div class="key-point">
+<strong>工作状态分类：</strong><br>
+甲类：θ<sub>c</sub>=180°，η=50% | 乙类：θ<sub>c</sub>=90°，η=78.5% | 丙类：θ<sub>c</sub><90°，η>78.5%
+</div>
+
+<h3>4.2 工作原理</h3>
+<div class="key-point">
+<strong>高频功放特点：</strong><br>
+① 放大高频大信号，非线性工作状态<br>
+② 基极负偏压，丙类工作（θ<sub>c</sub><90°）<br>
+③ 集电极电流为尖顶余弦脉冲<br>
+④ 负载为LC谐振回路，输出正弦波
+</div>
+
+<div class="formula-box">
+<div class="label">外部电路关系</div>
+<div class="formula">v<sub>BE</sub> = -V<sub>BB</sub> + V<sub>bm</sub>cosωt<br>v<sub>CE</sub> = V<sub>CC</sub> - V<sub>cm</sub>cosωt<br>i<sub>c</sub> = g<sub>c</sub>(v<sub>BE</sub> - V<sub>BZ</sub>)</div>
+</div>
+
+<h3>4.2.2 功率关系与效率</h3>
+<div class="formula-box">
+<div class="label">功率与效率</div>
+<div class="formula">直流功率：P<sub>=</sub> = V<sub>CC</sub>·I<sub>c0</sub><br>输出功率：P<sub>o</sub> = (1/2)V<sub>cm</sub>·I<sub>cm1</sub> = (1/2)I²<sub>cm1</sub>R<sub>p</sub><br>集电极效率：η<sub>c</sub> = P<sub>o</sub>/P<sub>=</sub> = (1/2)ξ·g₁(θ<sub>c</sub>)<br><br>电压利用系数：ξ = V<sub>cm</sub>/V<sub>CC</sub><br>波形系数：g₁(θ<sub>c</sub>) = I<sub>cm1</sub>/I<sub>c0</sub></div>
+</div>
+
+<h3>4.3 折线近似分析法</h3>
+<div class="formula-box">
+<div class="label">导通角</div>
+<div class="formula">cosθ<sub>c</sub> = (V<sub>BB</sub> + V<sub>BZ</sub>)/V<sub>bm</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">集电极电流脉冲</div>
+<div class="formula">I<sub>cmax</sub> = g<sub>c</sub>V<sub>bm</sub>(1 - cosθ<sub>c</sub>)<br>i<sub>c</sub> = I<sub>cmax</sub>·(cosωt - cosθ<sub>c</sub>)/(1 - cosθ<sub>c</sub>)</div>
+</div>
+
+<div class="formula-box">
+<div class="label">傅里叶分解</div>
+<div class="formula">I<sub>c0</sub> = I<sub>cmax</sub>·α₀(θ<sub>c</sub>)<br>I<sub>cm1</sub> = I<sub>cmax</sub>·α₁(θ<sub>c</sub>)<br>I<sub>cmn</sub> = I<sub>cmax</sub>·α<sub>n</sub>(θ<sub>c</sub>)<br><br>α₀(θ<sub>c</sub>) = (sinθ<sub>c</sub> - θ<sub>c</sub>cosθ<sub>c</sub>)/[π(1-cosθ<sub>c</sub>)]<br>α₁(θ<sub>c</sub>) = (θ<sub>c</sub> - cosθ<sub>c</sub>sinθ<sub>c</sub>)/[π(1-cosθ<sub>c</sub>)]</div>
+</div>
+
+<div class="formula-box">
+<div class="label">最佳通角</div>
+<div class="formula">θ<sub>c</sub> ≈ 70°（兼顾功率与效率）<br>θ<sub>c</sub>=120°时α₁最大（输出功率最大但效率低）<br>θ<sub>c</sub>→0时η→100%（但功率→0）</div>
+</div>
+
+<h3>4.3.4 动态特性与负载特性</h3>
+<div class="formula-box">
+<div class="label">动态特性方程</div>
+<div class="formula">i<sub>c</sub> = g<sub>d</sub>(v<sub>CE</sub> - V₀)<br>g<sub>d</sub> = -(V<sub>bm</sub>/V<sub>cm</sub>)·g<sub>c</sub>（斜率为负，相当于负电阻）</div>
+</div>
+
+<div class="key-point">
+<strong>三种工作状态：</strong><br>
+• <strong>欠压状态：</strong>输出功率和效率较低，输出电压随负载变化<br>
+• <strong>临界状态：</strong>输出功率最大，效率较高，发射机末级常用<br>
+• <strong>过压状态：</strong>输出电压平稳，发射机中间级和集电极调幅常用
+</div>
+
+<div class="formula-box">
+<div class="label">最佳负载电阻</div>
+<div class="formula">R<sub>p</sub> = (ξV<sub>CC</sub>)²/(2P<sub>o</sub>)<br>临界时ξ≈1：R<sub>p</sub> ≈ V²<sub>CC</sub>/(2P<sub>o</sub>)</div>
+</div>
+
+<h3>4.4 谐振功率放大器电路</h3>
+<div class="key-point">
+<strong>馈电电路：</strong><br>
+• <strong>串馈：</strong>直流电源、负载回路、功率管三者串联<br>
+• <strong>并馈：</strong>三者并联，调谐电容上无高压，安全可靠<br>
+• <strong>自偏压：</strong>I<sub>b0</sub>或I<sub>e0</sub>在电阻上产生负偏压
+</div>
+
+<h3>4.6 丙类倍频器</h3>
+<ul>
+    <li>输出回路调谐于n次谐波频率</li>
+    <li>二次谐波最佳通角≈60°，三次谐波≈40°</li>
+    <li>输出回路Q值要求：Q<sub>o</sub> > 10nπ</li>
+</ul>
+
+</div>
+</div>
+
+<!-- ==================== 第5章 ==================== -->
+<div class="chapter" id="ch5">
+<div class="chapter-header">第5章 正弦波振荡器</div>
+<div class="chapter-content">
+
+<h3>5.2 反馈型振荡器的工作原理</h3>
+
+<h4>5.2.2 起振条件</h4>
+<div class="formula-box">
+<div class="label">起振条件</div>
+<div class="formula">ÂF̂ > 1<br>即：{ A₀F > 1（振幅条件）<br>　　 { φ<sub>A</sub> + φ<sub>F</sub> = 2nπ（相位条件，正反馈）</div>
+</div>
+
+<h4>5.2.3 平衡条件</h4>
+<div class="formula-box">
+<div class="label">平衡条件</div>
+<div class="formula">Â·F̂ = 1<br>即：{ AF = 1（振幅平衡）<br>　　 { φ<sub>A</sub> + φ<sub>F</sub> = 2nπ（相位平衡）</div>
+</div>
+
+<h4>5.2.4 稳定条件</h4>
+<div class="formula-box">
+<div class="label">振幅稳定条件</div>
+<div class="formula">∂A/∂V<sub>om</sub> |<sub>V<sub>om</sub>=V<sub>omQ</sub></sub> < 0<br>靠有源器件工作在非线性区实现</div>
+</div>
+
+<div class="formula-box">
+<div class="label">相位（频率）稳定条件</div>
+<div class="formula">∂φ<sub>Z</sub>/∂ω < 0<br>靠并联谐振回路的相频特性实现</div>
+</div>
+
+<h3>5.3 反馈型LC振荡器线路</h3>
+
+<h4>5.3.2 三端式LC振荡器</h4>
+<div class="formula-box">
+<div class="label">三端式振荡器组成法则（相位判断准则）</div>
+<div class="formula">X<sub>be</sub>与X<sub>ce</sub>电抗性质相同<br>X<sub>cb</sub>与X<sub>be</sub>、X<sub>ce</sub>电抗性质相反<br>简记："ce同抗件，cb反抗件"</div>
+</div>
+
+<table>
+<tr><th>电路类型</th><th>名称</th><th>反馈系数F</th><th>振荡频率</th><th>特点</th></tr>
+<tr><td>电感三端式</td><td>哈特莱(Hartley)</td><td>(L₂+M)/(L₁+M)</td><td>≈1/(2π√(LC))</td><td>易起振，波形差，频率不宜太高</td></tr>
+<tr><td>电容三端式</td><td>考毕兹(Colpitts)</td><td>C₁/C₂</td><td>≈1/(2π√(LC'))，C'=C₁C₂/(C₁+C₂)</td><td>波形好，频率稳定度较高</td></tr>
+<tr><td>串联改进</td><td>克拉泼(Clapp)</td><td>C₁/(C₁+C₂)</td><td>≈1/(2π√(LC₃))</td><td>频率稳定度高，不适合波段振荡</td></tr>
+<tr><td>并联改进</td><td>西勒(Seiler)</td><td>C₁/(C₁+C₂)</td><td>≈1/(2π√(L(C₃+C₄)))</td><td>波段覆盖宽，适合波段振荡</td></tr>
+</table>
+
+<h3>5.4 振荡器的频率稳定</h3>
+<div class="formula-box">
+<div class="label">频率稳定度</div>
+<div class="formula">相对频率稳定度：δ = Δf<sub>max</sub>/f₀ |<sub>t=Δt</sub><br>相对频率变化：Δω/ω₀ ≈ -(1/2)(ΔL/L + ΔC/C)</div>
+</div>
+
+<div class="key-point">
+<strong>提高频率稳定度的措施：</strong><br>
+① 减小外因变化（恒温、稳压、密封、屏蔽）<br>
+② 提高回路标准性（优质LC材料）<br>
+③ 减小φ<sub>YF</sub>及其变化量（f<<f<sub>T</sub>，选电容三端式）<br>
+④ 减小负载影响（加缓冲级，松耦合）
+</div>
+
+<h3>5.5 石英晶体振荡器</h3>
+<div class="formula-box">
+<div class="label">石英晶体等效参数</div>
+<div class="formula">L<sub>q</sub>：10³~10²H | C<sub>q</sub>：10⁻⁴~10⁻¹pF | r<sub>q</sub>：几十~几百Ω | C₀：1~10pF<br>Q值：几万~几百万</div>
+</div>
+
+<div class="formula-box">
+<div class="label">串联谐振频率与并联谐振频率</div>
+<div class="formula">f<sub>q</sub> = 1/(2π√(L<sub>q</sub>C<sub>q</sub>))<br>f<sub>p</sub> = f<sub>q</sub>√(1 + C<sub>q</sub>/C₀) ≈ f<sub>q</sub>(1 + C<sub>q</sub>/(2C₀))<br>f<sub>q</sub> < f<sub>p</sub>，两者间距很小</div>
+</div>
+
+<div class="key-point">
+<strong>晶体振荡器电路：</strong><br>
+• <strong>皮尔斯(Pierce)电路：</strong>晶振等效为电感，振荡频率f₀≈f<sub>q</sub>(1+C<sub>q</sub>/(C₀+C<sub>L</sub>))<br>
+• <strong>密勒(Miller)电路：</strong>晶振接栅极和源极之间，用场效应管<br>
+• <strong>串联型：</strong>晶振工作在串联谐振频率f<sub>q</sub>，等效为短路
+</div>
+
+</div>
+</div>
+
+<!-- ==================== 第6章 ==================== -->
+<div class="chapter" id="ch6">
+<div class="chapter-header">第6章 调幅、检波与混频（频谱搬移电路）</div>
+<div class="chapter-content">
+
+<h3>6.2 振幅调制原理</h3>
+
+<h4>6.2.2 调幅波的性质</h4>
+<div class="formula-box">
+<div class="label">普通调幅波(AM)</div>
+<div class="formula">v(t) = V₀(1 + m<sub>a</sub>cosΩt)cosω₀t<br>展开：= V₀cosω₀t + (m<sub>a</sub>V₀/2)cos(ω₀+Ω)t + (m<sub>a</sub>V₀/2)cos(ω₀-Ω)t<br><br>调幅指数：m<sub>a</sub> = K<sub>d</sub>V<sub>Ω</sub>/V₀（要求m<sub>a</sub>≤1）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">调幅度测量</div>
+<div class="formula">m<sub>a</sub> = (V<sub>max</sub> - V<sub>min</sub>)/(V<sub>max</sub> + V<sub>min</sub>) = (V<sub>max</sub> - V₀)/V₀</div>
+</div>
+
+<div class="formula-box">
+<div class="label">频带宽度</div>
+<div class="formula">B<sub>AM</sub> = 2F<sub>max</sub>（调制信号最高频率的两倍）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">功率关系</div>
+<div class="formula">载波功率：P<sub>oT</sub> = V₀²/(2R)<br>每个边频功率：P<sub>SB</sub> = (m<sub>a</sub>²/4)P<sub>oT</sub><br>总功率：P<sub>AM</sub> = (1 + m<sub>a</sub>²/2)P<sub>oT</sub><br><strong>结论：</strong>m<sub>a</sub>≤1时，边频功率最多占总功率的1/3，效率低</div>
+</div>
+
+<h4>6.2.3 DSB与SSB调幅</h4>
+<div class="formula-box">
+<div class="label">双边带调幅(DSB-SC)</div>
+<div class="formula">v<sub>DSB</sub>(t) = V₀cosΩt·cosω₀t<br>频带宽度：B<sub>DSB</sub> = 2F<sub>max</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">单边带调幅(SSB-SC)</div>
+<div class="formula">v<sub>SSB</sub>(t) = (m<sub>a</sub>V₀/2)cos(ω₀±Ω)t<br>频带宽度：B<sub>SSB</sub> = F<sub>max</sub></div>
+</div>
+
+<h3>6.3 振幅调制电路</h3>
+<div class="key-point">
+<strong>调幅电路分类：</strong><br>
+<strong>低电平调幅：</strong>平方律调幅、平衡调幅器、环形调制器、模拟相乘器<br>
+<strong>高电平调幅：</strong>集电极调幅（过压区）、基极调幅（欠压区）
+</div>
+
+<div class="formula-box">
+<div class="label">模拟相乘器调幅</div>
+<div class="formula">v<sub>o</sub>(t) = kV₀cosω₀t·(V<sub>DC</sub>+V<sub>Ω</sub>cosΩt)<br>调节V<sub>DC</sub>可改变调幅系数m<sub>a</sub></div>
+</div>
+
+<h3>6.4 振幅解调（检波）</h3>
+
+<h4>6.4.2 二极管峰值包络检波器</h4>
+<div class="formula-box">
+<div class="label">电压传输系数</div>
+<div class="formula">K<sub>d</sub> = cosθ ≈ 1（R>>R<sub>d</sub>时）<br>θ ≈ ∛(3πR<sub>d</sub>/(R))</div>
+</div>
+
+<div class="formula-box">
+<div class="label">等效输入电阻</div>
+<div class="formula">R<sub>id</sub> ≈ R/2（K<sub>d</sub>≈1时）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">惰性失真条件（不产生失真）</div>
+<div class="formula">Ω<sub>max</sub>·RC ≤ 1.5/√(1-m<sub>a</sub>²)<br>或简记：Ω<sub>max</sub>·RC ≤ 1.5</div>
+</div>
+
+<div class="formula-box">
+<div class="label">负峰切割失真条件</div>
+<div class="formula">m<sub>a</sub> < R<sub>g</sub>/(R+R<sub>g</sub>) = R//R<sub>g</sub>/R</div>
+</div>
+
+<h4>6.4.3 同步检波</h4>
+<div class="key-point">
+<strong>适用：</strong>DSB、SSB信号解调（包络检波只能解调AM信号）<br>
+<strong>原理：</strong>本地载波与信号相乘 → 低通滤波 → 恢复调制信号<br>
+v<sub>Ω</sub> = (1/2)V₁V₀cosφcosΩt（φ为相位差，φ=0时输出最大）
+</div>
+
+<h3>6.5 混频器</h3>
+<div class="formula-box">
+<div class="label">混频原理</div>
+<div class="formula">f<sub>i</sub> = f<sub>o</sub> - f<sub>s</sub>（低中频）或 f<sub>i</sub> = f<sub>o</sub> + f<sub>s</sub>（高中频）<br>中频信号保持原调制规律不变</div>
+</div>
+
+<div class="formula-box">
+<div class="label">变跨导混频</div>
+<div class="formula">g<sub>c</sub> = g₁/2（变频跨导）<br>I<sub>i</sub> = g<sub>c</sub>·V<sub>sm</sub>/2<br>混频电压增益：A<sub>vc</sub> = g<sub>c</sub>/(g<sub>oc</sub>+g<sub>L</sub>)</div>
+</div>
+
+<h4>6.5.5 混频器的干扰</h4>
+<div class="formula-box">
+<div class="label">组合频率干扰</div>
+<div class="formula">f<sub>k</sub> = |±pf<sub>o</sub> ± qf<sub>s</sub>|（p,q为正整数）<br>干扰哨叫条件：f<sub>s</sub> = (p±1)/(q-p)·f<sub>i</sub></div>
+</div>
+
+<div class="formula-box">
+<div class="label">镜像频率干扰</div>
+<div class="formula">f'<sub>s</sub> = f<sub>s</sub> + 2f<sub>i</sub> = f<sub>o</sub> + f<sub>i</sub><br>抑制方法：提高前端选择性、提高中频频率</div>
+</div>
+
+</div>
+</div>
+
+<!-- ==================== 第7章 ==================== -->
+<div class="chapter" id="ch7">
+<div class="chapter-header">第7章 角度调制与解调（频谱非线性变换电路）</div>
+<div class="chapter-content">
+
+<h3>7.2 调角波的性质</h3>
+
+<h4>7.2.1 FM波和PM波的数学表达式</h4>
+<div class="formula-box">
+<div class="label">调频波(FM)</div>
+<div class="formula">瞬时频率：ω(t) = ω₀ + k<sub>f</sub>v<sub>Ω</sub>(t)<br>瞬时相位：θ(t) = ω₀t + k<sub>f</sub>∫v<sub>Ω</sub>(t)dt<br>a<sub>f</sub>(t) = V<sub>m</sub>cos[ω₀t + k<sub>f</sub>∫v<sub>Ω</sub>(t)dt]</div>
+</div>
+
+<div class="formula-box">
+<div class="label">调相波(PM)</div>
+<div class="formula">瞬时相位：θ(t) = ω₀t + k<sub>p</sub>v<sub>Ω</sub>(t)<br>瞬时频率：ω(t) = dθ/dt = ω₀ + k<sub>p</sub>dv<sub>Ω</sub>/dt<br>a<sub>p</sub>(t) = V<sub>m</sub>cos[ω₀t + k<sub>p</sub>v<sub>Ω</sub>(t)]</div>
+</div>
+
+<div class="formula-box">
+<div class="label">单音调制时（v<sub>Ω</sub>=V<sub>Ω</sub>cosΩt）</div>
+<div class="formula"><strong>FM波：</strong>a<sub>f</sub>(t) = V<sub>m</sub>cos(ω₀t + m<sub>f</sub>sinΩt)<br>频偏：Δω<sub>m</sub> = k<sub>f</sub>V<sub>Ω</sub>（与Ω无关）<br>调制指数：m<sub>f</sub> = k<sub>f</sub>V<sub>Ω</sub>/Ω（与Ω成反比）<br><br><strong>PM波：</strong>a<sub>p</sub>(t) = V<sub>m</sub>cos(ω₀t + m<sub>p</sub>cosΩt)<br>频偏：Δω<sub>m</sub> = k<sub>p</sub>V<sub>Ω</sub>Ω（与Ω成正比）<br>调制指数：m<sub>p</sub> = k<sub>p</sub>V<sub>Ω</sub>（与Ω无关）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">通用关系</div>
+<div class="formula">Δω<sub>m</sub> = m·Ω  或  Δf = m·F<br><strong>注意：</strong>角度调制中m可大于1（不同于AM的m<sub>a</sub>≤1）</div>
+</div>
+
+<h4>7.2.2 调角信号的频谱</h4>
+<div class="formula-box">
+<div class="label">FM波的贝塞尔函数展开</div>
+<div class="formula">a<sub>f</sub>(t) = V₀∑J<sub>n</sub>(m<sub>f</sub>)cos(ω₀+nΩt)  （n从-∞到+∞）<br><br>频谱特点：<br>
+• 载频和无穷多对上下边频组成<br>
+• 各频率分量间距为Ω<br>
+• 振幅由贝塞尔函数J<sub>n</sub>(m<sub>f</sub>)决定<br>
+• 奇数次上下边频相位相反</div>
+</div>
+
+<div class="formula-box">
+<div class="label">有效频带宽度</div>
+<div class="formula">B<sub>W</sub> = 2(m+1)F = 2(Δf + F)<br><strong>结论：</strong>FM为恒带宽调制（m<sub>f</sub>↑则带宽基本不变）<br>PM的带宽随F变化（m<sub>p</sub>不变，F↑则带宽↑）</div>
+</div>
+
+<div class="formula-box">
+<div class="label">功率</div>
+<div class="formula">P<sub>av</sub> = V₀²/(2R<sub>L</sub>)<br><strong>结论：</strong>调频波平均功率等于未调载波功率，调制只是重新分配功率</div>
+</div>
+
+<h3>7.3 调频方法及电路</h3>
+<div class="key-point">
+<strong>调频方法：</strong><br>
+<strong>直接调频：</strong>用调制信号控制振荡器频率（变容二极管、电抗管）<br>
+优点：频偏大 | 缺点：中心频率不稳定<br><br>
+<strong>间接调频：</strong>先积分再调相（调制信号积分→调相→等效调频）<br>
+优点：频率稳定度高 | 缺点：频偏小
+</div>
+
+<div class="formula-box">
+<div class="label">变容二极管直接调频</div>
+<div class="formula">C<sub>j</sub> = C<sub>j0</sub>/(1+v<sub>R</sub>/V<sub>D</sub>)<sup>γ</sup><br><br>Δω(t)/ω₀ ≈ -(1/2)ΔC/C<br><br>当γ=1时，二次、三次非线性失真为零，调制线性最好</div>
+</div>
+
+<h3>7.4 调角信号解调</h3>
+<div class="key-point">
+<strong>鉴频方法：</strong><br>
+① 斜率鉴频器（利用谐振回路幅频特性的斜率段）<br>
+② 相位鉴频器（利用相位-频率特性的线性段）<br>
+③ 比例鉴频器（具有自动限幅作用）<br>
+④ 锁相环鉴频
+</div>
+
+<h4>7.4.1 鉴频器主要技术指标</h4>
+<ul>
+    <li><strong>鉴频灵敏度：</strong>S<sub>d</sub> = dv<sub>o</sub>/df |<sub>f=f₀</sub>（单位频偏产生的输出电压）</li>
+    <li><strong>线性鉴频范围：</strong>2Δf<sub>max</sub></li>
+    <li><strong>非线性失真</strong></li>
+</ul>
+
+<h3>7.5 调频制的抗干扰性能</h3>
+<div class="key-point">
+<strong>FM优于AM的抗干扰性：</strong><br>
+• FM波为等幅波，可用限幅器消除幅度干扰<br>
+• 调制指数m<sub>f</sub>越大，抗干扰能力越强（但带宽增大）<br>
+• FM的信噪比改善与m<sub>f</sub>成正比
+</div>
+
+</div>
+</div>
+
+<!-- ==================== 公式速查表 ==================== -->
+<div class="chapter" id="formulas">
+<div class="chapter-header">附录：全书核心公式速查表</div>
+<div class="chapter-content">
+
+<h3>一、选频网络公式</h3>
+<table>
+<tr><th>项目</th><th>串联谐振</th><th>并联谐振</th></tr>
+<tr><td>谐振频率</td><td>ω₀ = 1/√(LC)</td><td>ω<sub>p</sub> = 1/√(LC)</td></tr>
+<tr><td>品质因数</td><td>Q = ω₀L/R = ρ/R</td><td>Q<sub>p</sub> = R<sub>p</sub>/(ω<sub>p</sub>L) = R<sub>p</sub>/ρ</td></tr>
+<tr><td>特性阻抗</td><td colspan="2">ρ = √(L/C) = ω₀L = 1/(ω₀C)</td></tr>
+<tr><td>通频带</td><td colspan="2">B = f₀/Q</td></tr>
+<tr><td>广义失谐</td><td>ξ = X/R</td><td>ξ = B/G</td></tr>
+<tr><td>谐振曲线</td><td>N = 1/√(1+ξ²)</td><td>N = 1/√(1+ξ²)</td></tr>
+<tr><td>谐振特点</td><td>阻抗最小=R，电压谐振</td><td>阻抗最大=R<sub>p</sub>，电流谐振</td></tr>
+</table>
+
+<h3>二、高频小信号放大器公式</h3>
+<table>
+<tr><th>项目</th><th>公式</th></tr>
+<tr><td>谐振电压增益</td><td>A<sub>V0</sub> = -p₁p₂y<sub>fe</sub>/g<sub>Σ</sub></td></tr>
+<tr><td>带宽增益积</td><td>A<sub>V0</sub>·2Δf₀.₇ = |y<sub>fe</sub>|/(2πC<sub>Σ</sub>)</td></tr>
+<tr><td>通频带</td><td>2Δf₀.₇ = f₀/Q<sub>L</sub></td></tr>
+<tr><td>稳定系数</td><td>S = 2(g<sub>s</sub>+g<sub>ie</sub>)(g<sub>oe</sub>+G<sub>L</sub>)/(|y<sub>fe</sub>||y<sub>re</sub>|(1+cos(φ<sub>fe</sub>+φ<sub>re</sub>)))</td></tr>
+<tr><td>噪声系数级联</td><td>N<sub>F</sub> = N<sub>F1</sub> + (N<sub>F2</sub>-1)/G<sub>P1</sub> + ...</td></tr>
+</table>
+
+<h3>三、谐振功率放大器公式</h3>
+<table>
+<tr><th>项目</th><th>公式</th></tr>
+<tr><td>导通角</td><td>cosθ<sub>c</sub> = (V<sub>BB</sub>+V<sub>BZ</sub>)/V<sub>bm</sub></td></tr>
+<tr><td>电流脉冲幅值</td><td>I<sub>cmax</sub> = g<sub>c</sub>V<sub>bm</sub>(1-cosθ<sub>c</sub>)</td></tr>
+<tr><td>直流分量</td><td>I<sub>c0</sub> = I<sub>cmax</sub>·α₀(θ<sub>c</sub>)</td></tr>
+<tr><td>基波分量</td><td>I<sub>cm1</sub> = I<sub>cmax</sub>·α₁(θ<sub>c</sub>)</td></tr>
+<tr><td>直流功率</td><td>P<sub>=</sub> = V<sub>CC</sub>·I<sub>c0</sub></td></tr>
+<tr><td>输出功率</td><td>P<sub>o</sub> = (1/2)V<sub>cm</sub>·I<sub>cm1</sub> = (1/2)ξV<sub>CC</sub>·α₁·I<sub>cmax</sub></td></tr>
+<tr><td>集电极效率</td><td>η<sub>c</sub> = (1/2)ξ·g₁(θ<sub>c</sub>)</td></tr>
+<tr><td>最佳负载</td><td>R<sub>p</sub> = V²<sub>CC</sub>/(2P<sub>o</sub>)</td></tr>
+</table>
+
+<h3>四、振荡器公式</h3>
+<table>
+<tr><th>项目</th><th>公式</th></tr>
+<tr><td>起振条件</td><td>A₀F > 1，φ<sub>A</sub>+φ<sub>F</sub> = 2nπ</td></tr>
+<tr><td>平衡条件</td><td>AF = 1，φ<sub>A</sub>+φ<sub>F</sub> = 2nπ</td></tr>
+<tr><td>振幅稳定</td><td>∂A/∂V<sub>om</sub> < 0</td></tr>
+<tr><td>相位稳定</td><td>∂φ<sub>Z</sub>/∂ω < 0</td></tr>
+<tr><td>石英晶体f<sub>p</sub></td><td>f<sub>p</sub> = f<sub>q</sub>√(1+C<sub>q</sub>/C₀) ≈ f<sub>q</sub>(1+C<sub>q</sub>/(2C₀))</td></tr>
+</table>
+
+<h3>五、调幅/检波/混频公式</h3>
+<table>
+<tr><th>项目</th><th>公式</th></tr>
+<tr><td>AM波</td><td>v = V₀(1+m<sub>a</sub>cosΩt)cosω₀t</td></tr>
+<tr><td>调幅度</td><td>m<sub>a</sub> = (V<sub>max</sub>-V<sub>min</sub>)/(V<sub>max</sub>+V<sub>min</sub>)</td></tr>
+<tr><td>AM带宽</td><td>B = 2F<sub>max</sub></td></tr>
+<tr><td>AM总功率</td><td>P = (1+m<sub>a</sub>²/2)P<sub>oT</sub></td></tr>
+<tr><td>DSB波</td><td>v = V₀cosΩt·cosω₀t</td></tr>
+<tr><td>SSB波</td><td>v = (m<sub>a</sub>V₀/2)cos(ω₀±Ω)t</td></tr>
+<tr><td>SSB带宽</td><td>B = F<sub>max</sub></td></tr>
+<tr><td>检波效率</td><td>K<sub>d</sub> = cosθ ≈ 1</td></tr>
+<tr><td>检波输入电阻</td><td>R<sub>id</sub> ≈ R/2</td></tr>
+<tr><td>混频中频</td><td>f<sub>i</sub> = f<sub>o</sub> - f<sub>s</sub></td></tr>
+<tr><td>镜像频率</td><td>f'<sub>s</sub> = f<sub>s</sub> + 2f<sub>i</sub></td></tr>
+</table>
+
+<h3>六、角度调制公式</h3>
+<table>
+<tr><th>项目</th><th>FM</th><th>PM</th></tr>
+<tr><td>瞬时频率</td><td>ω₀+k<sub>f</sub>v<sub>Ω</sub>(t)</td><td>ω₀+k<sub>p</sub>dv<sub>Ω</sub>/dt</td></tr>
+<tr><td>瞬时相位</td><td>ω₀t+k<sub>f</sub>∫v<sub>Ω</sub>dt</td><td>ω₀t+k<sub>p</sub>v<sub>Ω</sub>(t)</td></tr>
+<tr><td>频偏</td><td>Δω<sub>m</sub> = k<sub>f</sub>V<sub>Ω</sub></td><td>Δω<sub>m</sub> = k<sub>p</sub>V<sub>Ω</sub>Ω</td></tr>
+<tr><td>调制指数</td><td>m<sub>f</sub> = k<sub>f</sub>V<sub>Ω</sub>/Ω</td><td>m<sub>p</sub> = k<sub>p</sub>V<sub>Ω</sub></td></tr>
+<tr><td>频偏与m关系</td><td colspan="2">Δω<sub>m</sub> = mΩ 或 Δf = mF</td></tr>
+<tr><td>有效带宽</td><td colspan="2">B<sub>W</sub> = 2(m+1)F = 2(Δf+F)</td></tr>
+<tr><td>平均功率</td><td colspan="2">P<sub>av</sub> = V₀²/(2R<sub>L</sub>)（与未调载波相同）</td></tr>
+</table>
+
+</div>
+</div>
+
+<div style="text-align:center; margin-top:30px; padding:20px; color:#666; font-size:0.9em;">
+    <p>📚 基于严国萍《通信电子线路》（第三版）及武汉理工大学高频电子线路课程PPT整理</p>
+    <p>复习要点：掌握各章核心公式、理解电路工作原理、会分析典型电路</p>
+</div>
+
+</div>
+</body>
+</html>

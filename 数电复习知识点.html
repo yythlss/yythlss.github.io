@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字电子技术复习知识点</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .toc {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .toc-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .toc-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .toc-item a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .chapter {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .chapter h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #764ba2;
+        }
+        .chapter h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin: 20px 0 15px;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .chapter h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin: 15px 0 10px;
+        }
+        .key-point {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 4px solid #ff9800;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        .key-point strong {
+            color: #e65100;
+        }
+        .formula {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .example {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 4px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        .warning {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            border-left: 4px solid #e91e63;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        tr:hover {
+            background: #e3f2fd;
+        }
+        ul, ol {
+            margin: 10px 0 10px 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        .back-to-top:hover {
+            transform: scale(1.1);
+        }
+        .highlight {
+            background: yellow;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 数字电子技术复习知识点</h1>
+        <p>系统梳理数电核心概念 · 助力考试复习</p>
+    </header>
+
+    <div class="container">
+        <!-- 目录 -->
+        <div class="toc" id="toc">
+            <h2>📋 目录导航</h2>
+            <div class="toc-grid">
+                <div class="toc-item"><a href="#ch1">第1章 数字逻辑概述</a></div>
+                <div class="toc-item"><a href="#ch2">第2章 逻辑代数基础</a></div>
+                <div class="toc-item"><a href="#ch3">第3章 逻辑门电路</a></div>
+                <div class="toc-item"><a href="#ch4">第4章 组合逻辑电路</a></div>
+                <div class="toc-item"><a href="#ch5">第5章 中规模组合逻辑集成电路</a></div>
+                <div class="toc-item"><a href="#ch6">第6章 触发器</a></div>
+                <div class="toc-item"><a href="#ch7">第7章 时序逻辑电路</a></div>
+                <div class="toc-item"><a href="#ch8">第8章 时序逻辑集成电路</a></div>
+                <div class="toc-item"><a href="#ch9">第9章 555定时器</a></div>
+                <div class="toc-item"><a href="#ch10">第10章 存储器</a></div>
+                <div class="toc-item"><a href="#ch12">第12章 D/A与A/D转换</a></div>
+            </div>
+        </div>
+
+        <!-- 第1章 -->
+        <div class="chapter" id="ch1">
+            <h2>📖 第1章 数字逻辑概述</h2>
+
+            <h3>1.1 数字信号与数字电路</h3>
+
+            <h4>模拟信号与数字信号</h4>
+            <div class="key-point">
+                <strong>模拟信号：</strong>时间和幅值上都连续的信号<br>
+                <strong>数字信号：</strong>时间和幅值上都离散的信号（常用0、1表示）
+            </div>
+
+            <h4>数字电路的特点</h4>
+            <ul>
+                <li>基本工作信号是二进制数字信号（高电平和低电平）</li>
+                <li>晶体管处于开关工作状态，抗干扰能力强、精度高</li>
+                <li>通用性强，结构简单，便于集成</li>
+                <li>具有"逻辑思维"能力</li>
+            </ul>
+
+            <h4>正逻辑与负逻辑</h4>
+            <div class="key-point">
+                <strong>正逻辑：</strong>高电平用逻辑1表示，低电平用逻辑0表示<br>
+                <strong>负逻辑：</strong>高电平用逻辑0表示，低电平用逻辑1表示
+            </div>
+
+            <h3>1.2 数制</h3>
+
+            <h4>常用数制</h4>
+            <table>
+                <tr>
+                    <th>数制</th>
+                    <th>基数</th>
+                    <th>数码</th>
+                    <th>进位规则</th>
+                </tr>
+                <tr>
+                    <td>十进制</td>
+                    <td>10</td>
+                    <td>0-9</td>
+                    <td>逢十进一</td>
+                </tr>
+                <tr>
+                    <td>二进制</td>
+                    <td>2</td>
+                    <td>0, 1</td>
+                    <td>逢二进一</td>
+                </tr>
+                <tr>
+                    <td>八进制</td>
+                    <td>8</td>
+                    <td>0-7</td>
+                    <td>逢八进一</td>
+                </tr>
+                <tr>
+                    <td>十六进制</td>
+                    <td>16</td>
+                    <td>0-9, A-F</td>
+                    <td>逢十六进一</td>
+                </tr>
+            </table>
+
+            <h4>数制转换</h4>
+            <div class="formula">
+                <strong>二进制→十进制：</strong>按权展开求和<br>
+                例：(1011.101)₂ = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ + 1×2⁻¹ + 0×2⁻² + 1×2⁻³ = 11.625
+            </div>
+
+            <div class="formula">
+                <strong>十进制→二进制：</strong><br>
+                整数部分：除2取余，逆序排列<br>
+                小数部分：乘2取整，顺序排列
+            </div>
+
+            <div class="formula">
+                <strong>二进制↔十六进制：</strong>每4位二进制数对应1位十六进制数<br>
+                <strong>二进制↔八进制：</strong>每3位二进制数对应1位八进制数
+            </div>
+
+            <h3>1.3 二进制数的算术运算</h3>
+
+            <h4>补码运算</h4>
+            <div class="key-point">
+                <strong>正数的补码：</strong>与原码相同<br>
+                <strong>负数的补码：</strong>符号位为1，数值位逐位求反再加1<br>
+                <strong>补码加法：</strong>[A-B]补 = [A]补 + [-B]补
+            </div>
+
+            <div class="example">
+                <strong>例：</strong>用4位补码计算 5-2<br>
+                [5]补 = 0101，[-2]补 = 1110<br>
+                [5-2]补 = 0101 + 1110 = 10011（舍弃进位）= 0011 = 3 ✓
+            </div>
+
+            <h4>溢出判断</h4>
+            <div class="warning">
+                <strong>溢出条件：</strong>两个同号数相加，结果符号与加数符号相反<br>
+                <strong>判断方法：</strong>最高位进位与次高位进位异或为1则溢出
+            </div>
+
+            <h3>1.4 二进制代码</h3>
+
+            <h4>常用BCD码</h4>
+            <table>
+                <tr>
+                    <th>十进制</th>
+                    <th>8421码</th>
+                    <th>2421码</th>
+                    <th>余3码</th>
+                    <th>格雷码</th>
+                </tr>
+                <tr><td>0</td><td>0000</td><td>0000</td><td>0011</td><td>0000</td></tr>
+                <tr><td>1</td><td>0001</td><td>0001</td><td>0100</td><td>0001</td></tr>
+                <tr><td>2</td><td>0010</td><td>0010</td><td>0101</td><td>0011</td></tr>
+                <tr><td>3</td><td>0011</td><td>0011</td><td>0110</td><td>0010</td></tr>
+                <tr><td>4</td><td>0100</td><td>0100</td><td>0111</td><td>0110</td></tr>
+                <tr><td>5</td><td>0101</td><td>1011</td><td>1000</td><td>0111</td></tr>
+                <tr><td>6</td><td>0110</td><td>1100</td><td>1001</td><td>0101</td></tr>
+                <tr><td>7</td><td>0111</td><td>1101</td><td>1010</td><td>0100</td></tr>
+                <tr><td>8</td><td>1000</td><td>1110</td><td>1011</td><td>1100</td></tr>
+                <tr><td>9</td><td>1001</td><td>1111</td><td>1100</td><td>1101</td></tr>
+            </table>
+
+            <div class="key-point">
+                <strong>格雷码特点：</strong>相邻两个代码之间仅有一位不同<br>
+                <strong>余3码特点：</strong>0和9、1和8、...、4和5互为反码
+            </div>
+
+            <h3>1.5 基本逻辑运算</h3>
+
+            <table>
+                <tr>
+                    <th>运算</th>
+                    <th>表达式</th>
+                    <th>逻辑符号</th>
+                    <th>口诀</th>
+                </tr>
+                <tr>
+                    <td>与运算</td>
+                    <td>L = A·B = AB</td>
+                    <td>&门</td>
+                    <td>有0出0，全1出1</td>
+                </tr>
+                <tr>
+                    <td>或运算</td>
+                    <td>L = A+B</td>
+                    <td>≥1门</td>
+                    <td>有1出1，全0出0</td>
+                </tr>
+                <tr>
+                    <td>非运算</td>
+                    <td>L = Ā</td>
+                    <td>1门</td>
+                    <td>入0出1，入1出0</td>
+                </tr>
+                <tr>
+                    <td>与非运算</td>
+                    <td>L = AB̄</td>
+                    <td>&门+圆圈</td>
+                    <td>有0出1，全1出0</td>
+                </tr>
+                <tr>
+                    <td>或非运算</td>
+                    <td>L = A+B̄</td>
+                    <td>≥1门+圆圈</td>
+                    <td>有1出0，全0出1</td>
+                </tr>
+                <tr>
+                    <td>异或运算</td>
+                    <td>L = A⊕B = A B̄ + Ā B</td>
+                    <td>=1门</td>
+                    <td>相异出1，相同出0</td>
+                </tr>
+                <tr>
+                    <td>同或运算</td>
+                    <td>L = A⊙B = AB + Ā B̄</td>
+                    <td>=门</td>
+                    <td>相同出1，相异出0</td>
+                </tr>
+            </table>
+
+            <h3>1.6 逻辑函数的表示方法</h3>
+            <ul>
+                <li><strong>真值表：</strong>列出输入变量所有取值组合对应的输出值</li>
+                <li><strong>逻辑表达式：</strong>用与、或、非等运算组合表示</li>
+                <li><strong>逻辑图：</strong>用逻辑符号表示电路连接</li>
+                <li><strong>波形图：</strong>用时序波形表示信号关系</li>
+                <li><strong>卡诺图：</strong>用于化简逻辑函数</li>
+            </ul>
+        </div>
+
+        <!-- 第2章 -->
+        <div class="chapter" id="ch2">
+            <h2>📖 第2章 逻辑代数基础</h2>
+
+            <h3>2.1 逻辑代数的基本定律</h3>
+
+            <h4>基本公式</h4>
+            <table>
+                <tr>
+                    <th>名称</th>
+                    <th>公式1</th>
+                    <th>公式2</th>
+                </tr>
+                <tr>
+                    <td>0-1律</td>
+                    <td>A·0 = 0</td>
+                    <td>A+1 = 1</td>
+                </tr>
+                <tr>
+                    <td>自等律</td>
+                    <td>A·1 = A</td>
+                    <td>A+0 = A</td>
+                </tr>
+                <tr>
+                    <td>互补律</td>
+                    <td>A·Ā = 0</td>
+                    <td>A+Ā = 1</td>
+                </tr>
+                <tr>
+                    <td>重叠律</td>
+                    <td>A·A = A</td>
+                    <td>A+A = A</td>
+                </tr>
+                <tr>
+                    <td>交换律</td>
+                    <td>A·B = B·A</td>
+                    <td>A+B = B+A</td>
+                </tr>
+                <tr>
+                    <td>结合律</td>
+                    <td>(AB)C = A(BC)</td>
+                    <td>(A+B)+C = A+(B+C)</td>
+                </tr>
+                <tr>
+                    <td>分配律</td>
+                    <td>A(B+C) = AB+AC</td>
+                    <td>A+BC = (A+B)(A+C)</td>
+                </tr>
+                <tr>
+                    <td>吸收律</td>
+                    <td>A(A+B) = A</td>
+                    <td>A+AB = A</td>
+                </tr>
+                <tr>
+                    <td>冗余律</td>
+                    <td>AB+ĀC+BC = AB+ĀC</td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <h4>摩根定理（反演律）</h4>
+            <div class="formula">
+                <strong>摩根定理：</strong><br>
+                Ā·B̄ = A̅+B̅ （与非 = 非或）<br>
+                A̅+B̄ = Ā·B̄ （或非 = 非与）
+            </div>
+
+            <h4>三个重要规则</h4>
+            <div class="key-point">
+                <strong>代入规则：</strong>等式中的变量可用任意函数替代，等式仍成立<br>
+                <strong>反演规则：</strong>求反函数时，与↔或，0↔1，原变量↔反变量<br>
+                <strong>对偶规则：</strong>求对偶式时，与↔或，0↔1（变量不变）
+            </div>
+
+            <h3>2.2 逻辑函数的标准形式</h3>
+
+            <h4>最小项与最小项表达式</h4>
+            <div class="key-point">
+                <strong>最小项定义：</strong>n个变量的乘积项，每个变量以原变量或反变量形式出现且仅出现一次<br>
+                <strong>特点：</strong>
+                <ul>
+                    <li>n个变量有2ⁿ个最小项</li>
+                    <li>每个最小项只有一组变量取值使其为1</li>
+                    <li>所有最小项之和为1</li>
+                </ul>
+                <strong>编号：</strong>使最小项为1的变量取值对应的十进制数
+            </div>
+
+            <h4>最大项与最大项表达式</h4>
+            <div class="key-point">
+                <strong>最大项定义：</strong>n个变量的和项，每个变量以原变量或反变量形式出现且仅出现一次<br>
+                <strong>编号：</strong>使最大项为0的变量取值对应的十进制数<br>
+                <strong>关系：</strong>编号相同的最小项和最大项互为反函数
+            </div>
+
+            <h3>2.3 逻辑函数的化简</h3>
+
+            <h4>代数化简法</h4>
+            <ul>
+                <li><strong>并项法：</strong>利用 A+Ā=1 将两项合并</li>
+                <li><strong>吸收法：</strong>利用 A+AB=A 吸收多余项</li>
+                <li><strong>消去法：</strong>利用 A+ĀB=A+B 消去多余因子</li>
+                <li><strong>配项法：</strong>利用 A+Ā=1 增加项再化简</li>
+            </ul>
+
+            <h4>卡诺图化简法</h4>
+            <div class="key-point">
+                <strong>卡诺图特点：</strong>
+                <ul>
+                    <li>几何相邻的最小项在逻辑上也相邻</li>
+                    <li>2ⁿ个相邻最小项合并可消去n个变量</li>
+                    <li>相邻包括：上下边相邻、左右边相邻、四角相邻</li>
+                </ul>
+            </div>
+
+            <div class="formula">
+                <strong>化简步骤：</strong><br>
+                1. 将逻辑函数写成最小项表达式<br>
+                2. 在卡诺图中填入1（最小项）和0<br>
+                3. 画包围圈（必须是2ⁿ个相邻的1）<br>
+                4. 包围圈要尽可能大，数目尽可能少<br>
+                5. 每个包围圈对应一个乘积项，相加即为最简式
+            </div>
+
+            <h4>无关项的利用</h4>
+            <div class="example">
+                <strong>约束项：</strong>不允许出现的输入组合<br>
+                <strong>任意项：</strong>输出可为0或1的输入组合<br>
+                <strong>处理：</strong>在卡诺图中用×表示，根据化简需要取0或1
+            </div>
+        </div>
+
+        <!-- 第3章 -->
+        <div class="chapter" id="ch3">
+            <h2>📖 第3章 逻辑门电路</h2>
+
+            <h3>3.1 MOS管的开关特性</h3>
+
+            <div class="key-point">
+                <strong>NMOS管：</strong>
+                <ul>
+                    <li>当 vGS > VGS(th) 时导通，相当于开关闭合</li>
+                    <li>当 vGS < VGS(th) 时截止，相当于开关断开</li>
+                </ul>
+                <strong>PMOS管：</strong>
+                <ul>
+                    <li>当 |vGS| > |VGS(th)| 时导通</li>
+                    <li>当 |vGS| < |VGS(th)| 时截止</li>
+                </ul>
+            </div>
+
+            <h3>3.2 CMOS反相器</h3>
+
+            <div class="key-point">
+                <strong>结构特点：</strong>PMOS管和NMOS管互补对称<br>
+                <strong>工作原理：</strong>
+                <ul>
+                    <li>输入高电平：NMOS导通，PMOS截止，输出低电平</li>
+                    <li>输入低电平：PMOS导通，NMOS截止，输出高电平</li>
+                </ul>
+                <strong>重要特点：</strong>
+                <ul>
+                    <li>静态功耗几乎为零</li>
+                    <li>输入电阻高，带负载能力强</li>
+                    <li>开关速度快</li>
+                </ul>
+            </div>
+
+            <h3>3.3 CMOS逻辑门</h3>
+
+            <h4>CMOS与非门</h4>
+            <div class="formula">
+                结构：NMOS管串联（工作管），PMOS管并联（负载管）<br>
+                逻辑：L = AB̄
+            </div>
+
+            <h4>CMOS或非门</h4>
+            <div class="formula">
+                结构：NMOS管并联（工作管），PMOS管串联（负载管）<br>
+                逻辑：L = A̅+B̄
+            </div>
+
+            <h4>特殊输出结构</h4>
+            <table>
+                <tr>
+                    <th>类型</th>
+                    <th>特点</th>
+                    <th>应用</th>
+                </tr>
+                <tr>
+                    <td>漏极开路门(OD)</td>
+                    <td>需外接电源和电阻，可实现线与</td>
+                    <td>总线连接</td>
+                </tr>
+                <tr>
+                    <td>三态门(TSL)</td>
+                    <td>输出有高电平、低电平、高阻态三种状态</td>
+                    <td>总线传输</td>
+                </tr>
+                <tr>
+                    <td>传输门(TG)</td>
+                    <td>双向模拟开关，可传输模拟信号</td>
+                    <td>数据选择</td>
+                </tr>
+            </table>
+
+            <h3>3.4 TTL门电路</h3>
+
+            <h4>TTL反相器</h4>
+            <div class="key-point">
+                <strong>电路结构：</strong>输入级、中间级、输出级<br>
+                <strong>推拉式输出：</strong>提高开关速度和带负载能力
+            </div>
+
+            <h4>TTL与非门</h4>
+            <div class="formula">
+                输入级采用多发射极晶体管实现与功能<br>
+                中间级和输出级实现非功能<br>
+                逻辑：L = AB̄
+            </div>
+
+            <h4>集电极开路门(OC门)</h4>
+            <div class="key-point">
+                <strong>特点：</strong>输出端只有一个三极管，需外接电源和电阻<br>
+                <strong>应用：</strong>可实现线与功能
+            </div>
+
+            <h3>3.5 门电路的主要参数</h3>
+
+            <table>
+                <tr>
+                    <th>参数</th>
+                    <th>含义</th>
+                </tr>
+                <tr>
+                    <td>VOH(min)</td>
+                    <td>输出高电平的最小值</td>
+                </tr>
+                <tr>
+                    <td>VOL(max)</td>
+                    <td>输出低电平的最大值</td>
+                </tr>
+                <tr>
+                    <td>VIH(min)</td>
+                    <td>输入高电平的最小值</td>
+                </tr>
+                <tr>
+                    <td>VIL(max)</td>
+                    <td>输入低电平的最大值</td>
+                </tr>
+                <tr>
+                    <td>VNH</td>
+                    <td>高电平噪声容限 = VOH(min) - VIH(min)</td>
+                </tr>
+                <tr>
+                    <td>VNL</td>
+                    <td>低电平噪声容限 = VIL(max) - VOL(max)</td>
+                </tr>
+                <tr>
+                    <td>扇出数</td>
+                    <td>能驱动同类门的最大数目</td>
+                </tr>
+                <tr>
+                    <td>传输延迟时间</td>
+                    <td>输出波形相对输入波形的延迟</td>
+                </tr>
+            </table>
+
+            <div class="warning">
+                <strong>驱动条件：</strong><br>
+                1. VOH(min) ≥ VIH(min)<br>
+                2. VOL(max) ≤ VIL(max)<br>
+                3. IOH(max) ≥ IIH(total)<br>
+                4. IOL(max) ≥ IIL(total)
+            </div>
+        </div>
+
+        <!-- 第4章 -->
+        <div class="chapter" id="ch4">
+            <h2>📖 第4章 组合逻辑电路</h2>
+
+            <h3>4.1 组合逻辑电路的特点</h3>
+
+            <div class="key-point">
+                <strong>定义：</strong>输出只取决于当前输入，与电路原来状态无关<br>
+                <strong>结构特点：</strong>
+                <ul>
+                    <li>由门电路组成</li>
+                    <li>输出与输入之间没有反馈通路</li>
+                    <li>不含记忆元件</li>
+                </ul>
+            </div>
+
+            <h3>4.2 组合逻辑电路的分析</h3>
+
+            <div class="formula">
+                <strong>分析步骤：</strong><br>
+                1. 由逻辑图写出各输出端的逻辑表达式<br>
+                2. 化简和变换逻辑表达式<br>
+                3. 列出真值表<br>
+                4. 根据真值表确定电路功能
+            </div>
+
+            <h3>4.3 组合逻辑电路的设计</h3>
+
+            <div class="formula">
+                <strong>设计步骤：</strong><br>
+                1. 逻辑抽象：确定输入、输出变量及逻辑状态含义<br>
+                2. 列出真值表<br>
+                3. 写出逻辑表达式<br>
+                4. 化简和变换（根据器件类型）<br>
+                5. 画出逻辑图
+            </div>
+
+            <h3>4.4 竞争与冒险</h3>
+
+            <div class="key-point">
+                <strong>竞争：</strong>一个门的两个输入信号同时向相反方向变化<br>
+                <strong>冒险：</strong>由于竞争引起输出出现错误的窄脉冲（毛刺）<br>
+                <strong>产生条件：</strong>逻辑表达式可化为 A·Ā 或 A+Ā 形式
+            </div>
+
+            <h4>消除竞争冒险的方法</h4>
+            <ul>
+                <li><strong>加滤波电容：</strong>在输出端并联小电容（4~20pF）</li>
+                <li><strong>加选通信号：</strong>等待输入稳定后再取样</li>
+                <li><strong>增加冗余项：</strong>在卡诺图中包围圈相切处增加包围圈</li>
+            </ul>
+        </div>
+
+        <!-- 第5章 -->
+        <div class="chapter" id="ch5">
+            <h2>📖 第5章 中规模组合逻辑集成电路</h2>
+
+            <h3>5.1 编码器</h3>
+
+            <h4>普通编码器</h4>
+            <div class="key-point">
+                <strong>功能：</strong>将输入信号编成二进制代码<br>
+                <strong>限制：</strong>任何时刻只允许输入一个有效编码信号<br>
+                <strong>编码原则：</strong>N位二进制代码可表示2ᴺ个信号
+            </div>
+
+            <h4>优先编码器</h4>
+            <div class="key-point">
+                <strong>特点：</strong>允许同时输入多个编码信号，按优先级编码<br>
+                <strong>典型芯片：</strong>74LS148（8线-3线优先编码器）<br>
+                <strong>使能端：</strong>EI（使能输入）、EO（使能输出）、GS（工作状态标志）
+            </div>
+
+            <h3>5.2 译码器</h3>
+
+            <h4>二进制译码器</h4>
+            <div class="formula">
+                <strong>功能：</strong>将n位二进制代码译成2ᴺ个输出信号<br>
+                <strong>典型芯片：</strong>74LS138（3线-8线译码器）<br>
+                <strong>输出：</strong>Yi = E·mi（E为使能，mi为最小项）
+            </div>
+
+            <div class="example">
+                <strong>用译码器实现逻辑函数：</strong><br>
+                1. 将逻辑函数转换为最小项表达式<br>
+                2. 将最小项对应的输出端接到与非门<br>
+                3. 与非门输出即为逻辑函数
+            </div>
+
+            <h4>显示译码器</h4>
+            <div class="key-point">
+                <strong>功能：</strong>将BCD码译成七段显示驱动信号<br>
+                <strong>典型芯片：</strong>74HC4511、7448<br>
+                <strong>显示器：</strong>LED数码管（共阴极/共阳极）
+            </div>
+
+            <h3>5.3 数据选择器（MUX）</h3>
+
+            <div class="formula">
+                <strong>功能：</strong>在地址选择信号控制下，从多路输入中选择一路输出<br>
+                <strong>典型芯片：</strong>74HC151（8选1数据选择器）<br>
+                <strong>输出：</strong>Y = Σ(Di·mi)，Di为数据输入，mi为最小项
+            </div>
+
+            <div class="example">
+                <strong>用数据选择器实现逻辑函数：</strong><br>
+                <strong>方法一（N个变量）：</strong>变量接地址端，Di接0或1<br>
+                <strong>方法二（N+1个变量）：</strong>变量接地址端，Di接0、1或第N+1个变量<br>
+                <strong>方法三（≥N+2个变量）：</strong>需加辅助逻辑门
+            </div>
+
+            <h3>5.4 数据分配器（DEMUX）</h3>
+
+            <div class="key-point">
+                <strong>功能：</strong>将一路输入数据分配到多个输出通道<br>
+                <strong>实现：</strong>可用译码器实现（使能端接数据，地址端接选择信号）
+            </div>
+
+            <h3>5.5 数值比较器</h3>
+
+            <div class="formula">
+                <strong>功能：</strong>比较两个二进制数的大小<br>
+                <strong>典型芯片：</strong>74LS85（4位数值比较器）<br>
+                <strong>比较原则：</strong>从高位到低位依次比较
+            </div>
+
+            <h3>5.6 加法器</h3>
+
+            <h4>半加器与全加器</h4>
+            <table>
+                <tr>
+                    <th>类型</th>
+                    <th>输入</th>
+                    <th>输出</th>
+                    <th>表达式</th>
+                </tr>
+                <tr>
+                    <td>半加器</td>
+                    <td>A, B</td>
+                    <td>S, C</td>
+                    <td>S=A⊕B, C=AB</td>
+                </tr>
+                <tr>
+                    <td>全加器</td>
+                    <td>A, B, Ci</td>
+                    <td>S, Co</td>
+                    <td>S=A⊕B⊕Ci, Co=AB+(A⊕B)Ci</td>
+                </tr>
+            </table>
+
+            <h4>多位加法器</h4>
+            <div class="key-point">
+                <strong>串行进位加法器：</strong>低位进位送给高位，速度慢<br>
+                <strong>超前进位加法器：</strong>同时产生各位进位，速度快<br>
+                <strong>典型芯片：</strong>74LS283（4位超前进位加法器）
+            </div>
+
+            <div class="example">
+                <strong>加法器应用：</strong>
+                <ul>
+                    <li>实现减法运算：A-B = A + B补 = A + B反 + 1</li>
+                    <li>码制转换：8421码转余3码（加0011）</li>
+                    <li>BCD码加法运算</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 第6章 -->
+        <div class="chapter" id="ch6">
+            <h2>📖 第6章 触发器</h2>
+
+            <h3>6.1 触发器的基本概念</h3>
+
+            <div class="key-point">
+                <strong>定义：</strong>具有记忆功能的基本逻辑单元，能存储1位二进制信息<br>
+                <strong>特点：</strong>有两个稳定状态（0态和1态），在触发信号作用下可转换
+            </div>
+
+            <h3>6.2 基本RS触发器</h3>
+
+            <div class="formula">
+                <strong>特性方程：</strong>Q* = S + R̄Q，约束条件：SR = 0<br>
+                <strong>功能：</strong>
+                <ul>
+                    <li>S=0, R=0：保持</li>
+                    <li>S=1, R=0：置1</li>
+                    <li>S=0, R=1：置0</li>
+                    <li>S=1, R=1：不允许（约束条件）</li>
+                </ul>
+            </div>
+
+            <h3>6.3 同步触发器</h3>
+
+            <h4>同步RS触发器</h4>
+            <div class="formula">
+                <strong>特性方程：</strong>Q* = S + R̄Q（CP=1时有效）<br>
+                <strong>约束条件：</strong>SR = 0
+            </div>
+
+            <h4>同步D触发器</h4>
+            <div class="formula">
+                <strong>特性方程：</strong>Q* = D（CP=1时有效）<br>
+                <strong>特点：</strong>消除了约束条件
+            </div>
+
+            <h3>6.4 主从触发器</h3>
+
+            <div class="key-point">
+                <strong>主从RS触发器：</strong>
+                <ul>
+                    <li>CP=1时，主触发器接收信号，从触发器保持</li>
+                    <li>CP=0时，主触发器保持，从触发器接收主触发器状态</li>
+                    <li>解决了一次变化问题</li>
+                </ul>
+            </div>
+
+            <h4>主从JK触发器</h4>
+            <div class="formula">
+                <strong>特性方程：</strong>Q* = JQ̄ + K̄Q<br>
+                <strong>功能：</strong>
+                <ul>
+                    <li>J=0, K=0：保持</li>
+                    <li>J=1, K=0：置1</li>
+                    <li>J=0, K=1：置0</li>
+                    <li>J=1, K=1：翻转（计数）</li>
+                </ul>
+            </div>
+
+            <h3>6.5 边沿触发器</h3>
+
+            <div class="key-point">
+                <strong>特点：</strong>只在时钟边沿（上升沿或下降沿）触发<br>
+                <strong>优点：</strong>抗干扰能力强，不存在一次变化问题<br>
+                <strong>类型：</strong>上升沿触发、下降沿触发
+            </div>
+
+            <h3>6.6 触发器的功能转换</h3>
+
+            <table>
+                <tr>
+                    <th>目标触发器</th>
+                    <th>转换方法</th>
+                    <th>驱动方程</th>
+                </tr>
+                <tr>
+                    <td>JK→D</td>
+                    <td>J=D, K=D̄</td>
+                    <td>Q* = D</td>
+                </tr>
+                <tr>
+                    <td>JK→T</td>
+                    <td>J=T, K=T</td>
+                    <td>Q* = T⊕Q</td>
+                </tr>
+                <tr>
+                    <td>JK→T'</td>
+                    <td>J=1, K=1</td>
+                    <td>Q* = Q̄</td>
+                </tr>
+                <tr>
+                    <td>D→JK</td>
+                    <td>D = JQ̄ + K̄Q</td>
+                    <td>Q* = JQ̄ + K̄Q</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 第7章 -->
+        <div class="chapter" id="ch7">
+            <h2>📖 第7章 时序逻辑电路</h2>
+
+            <h3>7.1 时序逻辑电路的特点</h3>
+
+            <div class="key-point">
+                <strong>定义：</strong>输出不仅取决于当前输入，还与电路原来状态有关<br>
+                <strong>结构特点：</strong>
+                <ul>
+                    <li>包含存储电路（触发器）</li>
+                    <li>输出与输入之间存在反馈通路</li>
+                </ul>
+                <strong>描述方法：</strong>驱动方程、状态方程、输出方程、状态转换表、状态转换图、时序图
+            </div>
+
+            <h3>7.2 同步时序电路的分析</h3>
+
+            <div class="formula">
+                <strong>分析步骤：</strong><br>
+                1. 写出各触发器的驱动方程（激励方程）<br>
+                2. 将驱动方程代入特性方程，得到状态方程<br>
+                3. 写出输出方程<br>
+                4. 列出状态转换表<br>
+                5. 画出状态转换图和时序图<br>
+                6. 分析电路功能
+            </div>
+
+            <h3>7.3 同步时序电路的设计</h3>
+
+            <div class="formula">
+                <strong>设计步骤：</strong><br>
+                1. 根据逻辑要求画出状态转换图<br>
+                2. 状态化简（合并等价状态）<br>
+                3. 状态编码（给每个状态分配二进制代码）<br>
+                4. 列出状态转换表和驱动表<br>
+                5. 求驱动方程和输出方程<br>
+                6. 画出逻辑图<br>
+                7. 检查自启动能力
+            </div>
+
+            <h3>7.4 计数器</h3>
+
+            <h4>同步计数器</h4>
+            <div class="key-point">
+                <strong>特点：</strong>所有触发器使用同一时钟信号<br>
+                <strong>分析方法：</strong>写出驱动方程→状态方程→状态转换表
+            </div>
+
+            <h4>异步计数器</h4>
+            <div class="key-point">
+                <strong>特点：</strong>各触发器时钟信号不同<br>
+                <strong>分析注意：</strong>需考虑时钟信号的有效边沿
+            </div>
+
+            <h4>集成计数器</h4>
+            <table>
+                <tr>
+                    <th>芯片</th>
+                    <th>功能</th>
+                    <th>特点</th>
+                </tr>
+                <tr>
+                    <td>74LS161</td>
+                    <td>4位二进制同步计数器</td>
+                    <td>同步预置、异步清零</td>
+                </tr>
+                <tr>
+                    <td>74LS163</td>
+                    <td>4位二进制同步计数器</td>
+                    <td>同步预置、同步清零</td>
+                </tr>
+                <tr>
+                    <td>74LS192</td>
+                    <td>十进制可逆计数器</td>
+                    <td>双时钟、异步预置</td>
+                </tr>
+                <tr>
+                    <td>74LS290</td>
+                    <td>二-五-十进制计数器</td>
+                    <td>异步计数器</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <strong>计数器级联：</strong><br>
+                N进制计数器级联可实现更大模值的计数<br>
+                例：两个十进制计数器级联可实现100进制计数
+            </div>
+
+            <div class="example">
+                <strong>实现任意模值计数：</strong><br>
+                方法一：反馈置零法（异步清零）<br>
+                方法二：反馈预置法（同步预置）
+            </div>
+
+            <h3>7.5 寄存器和移位寄存器</h3>
+
+            <h4>寄存器</h4>
+            <div class="key-point">
+                <strong>功能：</strong>存储二进制数据<br>
+                <strong>典型芯片：</strong>74LS175（4位D触发器）
+            </div>
+
+            <h4>移位寄存器</h4>
+            <div class="key-point">
+                <strong>功能：</strong>数据可逐位左移或右移<br>
+                <strong>类型：</strong>
+                <ul>
+                    <li>单向移位寄存器（左移或右移）</li>
+                    <li>双向移位寄存器</li>
+                    <li>循环移位寄存器</li>
+                </ul>
+                <strong>典型芯片：</strong>74LS194（4位双向移位寄存器）
+            </div>
+
+            <div class="example">
+                <strong>移位寄存器应用：</strong>
+                <ul>
+                    <li>串行-并行转换</li>
+                    <li>并行-串行转换</li>
+                    <li>序列信号发生器</li>
+                    <li>计数器</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 第8章 -->
+        <div class="chapter" id="ch8">
+            <h2>📖 第8章 时序逻辑集成电路</h2>
+
+            <h3>8.1 集成计数器的应用</h3>
+
+            <h4>构成任意进制计数器</h4>
+            <div class="formula">
+                <strong>反馈置零法：</strong><br>
+                N进制计数器在计数到N-1时产生置零信号<br>
+                <strong>反馈预置法：</strong><br>
+                在计数到某个状态时产生预置信号，置入初始值
+            </div>
+
+            <div class="example">
+                <strong>例：用74LS161实现十进制计数器</strong><br>
+                方法一（反馈置零）：计数到1001(9)时，下一个状态清零<br>
+                方法二（反馈预置）：计数到1001时，预置为0000
+            </div>
+
+            <h4>计数器的级联</h4>
+            <div class="key-point">
+                <strong>同步级联：</strong>所有计数器使用同一时钟，低位进位控制高位计数<br>
+                <strong>异步级联：</strong>低位进位作为高位时钟
+            </div>
+
+            <h3>8.2 集成寄存器的应用</h3>
+
+            <div class="example">
+                <strong>移位寄存器构成环形计数器：</strong<parameter name="content">将移位寄存器的输出反馈到输入端，可构成环形计数器或扭环形计数器
+            </div>
+        </div>
+
+        <!-- 第9章 -->
+        <div class="chapter" id="ch9">
+            <h2>📖 第9章 555定时器及多谐振荡器</h2>
+
+            <h3>9.1 555定时器</h3>
+
+            <div class="key-point">
+                <strong>结构：</strong>由两个电压比较器、一个RS触发器和放电管组成<br>
+                <strong>引脚功能：</strong>
+                <ul>
+                    <li>TH（阈值输入）：高触发端</li>
+                    <li>TR（触发输入）：低触发端</li>
+                    <li>CO（控制电压）：外接控制电压</li>
+                    <li>R̄（复位）：低电平有效</li>
+                    <li>D（放电）：放电管输出</li>
+                    <li>OUT（输出）：逻辑输出</li>
+                </ul>
+            </div>
+
+            <h3>9.2 555定时器的应用</h3>
+
+            <h4>单稳态触发器</h4>
+            <div class="formula">
+                <strong>功能：</strong>输入触发信号后，输出一个固定宽度的脉冲<br>
+                <strong>脉冲宽度：</strong>tw = 1.1RC<br>
+                <strong>应用：</strong>定时、延时、脉冲整形
+            </div>
+
+            <h4>多谐振荡器（无稳态触发器）</h4>
+            <div class="formula">
+                <strong>功能：</strong>产生矩形脉冲信号<br>
+                <strong>振荡周期：</strong>T = (R1 + 2R2)C·ln2 ≈ 0.7(R1 + 2R2)C<br>
+                <strong>占空比：</strong>q = (R1 + R2)/(R1 + 2R2)
+            </div>
+
+            <h4>施密特触发器</h4>
+            <div class="key-point">
+                <strong>功能：</strong>将缓慢变化的信号转换为矩形波<br>
+                <strong>特点：</strong>具有回差特性（两个不同的阈值电压）<br>
+                <strong>应用：</strong>波形变换、脉冲整形、幅度鉴别
+            </div>
+        </div>
+
+        <!-- 第10章 -->
+        <div class="chapter" id="ch10">
+            <h2>📖 第10章 存储器</h2>
+
+            <h3>10.1 存储器的分类</h3>
+
+            <table>
+                <tr>
+                    <th>分类</th>
+                    <th>类型</th>
+                    <th>特点</th>
+                </tr>
+                <tr>
+                    <td rowspan="2">按功能</td>
+                    <td>ROM（只读存储器）</td>
+                    <td>数据固定，断电不丢失</td>
+                </tr>
+                <tr>
+                    <td>RAM（随机存取存储器）</td>
+                    <td>可读可写，断电丢失</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">RAM类型</td>
+                    <td>SRAM（静态RAM）</td>
+                    <td>速度快，集成度低</td>
+                </tr>
+                <tr>
+                    <td>DRAM（动态RAM）</td>
+                    <td>需要刷新，集成度高</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">ROM类型</td>
+                    <td>掩膜ROM</td>
+                    <td>出厂时数据固定</td>
+                </tr>
+                <tr>
+                    <td>PROM/EPROM/EEPROM</td>
+                    <td>可编程/可擦除</td>
+                </tr>
+            </table>
+
+            <h3>10.2 存储器的扩展</h3>
+
+            <div class="formula">
+                <strong>位扩展：</strong>将多片存储器的数据线并联，地址线和控制线共用<br>
+                <strong>字扩展：</strong>用高位地址线译码选择芯片，低位地址线共用
+            </div>
+
+            <h3>10.3 存储器实现组合逻辑函数</h3>
+
+            <div class="example">
+                <strong>ROM实现逻辑函数：</strong><br>
+                地址线作为输入变量，数据线作为输出函数<br>
+                每个地址单元存储对应的输出值
+            </div>
+        </div>
+
+        <!-- 第12章 -->
+        <div class="chapter" id="ch12">
+            <h2>📖 第12章 D/A与A/D转换</h2>
+
+            <h3>12.1 D/A转换器（DAC）</h3>
+
+            <h4>主要参数</h4>
+            <div class="key-point">
+                <strong>分辨率：</strong>输入数字量的位数，n位DAC有2ⁿ个输出电平<br>
+                <strong>转换精度：</strong>实际输出与理想输出的偏差<br>
+                <strong>转换速度：</strong>从输入数字量变化到输出稳定所需时间
+            </div>
+
+            <h4>常见DAC电路</h4>
+            <ul>
+                <li><strong>权电阻网络DAC：</strong>结构简单，但电阻值范围大</li>
+                <li><strong>R-2R梯形电阻网络DAC：</strong>电阻种类少，便于集成</li>
+                <li><strong>权电流型DAC：</strong>速度快，精度高</li>
+            </ul>
+
+            <h3>12.2 A/D转换器（ADC）</h3>
+
+            <h4>A/D转换步骤</h4>
+            <div class="formula">
+                <strong>采样：</strong>将时间连续信号转换为时间离散信号<br>
+                <strong>保持：</strong>在转换期间保持采样值不变<br>
+                <strong>量化：</strong>将采样值转换为离散电平<br>
+                <strong>编码：</strong>将量化后的电平用二进制代码表示
+            </div>
+
+            <div class="key-point">
+                <strong>采样定理：</strong>fs ≥ 2fmax（采样频率大于信号最高频率的2倍）
+            </div>
+
+            <h4>常见ADC电路</h4>
+            <table>
+                <tr>
+                    <th>类型</th>
+                    <th>特点</th>
+                    <th>应用</th>
+                </tr>
+                <tr>
+                    <td>并行比较型（Flash）</td>
+                    <td>速度最快，电路复杂</td>
+                    <td>高速应用</td>
+                </tr>
+                <tr>
+                    <td>逐次逼近型（SAR）</td>
+                    <td>速度较快，精度较高</td>
+                    <td>通用场合</td>
+                </tr>
+                <tr>
+                    <td>双积分型</td>
+                    <td>精度高，速度慢</td>
+                    <td>数字万用表</td>
+                </tr>
+                <tr>
+                    <td>Σ-Δ型</td>
+                    <td>高分辨率，抗干扰强</td>
+                    <td>音频处理</td>
+                </tr>
+            </table>
+
+            <h4>ADC主要参数</h4>
+            <div class="key-point">
+                <strong>分辨率：</strong>输出数字量的位数<br>
+                <strong>转换精度：</strong>实际转换值与理想值的偏差<br>
+                <strong>转换时间：</strong>完成一次转换所需时间<br>
+                <strong>量化误差：</strong>±0.5LSB（最小有效位）
+            </div>
+        </div>
+
+        <!-- 总结 -->
+        <div class="chapter">
+            <h2>📝 复习要点总结</h2>
+
+            <h3>重点掌握内容</h3>
+            <ol>
+                <li><strong>数制转换：</strong>二进制、十进制、十六进制之间的转换</li>
+                <li><strong>逻辑代数：</strong>基本公式、摩根定理、卡诺图化简</li>
+                <li><strong>门电路：</strong>CMOS和TTL门电路的特性、参数计算</li>
+                <li><strong>组合逻辑电路：</strong>分析和设计方法</li>
+                <li><strong>中规模集成电路：</strong>编码器、译码器、数据选择器的应用</li>
+                <li><strong>触发器：</strong>各种触发器的功能、特性方程</li>
+                <li><strong>时序逻辑电路：</strong>分析和设计方法、计数器、寄存器</li>
+                <li><strong>555定时器：</strong>单稳态、多谐振荡器、施密特触发器</li>
+                <li><strong>D/A和A/D转换：</strong>基本原理、主要参数</li>
+            </ol>
+
+            <h3>常用芯片速查</h3>
+            <table>
+                <tr>
+                    <th>芯片型号</th>
+                    <th>功能</th>
+                </tr>
+                <tr><td>74LS00</td><td>四2输入与非门</td></tr>
+                <tr><td>74LS04</td><td>六反相器</td></tr>
+                <tr><td>74LS08</td><td>四2输入与门</td></tr>
+                <tr><td>74LS32</td><td>四2输入或门</td></tr>
+                <tr><td>74LS86</td><td>四2输入异或门</td></tr>
+                <tr><td>74LS138</td><td>3线-8线译码器</td></tr>
+                <tr><td>74LS148</td><td>8线-3线优先编码器</td></tr>
+                <tr><td>74LS151</td><td>8选1数据选择器</td></tr>
+                <tr><td>74LS161</td><td>4位二进制同步计数器</td></tr>
+                <tr><td>74LS194</td><td>4位双向移位寄存器</td></tr>
+                <tr><td>74LS283</td><td>4位超前进位加法器</td></tr>
+                <tr><td>74LS85</td><td>4位数值比较器</td></tr>
+            </table>
+
+            <h3>考试技巧</h3>
+            <ul>
+                <li>卡诺图化简时注意无关项的利用</li>
+                <li>分析时序电路时先写驱动方程，再求状态方程</li>
+                <li>用MSI芯片设计电路时，先列出真值表，再确定连接方式</li>
+                <li>计数器设计注意区分同步清零和异步清零</li>
+                <li>DAC/ADC计算注意分辨率和量化误差</li>
+            </ul>
+        </div>
+    </div>
+
+    <a href="#toc" class="back-to-top">↑</a>
+
+    <footer style="text-align: center; padding: 30px; color: white; opacity: 0.8;">
+        <p>📚 数字电子技术复习知识点 · 祝考试顺利！</p>
+    </footer>
+</body>
+</html>

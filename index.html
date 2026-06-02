@@ -3,64 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人主页</title>
+    <title>复习资料</title>
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "微软雅黑",sans-serif;
         }
-        body{
-            background: linear-gradient(135deg,#e0f7ff,#f0f4ff);
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 80px;
-        }
-        .title{
-            font-size: 42px;
-            color: #222;
-            margin-bottom: 15px;
-        }
-        .desc{
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 50px;
-        }
-        .nav{
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
             justify-content: center;
+            align-items: center;
         }
-        .nav a{
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 800px;
+        }
+        h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-decoration: none;
-            padding: 14px 32px;
-            background: #409eff;
-            color: #fff;
-            border-radius: 50px;
-            font-size: 17px;
-            transition: 0.3s;
-            box-shadow: 0 4px 12px rgba(64,158,255,0.3);
+            color: #333;
+            display: block;
         }
-        .nav a:hover{
-            background: #237bdd;
-            transform: translateY(-3px);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            font-size: 1.6em;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .card p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .card .arrow {
+            float: right;
+            color: #667eea;
+            font-size: 1.5em;
+            margin-top: -30px;
+        }
+        footer {
+            color: rgba(255,255,255,0.7);
+            margin-top: 40px;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>📚 复习资料</h1>
+        <p class="subtitle">课程复习知识点汇总</p>
 
-    <h1 class="title">欢迎来到我的主页</h1>
-    <p class="desc">记录生活 · 分享爱好 · 收藏美好</p>
+        <div class="cards">
+            <a class="card" href="数电复习知识点.html">
+                <h2>数字电子技术</h2>
+                <p>数电复习知识点整理</p>
+                <span class="arrow">→</span>
+            </a>
 
-    <div class="nav">
-        <a href="pindou.html">拼豆色号查找工具</a>
-        <a href="todo.html">待办事项</a>
+            <a class="card" href="高频电子线路复习知识点.html">
+                <h2>高频电子线路</h2>
+                <p>高频电子线路复习知识点与公式汇总</p>
+                <span class="arrow">→</span>
+            </a>
+        </div>
 
+        <footer>
+            <p>持续更新中...</p>
+        </footer>
     </div>
-
 </body>
 </html>
