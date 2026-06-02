@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>概率论B 复习知识点 · 2024-2025</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-alt: #162032;
+    --accent: #38bdf8;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #fb923c;
+    --accent5: #f472b6;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border: #334155;
+    --highlight: rgba(56,189,248,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1a1040 100%);
+    padding: 60px 20px 50px; text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(56,189,248,0.06) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(167,139,250,0.06) 0%, transparent 50%);
+    animation: float 20s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+  .hero h1 {
+    font-size: 2.8em; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; position: relative; margin-bottom: 10px;
+  }
+  .hero .subtitle { color: var(--text-dim); font-size: 1.1em; position: relative; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+  /* TOC */
+  .toc { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px 35px; margin-bottom: 40px; }
+  .toc h2 { font-size: 1.4em; margin-bottom: 18px; color: var(--accent); }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .toc a {
+    color: var(--text); text-decoration: none; padding: 10px 16px; border-radius: 10px;
+    background: var(--card-alt); border: 1px solid transparent; transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px; font-size: 0.95em;
+  }
+  .toc a:hover { border-color: var(--accent); background: var(--highlight); transform: translateX(4px); }
+  .toc .ch-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 8px; font-weight: 700; font-size: 0.85em; flex-shrink: 0;
+  }
+  /* Exam info */
+  .exam-info {
+    background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(167,139,250,0.08));
+    border: 1px solid rgba(56,189,248,0.2); border-radius: 16px;
+    padding: 25px 30px; margin-bottom: 40px;
+  }
+  .exam-info h2 { color: var(--accent); margin-bottom: 15px; font-size: 1.3em; }
+  .exam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .exam-item { background: rgba(15,23,42,0.5); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border); }
+  .exam-item .label { color: var(--text-dim); font-size: 0.85em; margin-bottom: 4px; }
+  .exam-item .value { font-weight: 600; font-size: 1.05em; }
+  /* Chapter */
+  .chapter { background: var(--card); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 30px; overflow: hidden; }
+  .chapter-header {
+    padding: 25px 30px; cursor: pointer; display: flex; align-items: center; gap: 16px;
+    user-select: none; transition: background 0.2s;
+  }
+  .chapter-header:hover { background: rgba(255,255,255,0.02); }
+  .ch-badge {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.2em; flex-shrink: 0;
+  }
+  .ch-title-group { flex: 1; }
+  .ch-title { font-size: 1.3em; font-weight: 700; }
+  .ch-subtitle { color: var(--text-dim); font-size: 0.9em; margin-top: 2px; }
+  .ch-toggle { font-size: 1.5em; color: var(--text-dim); transition: transform 0.3s; }
+  .chapter.open .ch-toggle { transform: rotate(180deg); }
+  .chapter-body { display: none; padding: 0 30px 30px; }
+  .chapter.open .chapter-body { display: block; }
+  /* Section */
+  .section { margin-bottom: 24px; }
+  .section-title {
+    font-size: 1.1em; font-weight: 600; color: var(--accent); margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before { content: ''; width: 4px; height: 18px; border-radius: 2px; background: var(--accent); }
+  /* K-card */
+  .k-card { background: var(--card-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 12px; }
+  .k-card h4 { color: var(--accent2); font-size: 1em; margin-bottom: 10px; font-weight: 600; }
+  .k-card p, .k-card li { color: var(--text); font-size: 0.95em; margin-bottom: 6px; }
+  .k-card ul { padding-left: 20px; }
+  .k-card ul li::marker { color: var(--accent3); }
+  /* Formula */
+  .formula-box {
+    background: rgba(167,139,250,0.06); border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 10px; padding: 16px 20px; margin: 12px 0;
+    font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 1.05em;
+    overflow-x: auto; line-height: 2;
+  }
+  .formula-box .label {
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-size: 0.8em; color: var(--accent2); margin-bottom: 8px; font-weight: 600; display: block;
+  }
+  /* Table */
+  .dist-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
+  .dist-table th { background: rgba(56,189,248,0.1); color: var(--accent); padding: 10px 14px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .dist-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .dist-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .dist-table .mono { font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 0.95em; }
+  /* Tags */
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.8em; font-weight: 600; margin-right: 6px; margin-bottom: 4px; }
+  .tag-def { background: rgba(56,189,248,0.15); color: var(--accent); }
+  .tag-thm { background: rgba(167,139,250,0.15); color: var(--accent2); }
+  .tag-prop { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .tag-proof { background: rgba(251,146,60,0.15); color: var(--accent4); }
+  .tag-tip { background: rgba(244,114,182,0.15); color: var(--accent5); }
+  /* Highlight box */
+  .highlight-box { background: rgba(52,211,153,0.06); border-left: 3px solid var(--accent3); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 12px 0; font-size: 0.95em; }
+  .highlight-box.warn { background: rgba(251,146,60,0.06); border-left-color: var(--accent4); }
+  .highlight-box.important { background: rgba(244,114,182,0.06); border-left-color: var(--accent5); }
+  .highlight-box strong { color: var(--accent3); }
+  .highlight-box.warn strong { color: var(--accent4); }
+  .highlight-box.important strong { color: var(--accent5); }
+  /* Two col */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2em; }
+    .chapter-header { padding: 18px 20px; }
+    .chapter-body { padding: 0 20px 20px; }
+  }
+  /* Colors */
+  .c1 { background: rgba(56,189,248,0.15); color: var(--accent); }
+  .c2 { background: rgba(167,139,250,0.15); color: var(--accent2); }
+  .c3 { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .c4 { background: rgba(251,146,60,0.15); color: var(--accent4); }
+  .c5 { background: rgba(244,114,182,0.15); color: var(--accent5); }
+  .c6 { background: rgba(250,204,21,0.15); color: #facc15; }
+  .c7 { background: rgba(96,165,250,0.15); color: #60a5fa; }
+  /* Footer */
+  .footer { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 20px; }
+  html { scroll-behavior: smooth; }
+  .back-top {
+    position: fixed; bottom: 30px; right: 30px; width: 44px; height: 44px;
+    border-radius: 12px; background: var(--accent); color: var(--bg); border: none;
+    cursor: pointer; font-size: 1.3em; display: none; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(56,189,248,0.3); transition: transform 0.2s; z-index: 999;
+  }
+  .back-top:hover { transform: scale(1.1); }
+  .expand-all {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 10px;
+    background: var(--card-alt); border: 1px solid var(--border); color: var(--text);
+    cursor: pointer; font-size: 0.9em; margin-bottom: 20px; transition: all 0.2s;
+  }
+  .expand-all:hover { border-color: var(--accent); background: var(--highlight); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>概率论B 复习知识点</h1>
+  <p class="subtitle">基于课程课件系统整理 · 全七章</p>
+</div>
+
+<div class="container">
+
+<div class="exam-info">
+  <h2>📋 考试信息（来自复习课）</h2>
+  <div class="exam-grid">
+    <div class="exam-item"><div class="label">题目数量</div><div class="value">10 道大题</div></div>
+    <div class="exam-item"><div class="label">题型</div><div class="value">计算题、证明题</div></div>
+    <div class="exam-item"><div class="label">总分</div><div class="value">100 分（每题 8-12 分）</div></div>
+    <div class="exam-item"><div class="label">试卷版本</div><div class="value">A / B 卷随机</div></div>
+    <div class="exam-item"><div class="label">考试范围</div><div class="value">第 1 ~ 7 章</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>📑 目录导航</h2>
+  <div class="toc-grid">
+    <a href="#ch1"><span class="ch-num c1">1</span>随机事件与概率</a>
+    <a href="#ch2"><span class="ch-num c2">2</span>条件概率和独立性</a>
+    <a href="#ch3"><span class="ch-num c3">3</span>随机变量及其分布函数</a>
+    <a href="#ch4"><span class="ch-num c4">4</span>随机向量及其分布</a>
+    <a href="#ch5"><span class="ch-num c5">5</span>随机变量的数字特征</a>
+    <a href="#ch6"><span class="ch-num c6">6</span>特征函数与母函数</a>
+    <a href="#ch7"><span class="ch-num c7">7</span>大数定律与中心极限定理</a>
+  </div>
+</div>
+
+<button class="expand-all" onclick="toggleAll()">📂 全部展开/收起</button>
+
+<!-- ==================== 第1章 ==================== -->
+<div class="chapter open" id="ch1">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c1">1</div>
+    <div class="ch-title-group">
+      <div class="ch-title">随机事件与概率</div>
+      <div class="ch-subtitle">Random Events and Probability</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">1.1 随机事件与样本空间</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>随机试验</h4>
+        <p>对随机现象进行的观测或实验统称为随机试验，需满足三个条件：</p>
+        <ul>
+          <li>在相同条件下可以<strong>重复进行</strong></li>
+          <li>每次试验的可能结果不止一个，且能事先<strong>明确所有可能结果</strong></li>
+          <li>每次试验前<strong>不能确定</strong>哪一个结果会出现，但总会恰好是其中一个</li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>样本空间与事件</h4>
+        <ul>
+          <li><strong>样本空间 Ω</strong>：随机试验所有可能结果的集合</li>
+          <li><strong>样本点 ω</strong>：样本空间中的元素</li>
+          <li>样本空间分类：<strong>离散样本空间</strong>（样本点有限或可列个）vs <strong>连续样本空间</strong>（不可列无限个）</li>
+          <li><strong>随机事件</strong>：样本空间的子集。基本事件（不可再分）、复合事件（由基本事件组合）</li>
+          <li><strong>必然事件</strong>：Ω；<strong>不可能事件</strong>：∅</li>
+          <li>事件 A 发生 ⟺ A 中某个样本点出现</li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-prop">性质</span>事件间的关系与运算</h4>
+        <div class="two-col">
+          <div>
+            <p><strong>关系：</strong></p>
+            <ul>
+              <li><strong>包含</strong>：A ⊂ B（A发生则B必发生）</li>
+              <li><strong>相等</strong>：A = B（A ⊂ B 且 B ⊂ A）</li>
+              <li><strong>互斥（互不相容）</strong>：A ∩ B = ∅</li>
+              <li><strong>对立（互逆）</strong>：A ∩ B = ∅ 且 A ∪ B = Ω，记 B = Ā</li>
+            </ul>
+          </div>
+          <div>
+            <p><strong>运算律：</strong></p>
+            <ul>
+              <li><strong>交换律</strong>：A ∪ B = B ∪ A，A ∩ B = B ∩ A</li>
+              <li><strong>结合律</strong>：(A ∪ B) ∪ C = A ∪ (B ∪ C)</li>
+              <li><strong>分配律</strong>：(A ∪ B)C = AC ∪ BC</li>
+              <li><strong>对偶律（De Morgan）</strong>：<br>A∪B 的补 = Ā ∩ B̄<br>A∩B 的补 = Ā ∪ B̄</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box warn">
+          <strong>⚠️ 易混淆：</strong>对立一定互斥，但互斥不一定对立。对立要求并集为全集。对立事件唯一，互斥事件可以有多个。
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-tip">例题</span>事件表示练习</h4>
+        <p>设 A, B, C 为三个随机事件：</p>
+        <ul>
+          <li>仅 A 出现，B, C 不出现：ABC̄ 的补中取 A∩B̄∩C̄</li>
+          <li>三个事件至少有一个出现：A ∪ B ∪ C</li>
+          <li>不多于一个事件出现：ĀB̄C̄ ∪ ĀB̄C ∪ ĀBC̄ ∪ AB̄C̄</li>
+          <li>至少有两个出现：AB ∪ AC ∪ BC</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1.2 古典概型</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>古典概型条件与公式</h4>
+        <p>满足：① 样本空间<strong>有限</strong>；② 每个样本点<strong>等可能</strong>出现。</p>
+        <div class="formula-box">
+          <span class="label">古典概型公式</span>
+          P(A) = A 包含的样本点数 / Ω 中样本点总数 = k / n
+        </div>
+        <p><strong>计数原理：</strong></p>
+        <ul>
+          <li><strong>加法原理</strong>：完成一件事有 n 类方法，第 i 类有 mᵢ 种 → 共 Σmᵢ 种</li>
+          <li><strong>乘法原理</strong>：完成一件事需 n 步，第 i 步有 mᵢ 种 → 共 Πmᵢ 种</li>
+          <li><strong>排列</strong>：P(n,k) = n! / (n-k)!（有序）</li>
+          <li><strong>组合</strong>：C(n,k) = n! / [k!(n-k)!]（无序）</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>解题步骤：</strong>设事件 → 找样本点 → 求概率
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-tip">经典例题</span></h4>
+        <ul>
+          <li><strong>分房问题</strong>（生日问题）：n 个人，365 天，至少两人生日相同的概率。当 n=23 时概率已超 50%</li>
+          <li><strong>匹配问题</strong>（信纸装信封）：n 封信随机装入 n 个信封，至少一封匹配的概率 → 1 - 1/2! + 1/3! - … + (-1)^(n+1)/n!</li>
+          <li><strong>抽样问题</strong>：有放回 vs 无放回，当总体大而抽样少时两者近似相等</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1.3 几何概型</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>几何概率</h4>
+        <p>样本点等可能地落入空间某区域，通过<strong>几何度量</strong>（长度/面积/体积）计算概率：</p>
+        <div class="formula-box">
+          <span class="label">几何概型公式</span>
+          P(A) = A 对应区域的度量 / Ω 对应区域的度量
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-tip">经典例题</span></h4>
+        <ul>
+          <li><strong>会面问题</strong>：甲乙约在 [0,T] 内会面，先到者等 t 后离去。P(会面) = 1 - (T-t)²/T²</li>
+          <li><strong>Buffon 投针问题</strong>：间距为 a 的平行线，长 b (< a) 的针，P(相交) = 2b/(πa)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1.4 概率的公理化定义</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>事件域与概率空间</h4>
+        <p><strong>事件域 F</strong>（σ 域）满足：① Ω ∈ F；② 若 A ∈ F 则 Ā ∈ F；③ 若 Aᵢ ∈ F 则 ∪Aᵢ ∈ F</p>
+        <p><strong>概率 P</strong> 是 F 上的集合函数，满足三条公理：</p>
+        <ul>
+          <li><strong>非负性</strong>：∀A ∈ F，P(A) ≥ 0</li>
+          <li><strong>规范性</strong>：P(Ω) = 1</li>
+          <li><strong>可列可加性</strong>：对两两互斥的可列事件 A₁, A₂, …，P(∪Aᵢ) = ΣP(Aᵢ)</li>
+        </ul>
+        <p>(Ω, F, P) 称为<strong>概率空间</strong>。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1.5 概率的性质</div>
+      <div class="k-card">
+        <h4><span class="tag tag-prop">性质</span>常用概率性质</h4>
+        <ul>
+          <li>P(∅) = 0</li>
+          <li><strong>有限可加性</strong>：互斥事件之并的概率 = 概率之和</li>
+          <li><strong>对立事件</strong>：P(Ā) = 1 - P(A)</li>
+          <li><strong>减法公式</strong>：P(A - B) = P(A) - P(AB)</li>
+          <li><strong>加法公式</strong>：P(A ∪ B) = P(A) + P(B) - P(AB)</li>
+          <li><strong>一般加法公式</strong>（多除少补）：P(A∪B∪C) = P(A)+P(B)+P(C) - P(AB)-P(AC)-P(BC) + P(ABC)</li>
+          <li><strong>单调性</strong>：若 A ⊂ B，则 P(A) ≤ P(B)</li>
+          <li><strong>连续性</strong>：单调增序列 Aₙ ↑ A → P(Aₙ) → P(A)；单调减序列类似</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>技巧：</strong>求"至少一个"的概率常转化为求对立事件（"一个都没有"）。P(AB) 的范围：max(0, P(A)+P(B)-1) ≤ P(AB) ≤ min(P(A), P(B))
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 第2章 ==================== -->
+<div class="chapter" id="ch2">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c2">2</div>
+    <div class="ch-title-group">
+      <div class="ch-title">条件概率和独立性</div>
+      <div class="ch-subtitle">Conditional Probability and Independence</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">2.1 条件概率与乘法公式</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>条件概率</h4>
+        <p>设 P(A) > 0，在 A 已发生的条件下 B 发生的条件概率：</p>
+        <div class="formula-box">
+          <span class="label">条件概率公式</span>
+          P(B|A) = P(AB) / P(A)
+        </div>
+        <p>条件概率 P(·|A) 本身也满足概率的三条公理（非负性、规范性、可列可加性）。</p>
+        <p><strong>计算方法：</strong>① 在缩减后的样本空间 A 中计算；② 在原样本空间中用定义计算。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>乘法公式</h4>
+        <div class="formula-box">
+          <span class="label">乘法公式</span>
+          P(AB) = P(A) · P(B|A) = P(B) · P(A|B)<br>
+          P(ABC) = P(A) · P(B|A) · P(C|AB)
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2.2 事件的独立性</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>独立性</h4>
+        <ul>
+          <li><strong>两事件独立</strong>：P(AB) = P(A)·P(B)</li>
+          <li><strong>两两独立</strong>：任意两个事件都相互独立（共 C(n,2) 个条件）</li>
+          <li><strong>相互独立</strong>：任意有限个事件的交的概率 = 各自概率之积（共 2ⁿ - n - 1 个条件）</li>
+        </ul>
+        <div class="highlight-box important">
+          <strong>🔑 关键辨析：</strong>
+          <ul>
+            <li><strong>互斥</strong>：AB = ∅（不能同时发生）</li>
+            <li><strong>独立</strong>：P(AB) = P(A)P(B)（一个发生不影响另一个的概率）</li>
+            <li>若 P(A) > 0 且 P(B) > 0，则<strong>互斥一定不独立，独立一定不互斥</strong></li>
+            <li><strong>两两独立 ⇏ 相互独立</strong>（需验证所有子集的交）</li>
+          </ul>
+        </div>
+        <p><strong>独立性性质：</strong></p>
+        <ul>
+          <li>若 A, B 独立，则 A 与 B̄、Ā 与 B、Ā 与 B̄ 也独立</li>
+          <li>概率为 0 或 1 的事件与任何事件独立</li>
+          <li><strong>小概率事件</strong>：单个概率虽小，大量独立试验中至少发生一次的概率可能很大（例：1500 人中有人带感冒病毒的概率 ≈ 0.95）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2.3 全概率公式与贝叶斯公式</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>样本空间的划分</h4>
+        <p>设 B₁, B₂, …, Bₙ 互斥且 ∪Bᵢ = Ω，称 {Bᵢ} 为完备事件组（划分）。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>全概率公式</h4>
+        <div class="formula-box">
+          <span class="label">全概率公式</span>
+          P(A) = Σᵢ P(Bᵢ) · P(A|Bᵢ)
+        </div>
+        <p><strong>意义：</strong>将复杂事件分解为若干简单事件，"化整为零，各个击破"。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>贝叶斯公式</h4>
+        <div class="formula-box">
+          <span class="label">贝叶斯公式</span>
+          P(Bⱼ|A) = P(Bⱼ) · P(A|Bⱼ) / Σᵢ P(Bᵢ) · P(A|Bᵢ)
+        </div>
+        <p>其中 P(Bⱼ) 为<strong>先验概率</strong>（由以往数据得到），P(Bⱼ|A) 为<strong>后验概率</strong>（得到信息后修正）。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2.4 试验的独立性</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>独立试验与常见分布</h4>
+        <ul>
+          <li><strong>Bernoulli 试验</strong>：只有两个结果（成功/失败）的单次试验</li>
+          <li><strong>n 重 Bernoulli 试验</strong>：n 次独立重复的 Bernoulli 试验</li>
+        </ul>
+        <div class="formula-box">
+          <span class="label">二项分布 B(n, p)</span>
+          P(X = k) = C(n,k) · p^k · (1-p)^(n-k)，k = 0, 1, …, n
+        </div>
+        <ul>
+          <li><strong>几何分布 G(p)</strong>：首次成功在第 k 次 → P(X=k) = (1-p)^(k-1) · p</li>
+          <li><strong>Pascal 分布（负二项分布）</strong>：第 r 次成功在第 k 次 → P(X=k) = C(k-1, r-1) · p^r · (1-p)^(k-r)</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 第3章 ==================== -->
+<div class="chapter" id="ch3">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c3">3</div>
+    <div class="ch-title-group">
+      <div class="ch-title">随机变量及其分布函数</div>
+      <div class="ch-subtitle">Random Variables and Distribution Functions</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">3.1 随机变量</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>随机变量</h4>
+        <p>定义在样本空间 Ω 上的实值函数 X = X(ω)，将随机试验的结果映射为实数。</p>
+        <ul>
+          <li><strong>离散型</strong>：所有取值可一一列举</li>
+          <li><strong>连续型</strong>：取值充满某个区间</li>
+          <li><strong>其他</strong>：既非离散型又非连续型</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>意义：</strong>随机变量概念的产生是概率论发展史上的重大事件。引入随机变量后，对随机现象的研究由事件及事件概率扩大为随机变量及其取值规律。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3.2 离散型随机变量与分布律</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>分布律</h4>
+        <p>P(X = xₖ) = pₖ，满足 pₖ ≥ 0 且 Σpₖ = 1。可用表格表示。</p>
+      </div>
+      <table class="dist-table">
+        <thead>
+          <tr><th>分布</th><th>记号</th><th>分布律 P(X=k)</th><th>E(X)</th><th>D(X)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>0-1 分布</strong></td><td class="mono">B(1, p)</td><td class="mono">p^k · (1-p)^(1-k)，k=0,1</td><td class="mono">p</td><td class="mono">p(1-p)</td></tr>
+          <tr><td><strong>二项分布</strong></td><td class="mono">B(n, p)</td><td class="mono">C(n,k) · p^k · (1-p)^(n-k)</td><td class="mono">np</td><td class="mono">np(1-p)</td></tr>
+          <tr><td><strong>Poisson 分布</strong></td><td class="mono">P(λ)</td><td class="mono">e^(-λ) · λ^k / k!</td><td class="mono">λ</td><td class="mono">λ</td></tr>
+          <tr><td><strong>几何分布</strong></td><td class="mono">G(p)</td><td class="mono">(1-p)^(k-1) · p</td><td class="mono">1/p</td><td class="mono">(1-p)/p²</td></tr>
+        </tbody>
+      </table>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Poisson 定理</h4>
+        <p>当 n 大、p 小、np = λ 适中时，二项分布可用 Poisson 分布近似：</p>
+        <div class="formula-box">
+          <span class="label">Poisson 近似</span>
+          C(n,k) · p^k · (1-p)^(n-k) ≈ e^(-λ) · λ^k / k!
+        </div>
+        <div class="highlight-box">
+          <strong>应用场景：</strong>电话呼唤次数、交通事故次数、放射性粒子计数等均服从 Poisson 分布。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3.3 连续型随机变量</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>概率密度函数 (PDF)</h4>
+        <p>若存在 f(x) ≥ 0 使 F(x) = ∫₋∞ˣ f(t)dt，则 f(x) 为概率密度函数。</p>
+        <p><strong>性质：</strong>① f(x) ≥ 0；② ∫₋∞^+∞ f(x)dx = 1；③ P(a < X ≤ b) = ∫ₐᵇ f(x)dx</p>
+        <div class="highlight-box warn">
+          <strong>⚠️ 注意：</strong>连续型随机变量取任一指定值的概率为零，即 P(X = a) = 0。因此区间的开闭不影响概率。
+        </div>
+      </div>
+      <table class="dist-table">
+        <thead>
+          <tr><th>分布</th><th>记号</th><th>概率密度 f(x)</th><th>E(X)</th><th>D(X)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>均匀分布</strong></td><td class="mono">U(a, b)</td><td class="mono">1/(b-a)，a < x < b</td><td class="mono">(a+b)/2</td><td class="mono">(b-a)²/12</td></tr>
+          <tr><td><strong>指数分布</strong></td><td class="mono">Exp(λ)</td><td class="mono">λe^(-λx)，x > 0</td><td class="mono">1/λ</td><td class="mono">1/λ²</td></tr>
+          <tr><td><strong>标准正态</strong></td><td class="mono">N(0, 1)</td><td class="mono">(1/√2π) · e^(-x²/2)</td><td class="mono">0</td><td class="mono">1</td></tr>
+          <tr><td><strong>一般正态</strong></td><td class="mono">N(μ, σ²)</td><td class="mono">(1/σ√2π) · e^(-(x-μ)²/(2σ²))</td><td class="mono">μ</td><td class="mono">σ²</td></tr>
+        </tbody>
+      </table>
+      <div class="k-card">
+        <h4><span class="tag tag-proof">证明</span>指数分布的无记忆性</h4>
+        <div class="formula-box">
+          <span class="label">无记忆性</span>
+          P(X > s + t | X > s) = P(X > t)，s, t > 0<br><br>
+          证：P(X > s+t | X > s) = P(X > s+t) / P(X > s) = e^(-λ(s+t)) / e^(-λs) = e^(-λt) = P(X > t) ■
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-prop">性质</span>正态分布</h4>
+        <ul>
+          <li><strong>标准化</strong>：若 X ~ N(μ, σ²)，则 Z = (X - μ) / σ ~ N(0, 1)</li>
+          <li>P(a < X < b) = Φ((b-μ)/σ) - Φ((a-μ)/σ)</li>
+          <li>Φ(-x) = 1 - Φ(x)</li>
+          <li>正态分布是最重要的分布：测量误差、身高体重等近似服从；二项分布、Poisson 分布的极限分布是正态分布</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3.4 分布函数</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>分布函数 F(x)</h4>
+        <div class="formula-box">
+          <span class="label">分布函数定义</span>
+          F(x) = P(X ≤ x)，-∞ < x < +∞
+        </div>
+        <p><strong>性质：</strong></p>
+        <ul>
+          <li><strong>单调不减</strong>：x₁ < x₂ ⟹ F(x₁) ≤ F(x₂)</li>
+          <li><strong>右连续</strong>：F(x⁺) = F(x)</li>
+          <li><strong>边界条件</strong>：F(-∞) = 0，F(+∞) = 1</li>
+          <li>P(a < X ≤ b) = F(b) - F(a)</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>离散型：</strong>F(x) = Σ_{xₖ ≤ x} pₖ（阶梯函数）<br>
+          <strong>连续型：</strong>F(x) = ∫₋∞ˣ f(t)dt，且 F'(x) = f(x)（在连续点处）<br><br>
+          <strong>题型：</strong>① 离散型分布函数 ② 连续型分布函数 ③ 离散型随机变量函数的分布函数 ④ 连续型随机变量函数的分布函数
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3.5 附录：泊松过程</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>泊松过程</h4>
+        <p>满足<strong>平稳性</strong>（概率规律不随时间推移改变）和<strong>独立增量性</strong>的计数过程。在长度为 t 的时间区间内，事件发生次数服从参数为 λt 的 Poisson 分布。</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 第4章 ==================== -->
+<div class="chapter" id="ch4">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c4">4</div>
+    <div class="ch-title-group">
+      <div class="ch-title">随机向量及其分布</div>
+      <div class="ch-subtitle">Random Vectors and Their Distributions</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">4.1 随机向量及其联合分布</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>联合分布函数</h4>
+        <div class="formula-box">
+          <span class="label">联合分布函数</span>
+          F(x, y) = P(X ≤ x, Y ≤ y)
+        </div>
+        <p><strong>性质：</strong></p>
+        <ul>
+          <li>对 x, y 分别单调不减、右连续</li>
+          <li>F(-∞, y) = F(x, -∞) = 0，F(+∞, +∞) = 1</li>
+          <li>P(a < X ≤ b, c < Y ≤ d) = F(b,d) - F(a,d) - F(b,c) + F(a,c) ≥ 0</li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>边缘分布函数</h4>
+        <div class="formula-box">
+          <span class="label">边缘分布函数</span>
+          Fₓ(x) = F(x, +∞) = P(X ≤ x)<br>
+          Fᵧ(y) = F(+∞, y) = P(Y ≤ y)
+        </div>
+        <div class="highlight-box warn">
+          <strong>⚠️ 关键：</strong>联合分布唯一确定边缘分布，但<strong>边缘分布不能唯一确定联合分布</strong>！联合分布还包含 X 与 Y 之间关系的信息。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4.2 离散型随机向量</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>联合分布律与边缘分布律</h4>
+        <p>pᵢⱼ = P(X = xᵢ, Y = yⱼ)，满足 pᵢⱼ ≥ 0，Σᵢ Σⱼ pᵢⱼ = 1</p>
+        <div class="formula-box">
+          <span class="label">边缘分布律</span>
+          P(X = xᵢ) = pᵢ· = Σⱼ pᵢⱼ<br>
+          P(Y = yⱼ) = p·ⱼ = Σᵢ pᵢⱼ
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>独立性判别（离散型）</h4>
+        <p>X, Y 独立 ⟺ 对所有 i, j：pᵢⱼ = pᵢ· · p·ⱼ</p>
+        <div class="highlight-box">
+          <strong>例：</strong>有放回摸球 → 独立；不放回摸球 → 不独立。两者边缘分布相同但联合分布不同。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4.3 连续型随机向量</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>联合密度与边缘密度</h4>
+        <p>F(x,y) = ∫₋∞ˣ ∫₋∞ʸ f(u,v) dv du（Fubini 定理保证可交换积分次序）</p>
+        <div class="formula-box">
+          <span class="label">边缘概率密度</span>
+          fₓ(x) = ∫₋∞^+∞ f(x, y) dy<br>
+          fᵧ(y) = ∫₋∞^+∞ f(x, y) dx
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>独立性判别（连续型）</h4>
+        <p>X, Y 独立 ⟺ f(x,y) = fₓ(x) · fᵧ(y)（几乎处处成立）</p>
+        <div class="highlight-box warn">
+          <strong>⚠️ 注意：</strong>若联合密度的支撑区域不是矩形区域，则 X, Y 一定不独立。二维正态分布中若 ρ ≠ 0，则 X, Y 不独立。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4.4 随机向量的函数分布</div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>和的分布（卷积公式）</h4>
+        <div class="formula-box">
+          <span class="label">Z = X + Y 的密度</span>
+          f_Z(z) = ∫₋∞^+∞ f(x, z-x) dx = ∫₋∞^+∞ f(z-y, y) dy<br><br>
+          独立时：f_Z(z) = ∫₋∞^+∞ fₓ(x) · fᵧ(z-x) dx
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>商的分布</h4>
+        <div class="formula-box">
+          <span class="label">Z = X/Y 的密度</span>
+          f_Z(z) = ∫₋∞^+∞ |y| · f(zy, y) dy
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>最大值与最小值的分布</h4>
+        <p>设 X₁, …, Xₙ 独立同分布，分布函数为 F(x)：</p>
+        <div class="formula-box">
+          <span class="label">极值分布</span>
+          M = max(X₁,…,Xₙ)：Fₘ(x) = [F(x)]^n<br>
+          N = min(X₁,…,Xₙ)：Fₙ(x) = 1 - [1 - F(x)]^n
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4.5 条件分布</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>条件分布</h4>
+        <p><strong>离散型：</strong>P(X=xᵢ|Y=yⱼ) = pᵢⱼ / p·ⱼ</p>
+        <div class="formula-box">
+          <span class="label">条件密度（连续型）</span>
+          f_{X|Y}(x|y) = f(x, y) / fᵧ(y)，fᵧ(y) > 0<br>
+          f_{Y|X}(y|x) = f(x, y) / fₓ(x)，fₓ(x) > 0
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 第5章 ==================== -->
+<div class="chapter" id="ch5">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c5">5</div>
+    <div class="ch-title-group">
+      <div class="ch-title">随机变量的数字特征</div>
+      <div class="ch-subtitle">Numerical Characteristics of Random Variables</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">5.1 数学期望</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>数学期望</h4>
+        <div class="formula-box">
+          <span class="label">离散型</span>
+          E(X) = Σₖ xₖ · pₖ（要求级数绝对收敛）
+        </div>
+        <div class="formula-box">
+          <span class="label">连续型</span>
+          E(X) = ∫₋∞^+∞ x · f(x) dx（要求积分绝对收敛）
+        </div>
+        <p><strong>说明：</strong>E(X) 是一个实数（加权平均），不是变量。绝对收敛保证级数和不随排列次序改变。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>随机变量函数的期望</h4>
+        <div class="formula-box">
+          <span class="label">一维</span>
+          E[g(X)] = Σₖ g(xₖ) · pₖ（离散）<br>
+          E[g(X)] = ∫ g(x) · f(x) dx（连续）
+        </div>
+        <div class="formula-box">
+          <span class="label">二维</span>
+          E[g(X, Y)] = ∫∫ g(x,y) · f(x,y) dx dy（连续）<br>
+          E[g(X, Y)] = Σᵢ Σⱼ g(xᵢ, yⱼ) · pᵢⱼ（离散）
+        </div>
+        <div class="highlight-box">
+          <strong>优势：</strong>不必先求 g(X) 的分布，可直接用 X 的分布计算。
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-prop">性质</span>期望的性质</h4>
+        <ul>
+          <li>E(C) = C</li>
+          <li>E(aX + b) = aE(X) + b</li>
+          <li>E(X + Y) = E(X) + E(Y)</li>
+          <li>若 X, Y <strong>独立</strong>，则 E(XY) = E(X) · E(Y)</li>
+          <li>推广：E(ΣaᵢXᵢ) = ΣaᵢE(Xᵢ)</li>
+          <li>E(X²) ≥ [E(X)]²（Jensen 不等式，等号当且仅当 X 为常数）</li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-tip">应用</span>数学期望的实际意义</h4>
+        <ul>
+          <li><strong>分赌本问题</strong>：按期望分配赌金</li>
+          <li><strong>核酸检测</strong>：分组检测最优方案（k=10 或 11 时节省约 80% 工作量）</li>
+          <li><strong>投资决策</strong>：比较不同方案的期望收益</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">5.2 方差</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>方差与标准差</h4>
+        <div class="formula-box">
+          <span class="label">方差公式</span>
+          D(X) = E[X - E(X)]² = E(X²) - [E(X)]²<br>
+          σ(X) = √D(X)（标准差）
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-prop">性质</span>方差的性质</h4>
+        <ul>
+          <li>D(C) = 0</li>
+          <li>D(aX + b) = a²D(X)</li>
+          <li>若 X, Y <strong>独立</strong>，则 D(X ± Y) = D(X) + D(Y)</li>
+          <li>推广：若 X₁, …, Xₙ 独立，则 D(ΣaᵢXᵢ) = Σaᵢ²D(Xᵢ)</li>
+        </ul>
+      </div>
+      <table class="dist-table">
+        <thead><tr><th>分布</th><th>E(X)</th><th>D(X)</th></tr></thead>
+        <tbody>
+          <tr><td>B(1, p)</td><td class="mono">p</td><td class="mono">p(1-p)</td></tr>
+          <tr><td>B(n, p)</td><td class="mono">np</td><td class="mono">np(1-p)</td></tr>
+          <tr><td>P(λ)</td><td class="mono">λ</td><td class="mono">λ</td></tr>
+          <tr><td>G(p)</td><td class="mono">1/p</td><td class="mono">(1-p)/p²</td></tr>
+          <tr><td>U(a, b)</td><td class="mono">(a+b)/2</td><td class="mono">(b-a)²/12</td></tr>
+          <tr><td>Exp(λ)</td><td class="mono">1/λ</td><td class="mono">1/λ²</td></tr>
+          <tr><td>N(μ, σ²)</td><td class="mono">μ</td><td class="mono">σ²</td></tr>
+        </tbody>
+      </table>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Chebyshev 不等式</h4>
+        <div class="formula-box">
+          <span class="label">Chebyshev 不等式</span>
+          P(|X - E(X)| ≥ ε) ≤ D(X) / ε²<br>
+          等价形式：P(|X - μ| < ε) ≥ 1 - σ²/ε²
+        </div>
+        <p><strong>意义：</strong>即使不知道分布，也能给出概率的上界估计。但估计较粗糙，若已知分布则直接计算更精确。</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">5.3 协方差与相关系数</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>协方差</h4>
+        <div class="formula-box">
+          <span class="label">协方差</span>
+          Cov(X, Y) = E[(X - EX)(Y - EY)] = E(XY) - E(X)·E(Y)
+        </div>
+        <p><strong>性质：</strong></p>
+        <ul>
+          <li>Cov(X, X) = D(X)</li>
+          <li>Cov(X, Y) = Cov(Y, X)</li>
+          <li>Cov(aX + b, cY + d) = ac · Cov(X, Y)</li>
+          <li>D(X ± Y) = D(X) + D(Y) ± 2Cov(X, Y)</li>
+          <li>Cov(X, Y) = 0 ⟺ X, Y <strong>不相关</strong></li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>相关系数</h4>
+        <div class="formula-box">
+          <span class="label">相关系数</span>
+          ρ(X,Y) = Cov(X,Y) / √(D(X)·D(Y))
+        </div>
+        <p><strong>性质（Cauchy-Schwarz 不等式）：</strong></p>
+        <ul>
+          <li>|ρ| ≤ 1</li>
+          <li>|ρ| = 1 ⟺ Y = aX + b（几乎处处线性相关）</li>
+          <li>ρ = 0 称为<strong>不相关</strong></li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-tip">辨析</span>不相关 vs 独立</h4>
+        <div class="highlight-box important">
+          <strong>🔑 核心区别：</strong>
+          <ul>
+            <li><strong>独立 → 不相关</strong>（Cov = 0，ρ = 0）</li>
+            <li><strong>不相关 ⇏ 独立</strong>（只说明无线性关系，可能有非线性关系）</li>
+            <li><strong>特例：</strong>对二维正态分布，不相关 ⟺ 独立</li>
+          </ul>
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>协方差矩阵</h4>
+        <p>C = [Cov(Xᵢ, Xⱼ)] 为 n×n 矩阵，性质：<strong>非负定（半正定）</strong>。</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 第6章 ==================== -->
+<div class="chapter" id="ch6">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c6">6</div>
+    <div class="ch-title-group">
+      <div class="ch-title">特征函数与母函数</div>
+      <div class="ch-subtitle">Characteristic Functions and Generating Functions</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">6.1 一维随机变量的特征函数</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>特征函数</h4>
+        <p>将 Fourier 变换应用于分布函数，引入特征函数。它既能完全决定分布函数，又具有良好的分析性质。</p>
+        <div class="formula-box">
+          <span class="label">特征函数定义</span>
+          φₓ(t) = E(e^(itX)) = E(cos tX) + i·E(sin tX)<br><br>
+          离散型：φ(t) = Σₖ e^(itxₖ) · pₖ<br>
+          连续型：φ(t) = ∫₋∞^+∞ e^(itx) · f(x) dx
+        </div>
+        <p><strong>特征函数总是存在</strong>（因为 |e^(itx)| = 1，积分/求和总是收敛的）。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-prop">性质</span>特征函数的性质</h4>
+        <ul>
+          <li><strong>性质 1</strong>：φ(0) = 1，|φ(t)| ≤ 1</li>
+          <li><strong>性质 2</strong>：φ(t) 在 (-∞, +∞) 上<strong>一致连续</strong></li>
+          <li><strong>性质 3</strong>：非负定性</li>
+          <li><strong>性质 4</strong>：若 X, Y 独立，则 φ_{X+Y}(t) = φₓ(t) · φᵧ(t)（<strong>独立和的特征函数 = 特征函数之积</strong>）</li>
+          <li><strong>推论（再生性）</strong>：同类型分布之和仍为该类型（Poisson、正态、Gamma 等）</li>
+          <li><strong>性质 5</strong>：若 Y = aX + b，则 φᵧ(t) = e^(ibt) · φₓ(at)</li>
+          <li><strong>性质 6</strong>：若 E|X|ⁿ 存在，则 φ⁽ⁿ⁾(0) = iⁿ · E(Xⁿ)，即 <strong>E(Xⁿ) = i⁻ⁿ · φ⁽ⁿ⁾(0)</strong></li>
+        </ul>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>常见分布的特征函数</h4>
+        <table class="dist-table">
+          <thead><tr><th>分布</th><th>特征函数 φ(t)</th></tr></thead>
+          <tbody>
+            <tr><td>B(n, p)</td><td class="mono">(pe^(it) + q)^n</td></tr>
+            <tr><td>P(λ)</td><td class="mono">exp{λ(e^(it) - 1)}</td></tr>
+            <tr><td>U(a, b)</td><td class="mono">(e^(itb) - e^(ita)) / (it(b-a))</td></tr>
+            <tr><td>Exp(λ)</td><td class="mono">(1 - it/λ)^(-1)</td></tr>
+            <tr><td>N(0, 1)</td><td class="mono">e^(-t²/2)</td></tr>
+            <tr><td>N(μ, σ²)</td><td class="mono">exp{iμt - σ²t²/2}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>反演公式与唯一性定理</h4>
+        <p>由特征函数可以唯一确定分布函数（Levy 反演公式）。</p>
+        <div class="highlight-box">
+          <strong>唯一性定理：</strong>随机变量的分布函数由其特征函数唯一决定。这是特征函数作为刻画随机变量统计规律数学工具的理论基础。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">6.2 多维随机变量的特征函数</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>二维特征函数</h4>
+        <div class="formula-box">
+          <span class="label">二维特征函数</span>
+          φ(t₁, t₂) = E[exp(i(t₁X + t₂Y))]<br><br>
+          连续型：φ(t₁, t₂) = ∫∫ e^(it₁x + it₂y) · f(x,y) dx dy
+        </div>
+        <p><strong>性质：</strong></p>
+        <ul>
+          <li>φ(0, 0) = 1</li>
+          <li>X, Y 独立 ⟺ φ(t₁, t₂) = φₓ(t₁) · φᵧ(t₂)</li>
+          <li>边缘特征函数：φₓ(t₁) = φ(t₁, 0)，φᵧ(t₂) = φ(0, t₂)</li>
+          <li>逆转公式和唯一性定理同样成立</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 第7章 ==================== -->
+<div class="chapter" id="ch7">
+  <div class="chapter-header" onclick="toggle(this)">
+    <div class="ch-badge c7">7</div>
+    <div class="ch-title-group">
+      <div class="ch-title">大数定律与中心极限定理</div>
+      <div class="ch-subtitle">Law of Large Numbers and Central Limit Theorem</div>
+    </div>
+    <div class="ch-toggle">▼</div>
+  </div>
+  <div class="chapter-body">
+
+    <div class="section">
+      <div class="section-title">7.1 收敛性概念与大数定律</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>四种收敛方式</h4>
+        <ul>
+          <li><strong>依分布收敛（弱收敛）</strong>：Xₙ →ᵈ X，即 Fₙ(x) → F(x)（在 F 的连续点处）</li>
+          <li><strong>依概率收敛</strong>：Xₙ →ᵖ X，即 ∀ε > 0，P(|Xₙ - X| > ε) → 0</li>
+          <li><strong>r 阶收敛</strong>：Xₙ →ʳ X，即 E|Xₙ - X|ʳ → 0</li>
+          <li><strong>以概率 1 收敛（a.s. 收敛）</strong>：Xₙ →ᵃ.ˢ. X，即 P(lim Xₙ = X) = 1</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>收敛强度关系：</strong><br>
+          a.s. 收敛 ⟹ 依概率收敛 ⟹ 依分布收敛<br>
+          r 阶收敛 ⟹ 依概率收敛<br>
+          反向均不成立（一般情况下）
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>大数定律</h4>
+        <p>设 {Xₙ} 为随机变量序列，E(Xᵢ) 存在，令 Sₙ = ΣXᵢ，若 Sₙ/n - E(Sₙ/n) →ᵖ 0，则称 {Xₙ} 服从大数定律。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Bernoulli 大数定律</h4>
+        <p>nₐ 为 n 次 Bernoulli 试验中事件 A 发生的次数，p = P(A)：</p>
+        <div class="formula-box">
+          <span class="label">Bernoulli 大数定律</span>
+          ∀ε > 0，lim P(|nₐ/n - p| ≥ ε) = 0
+        </div>
+        <p><strong>意义：</strong>当 n 很大时，频率与概率有较大偏差的可能性很小。可用频率代替概率。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Poisson 大数定律</h4>
+        <p>设各次试验中 A 发生的概率不同，第 i 次为 pᵢ，则：</p>
+        <div class="formula-box">
+          <span class="label">Poisson 大数定律</span>
+          (1/n)Σ Xᵢ - (1/n)Σ pᵢ →ᵖ 0
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Chebyshev 大数定律</h4>
+        <p>设 X₁, X₂, … 相互独立，E(Xᵢ) = μᵢ，D(Xᵢ) ≤ C，则：</p>
+        <div class="formula-box">
+          <span class="label">Chebyshev 大数定律</span>
+          (1/n)ΣXᵢ - (1/n)Σμᵢ →ᵖ 0
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Khintchine 大数定律（最重要）</h4>
+        <p>设 X₁, X₂, … 独立同分布 (i.i.d.)，E(Xᵢ) = μ，则：</p>
+        <div class="formula-box">
+          <span class="label">Khintchine 大数定律</span>
+          X̄ₙ = (1/n)ΣXᵢ →ᵖ μ
+        </div>
+        <div class="highlight-box">
+          <strong>核心意义：</strong>样本均值依概率收敛于总体均值。为"用频率估计概率"和"用样本均值估计期望"提供了理论依据。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">7.2 中心极限定理</div>
+      <div class="k-card">
+        <h4><span class="tag tag-def">定义</span>中心极限定理</h4>
+        <p>研究独立随机变量之和的极限分布为正态分布的条件。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>De Moivre-Laplace 定理</h4>
+        <p>设 Sₙ ~ B(n, p)：</p>
+        <div class="formula-box">
+          <span class="label">De Moivre-Laplace</span>
+          (Sₙ - np) / √(np(1-p)) →ᵈ N(0, 1)
+        </div>
+        <p><strong>意义：</strong>正态分布是二项分布的极限分布，n 充分大时可用正态分布近似二项分布。</p>
+        <div class="highlight-box warn">
+          <strong>⚠️ 注意：</strong>泊松分布和正态分布都是二项分布的极限分布。当 n 大 p 小（np 适中）时，泊松近似比正态近似更精确。正态近似只需 n 大。
+        </div>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>独立同分布中心极限定理（Lindeberg-Lévy）</h4>
+        <p>设 X₁, X₂, … i.i.d.，E(Xᵢ) = μ，D(Xᵢ) = σ² > 0，则：</p>
+        <div class="formula-box">
+          <span class="label">Lindeberg-Lévy CLT</span>
+          (ΣXᵢ - nμ) / (σ√n) →ᵈ N(0, 1)
+        </div>
+        <p><strong>意义：</strong>这是数理统计中大样本统计推断的理论基础。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-thm">定理</span>Lyapunov 定理</h4>
+        <p>设 X₁, X₂, … 相互独立（不必同分布），满足 Lyapunov 条件，则：</p>
+        <div class="formula-box">
+          <span class="label">Lyapunov CLT</span>
+          (ΣXᵢ - Σμᵢ) / Bₙ →ᵈ N(0, 1)，其中 Bₙ² = Σσᵢ²
+        </div>
+        <p><strong>定理表明：</strong>在相当一般的条件下，独立随机变量个数增加时，其和的分布趋于正态分布。</p>
+      </div>
+      <div class="k-card">
+        <h4><span class="tag tag-tip">应用</span>中心极限定理的应用</h4>
+        <div class="highlight-box">
+          <strong>核心思想：</strong>大量独立随机变量之和近似服从正态分布。
+        </div>
+        <div class="formula-box">
+          <span class="label">近似计算公式</span>
+          P(a ≤ Sₙ ≤ b) ≈ Φ((b - nμ)/(σ√n)) - Φ((a - nμ)/(σ√n))
+        </div>
+        <p><strong>典型应用：</strong></p>
+        <ul>
+          <li>保险公司利润计算（万人投保，死亡率 0.006）</li>
+          <li>电话分机外线配备（260 部分机，4% 使用率，需 16 条外线）</li>
+          <li>船舶纵摇角概率（90000 次波浪冲击）</li>
+          <li>家长会人数估计（400 名学生）</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="footer">
+  <p>概率论B 复习知识点 · 基于课程课件系统整理 · 祝考试顺利 🎓</p>
+</div>
+
+<script>
+function toggle(h){h.parentElement.classList.toggle('open')}
+function toggleAll(){const ch=document.querySelectorAll('.chapter');const all=Array.from(ch).every(c=>c.classList.contains('open'));ch.forEach(c=>{all?c.classList.remove('open'):c.classList.add('open')})}
+window.addEventListener('scroll',()=>{document.getElementById('backTop').style.display=window.scrollY>400?'flex':'none'});
+</script>
+</body>
+</html>
