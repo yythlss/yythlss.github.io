@@ -1,3 +1,11 @@
+# yythlss.github.io
+
+个人项目主页：[https://yythlss.github.io](https://yythlss.github.io)
+
+使用原生 HTML、CSS 与 JavaScript 构建，集中展示嵌入式系统、智能硬件、电子电路和 AI 应用项目。
+
+---
+
 # Hi, I'm yythlss 👋
 
 武汉理工大学电子信息工程本科生，主要关注嵌入式系统、智能硬件、数字与模拟电路，以及 AI 应用开发。

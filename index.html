@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="yythlss 的个人主页：嵌入式系统、智能硬件、电子电路与 AI 应用项目。">
+  <meta name="theme-color" content="#0b1018">
+  <title>yythlss | Embedded Systems & AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-glow page-glow-one" aria-hidden="true"></div>
+  <div class="page-glow page-glow-two" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="返回首页">
+      <span class="brand-mark">Y</span>
+      <span>yythlss</span>
+    </a>
+    <nav class="site-nav" aria-label="主导航">
+      <a href="#about">关于</a>
+      <a href="#projects">项目</a>
+      <a href="#skills">技能</a>
+      <a href="#contact">联系</a>
+    </nav>
+    <a class="header-link" href="https://github.com/yythlss" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </header>
+
+  <main id="top">
+    <section class="hero section-shell">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot"></span> Electronic Information Engineering</p>
+        <h1>从电路到智能系统，<br><span>把想法做成可运行的作品。</span></h1>
+        <p class="hero-description">
+          我是 yythlss，一名电子信息工程本科生。主要关注嵌入式系统、智能硬件、数字与模拟电路，
+          同时探索 AI Agent、知识系统与真实硬件的结合。
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#projects">查看项目</a>
+          <a class="button button-secondary" href="https://github.com/yythlss" target="_blank" rel="noreferrer">访问 GitHub</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel" aria-label="个人方向概览">
+        <div class="panel-label">CURRENT FOCUS</div>
+        <p class="panel-title">Embedded × Hardware × AI</p>
+        <div class="signal-lines" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <dl class="quick-stats">
+          <div><dt>07</dt><dd>公开项目</dd></div>
+          <div><dt>05</dt><dd>硬件与嵌入式</dd></div>
+          <div><dt>02</dt><dd>AI 应用</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section id="about" class="section-shell content-section">
+      <div class="section-heading">
+        <p class="section-index">01 / ABOUT</p>
+        <h2>关注系统如何真正运行</h2>
+        <p>不只让功能“能跑”，也重视供电、接口、并发、状态管理、测试和文档。</p>
+      </div>
+
+      <div class="about-grid">
+        <article class="capability-card">
+          <span class="card-number">01</span>
+          <h3>嵌入式系统</h3>
+          <p>使用 STM32、ESP32-S3、STC11 与 FreeRTOS 完成传感器采集、设备控制、通信和实时任务设计。</p>
+        </article>
+        <article class="capability-card">
+          <span class="card-number">02</span>
+          <h3>智能硬件</h3>
+          <p>关注电源、舵机、语音、显示、雷达与环境传感器的系统集成，重视真实硬件中的稳定性问题。</p>
+        </article>
+        <article class="capability-card">
+          <span class="card-number">03</span>
+          <h3>AI 应用</h3>
+          <p>使用 Next.js、FastAPI 与 OpenAI-compatible API 构建 Agent、知识库、产品原型和硬件交互工具。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="projects" class="section-shell content-section">
+      <div class="section-heading heading-row">
+        <div>
+          <p class="section-index">02 / PROJECTS</p>
+          <h2>项目作品</h2>
+          <p>课程设计、嵌入式系统与 AI 产品原型的持续整理。</p>
+        </div>
+        <div class="project-filters" aria-label="项目分类筛选">
+          <button class="filter-button active" type="button" data-filter="all">全部</button>
+          <button class="filter-button" type="button" data-filter="embedded">嵌入式</button>
+          <button class="filter-button" type="button" data-filter="electronics">电子电路</button>
+          <button class="filter-button" type="button" data-filter="ai">AI 应用</button>
+        </div>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-card project-card-featured" data-category="embedded">
+          <div class="project-topline"><span>FEATURED · EMBEDDED</span><span>01</span></div>
+          <h3>Smart Home Controller</h3>
+          <p>ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、TJC 串口屏、HTTP API、微信小程序和 MCP 桥接。</p>
+          <ul class="tag-list"><li>ESP32-S3</li><li>ESP-IDF</li><li>C++</li><li>MCP</li><li>微信小程序</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/Smart-Home-Controller" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+
+        <article class="project-card" data-category="embedded">
+          <div class="project-topline"><span>EMBEDDED</span><span>02</span></div>
+          <h3>FreeRTOS Warehouse System</h3>
+          <p>基于 STM32F103 和 FreeRTOS 的仓库人数统计与门禁系统，使用双路超声波、OLED、RTC 和 TF 卡日志。</p>
+          <ul class="tag-list"><li>STM32</li><li>FreeRTOS</li><li>OLED</li><li>FatFs</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/FreeRTOS-Warehouse-Count-Access-System" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+
+        <article class="project-card" data-category="embedded">
+          <div class="project-topline"><span>SMART HARDWARE</span><span>03</span></div>
+          <h3>Smart Desktop Pet</h3>
+          <p>优化舵机供电并加入天问 ASRPRO 离线语音交互的桌面电子宠物，支持多种动作和情绪互动。</p>
+          <ul class="tag-list"><li>ASRPRO</li><li>STC11</li><li>UART</li><li>Servo</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/Smart-Desktop-Pet" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+
+        <article class="project-card" data-category="electronics">
+          <div class="project-topline"><span>ANALOG ELECTRONICS</span><span>04</span></div>
+          <h3>Temperature Limit Alarm</h3>
+          <p>由 MF58 NTC、LM358 窗口比较器和双 NE555 构成的纯模拟高低温声光报警系统。</p>
+          <ul class="tag-list"><li>LM358</li><li>NE555</li><li>NTC</li><li>Multisim</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/Temperature-Limit-Alarm-Based-on-Analog-Electronics" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+
+        <article class="project-card" data-category="electronics">
+          <div class="project-topline"><span>DIGITAL ELECTRONICS</span><span>05</span></div>
+          <h3>Four-Channel Responder</h3>
+          <p>采用 74LS 系列芯片实现四路抢答、0～99 秒预置倒计时、首次抢答锁存和超时报警。</p>
+          <ul class="tag-list"><li>74LS148</li><li>74LS192</li><li>74LS373</li><li>NE555</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+
+        <article class="project-card" data-category="ai">
+          <div class="project-topline"><span>AI · KNOWLEDGE</span><span>06</span></div>
+          <h3>MemoStudy Agent</h3>
+          <p>本地优先的个人知识系统，支持资料导入、带引用问答、学习路径、复盘和研究报告生成。</p>
+          <ul class="tag-list"><li>FastAPI</li><li>Next.js</li><li>SQLite</li><li>Docker</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/MemoStudy-Agent" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+
+        <article class="project-card" data-category="ai">
+          <div class="project-topline"><span>AI · PRODUCT</span><span>07</span></div>
+          <h3>ProtoVibe Agent</h3>
+          <p>从产品 Brief 连续生成需求、PRD、可运行原型、开发方案、数字人讲解和质量审查的产品工作台。</p>
+          <ul class="tag-list"><li>Next.js</li><li>TypeScript</li><li>Responses API</li><li>Zod</li></ul>
+          <a class="project-link" href="https://github.com/yythlss/ProtoVibe-Agent" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section id="skills" class="section-shell content-section">
+      <div class="section-heading">
+        <p class="section-index">03 / SKILLS</p>
+        <h2>技术栈</h2>
+        <p>围绕“采集—控制—通信—交互—验证”构建完整项目链路。</p>
+      </div>
+
+      <div class="skills-grid">
+        <article class="skill-group">
+          <h3>MCU & RTOS</h3>
+          <p>STM32F103 · ESP32-S3 · STC11 · FreeRTOS</p>
+        </article>
+        <article class="skill-group">
+          <h3>Embedded</h3>
+          <p>C · C++ · ESP-IDF · STM32CubeMX · Keil · IAR</p>
+        </article>
+        <article class="skill-group">
+          <h3>Hardware</h3>
+          <p>UART · I²C · SPI · PWM · ADC · 传感器 · 舵机 · 电源</p>
+        </article>
+        <article class="skill-group">
+          <h3>Electronics</h3>
+          <p>模拟电路 · 数字电路 · Multisim · 嘉立创 EDA Pro</p>
+        </article>
+        <article class="skill-group">
+          <h3>AI & Backend</h3>
+          <p>Python · FastAPI · OpenAI-compatible API · Ollama · MCP</p>
+        </article>
+        <article class="skill-group">
+          <h3>Web & Engineering</h3>
+          <p>TypeScript · Next.js · React · Docker · Git · REST API</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell content-section focus-section">
+      <div class="section-heading">
+        <p class="section-index">04 / NOW</p>
+        <h2>正在关注</h2>
+      </div>
+      <div class="focus-list">
+        <p><span>01</span> STM32、FreeRTOS 与嵌入式系统调试</p>
+        <p><span>02</span> 传感器融合、执行器控制与多端交互</p>
+        <p><span>03</span> AI Agent 与真实硬件、知识系统的结合</p>
+        <p><span>04</span> 将实验和课程项目整理为可复现的开源作品</p>
+      </div>
+    </section>
+
+    <section id="contact" class="section-shell contact-section">
+      <p class="section-index">05 / CONTACT</p>
+      <h2>一起做点真正能运行的东西。</h2>
+      <p>欢迎通过 GitHub 查看项目、提交 Issue，或交流嵌入式系统、智能硬件与 AI 应用。</p>
+      <a class="button button-primary" href="https://github.com/yythlss" target="_blank" rel="noreferrer">github.com/yythlss ↗</a>
+    </section>
+  </main>
+
+  <footer class="site-footer section-shell">
+    <span>© <span id="year">2026</span> yythlss</span>
+    <span>Built with HTML, CSS & JavaScript</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
