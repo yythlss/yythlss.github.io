@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="yythlss 的个人主页：嵌入式系统、智能硬件、电子电路与 AI 应用项目。">
-  <meta name="theme-color" content="#0b1018">
-  <title>yythlss | Embedded Systems & AI</title>
+  <meta name="description" content="yythlss 的个人主页：嵌入式系统、智能硬件与电子电路项目。">
+  <meta name="theme-color" content="#EFFAFD">
+  <title>yythlss | Embedded Systems & Electronics</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -33,7 +33,7 @@
         <h1>从电路到智能系统，<br><span>把想法做成可运行的作品。</span></h1>
         <p class="hero-description">
           我是 yythlss，一名电子信息工程本科生。主要关注嵌入式系统、智能硬件、数字与模拟电路，
-          同时探索 AI Agent、知识系统与真实硬件的结合。
+          喜欢把课程设计和实验原型继续完善成可运行、可复现的作品。
         </p>
         <div class="hero-actions">
           <a class="button button-primary" href="#projects">查看项目</a>
@@ -43,14 +43,14 @@
 
       <aside class="hero-panel" aria-label="个人方向概览">
         <div class="panel-label">CURRENT FOCUS</div>
-        <p class="panel-title">Embedded × Hardware × AI</p>
+        <p class="panel-title">Embedded × Hardware × Circuits</p>
         <div class="signal-lines" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span>
         </div>
         <dl class="quick-stats">
-          <div><dt>07</dt><dd>公开项目</dd></div>
-          <div><dt>05</dt><dd>硬件与嵌入式</dd></div>
-          <div><dt>02</dt><dd>AI 应用</dd></div>
+          <div><dt>05</dt><dd>重点项目</dd></div>
+          <div><dt>03</dt><dd>嵌入式与硬件</dd></div>
+          <div><dt>02</dt><dd>电子电路</dd></div>
         </dl>
       </aside>
     </section>
@@ -75,8 +75,8 @@
         </article>
         <article class="capability-card">
           <span class="card-number">03</span>
-          <h3>AI 应用</h3>
-          <p>使用 Next.js、FastAPI 与 OpenAI-compatible API 构建 Agent、知识库、产品原型和硬件交互工具。</p>
+          <h3>电路与验证</h3>
+          <p>使用 Multisim 与嘉立创 EDA 完成模拟、数字电路设计，并通过仿真、实物调试和文档记录验证方案。</p>
         </article>
       </div>
     </section>
@@ -86,13 +86,12 @@
         <div>
           <p class="section-index">02 / PROJECTS</p>
           <h2>项目作品</h2>
-          <p>课程设计、嵌入式系统与 AI 产品原型的持续整理。</p>
+          <p>课程设计、嵌入式系统与智能硬件项目的持续整理。</p>
         </div>
         <div class="project-filters" aria-label="项目分类筛选">
           <button class="filter-button active" type="button" data-filter="all">全部</button>
           <button class="filter-button" type="button" data-filter="embedded">嵌入式</button>
           <button class="filter-button" type="button" data-filter="electronics">电子电路</button>
-          <button class="filter-button" type="button" data-filter="ai">AI 应用</button>
         </div>
       </div>
 
@@ -137,22 +136,23 @@
           <a class="project-link" href="https://github.com/yythlss/Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
         </article>
 
-        <article class="project-card" data-category="ai">
-          <div class="project-topline"><span>AI · KNOWLEDGE</span><span>06</span></div>
-          <h3>MemoStudy Agent</h3>
-          <p>本地优先的个人知识系统，支持资料导入、带引用问答、学习路径、复盘和研究报告生成。</p>
-          <ul class="tag-list"><li>FastAPI</li><li>Next.js</li><li>SQLite</li><li>Docker</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/MemoStudy-Agent" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
-
-        <article class="project-card" data-category="ai">
-          <div class="project-topline"><span>AI · PRODUCT</span><span>07</span></div>
-          <h3>ProtoVibe Agent</h3>
-          <p>从产品 Brief 连续生成需求、PRD、可运行原型、开发方案、数字人讲解和质量审查的产品工作台。</p>
-          <ul class="tag-list"><li>Next.js</li><li>TypeScript</li><li>Responses API</li><li>Zod</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/ProtoVibe-Agent" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
       </div>
+
+      <aside class="side-projects" aria-labelledby="side-projects-title">
+        <div>
+          <p class="side-projects-label">SIDE EXPERIMENTS</p>
+          <h3 id="side-projects-title">兴趣实验</h3>
+          <p>业余做的一些软件小实验，作为技术探索记录。</p>
+        </div>
+        <div class="side-project-links">
+          <a href="https://github.com/yythlss/MemoStudy-Agent" target="_blank" rel="noreferrer">
+            <span>MemoStudy Agent</span><small>知识整理实验 ↗</small>
+          </a>
+          <a href="https://github.com/yythlss/ProtoVibe-Agent" target="_blank" rel="noreferrer">
+            <span>ProtoVibe Agent</span><small>产品原型实验 ↗</small>
+          </a>
+        </div>
+      </aside>
     </section>
 
     <section id="skills" class="section-shell content-section">
@@ -180,8 +180,8 @@
           <p>模拟电路 · 数字电路 · Multisim · 嘉立创 EDA Pro</p>
         </article>
         <article class="skill-group">
-          <h3>AI & Backend</h3>
-          <p>Python · FastAPI · OpenAI-compatible API · Ollama · MCP</p>
+          <h3>Software & Tools</h3>
+          <p>Python · FastAPI · Git · Docker · REST API</p>
         </article>
         <article class="skill-group">
           <h3>Web & Engineering</h3>
@@ -198,7 +198,7 @@
       <div class="focus-list">
         <p><span>01</span> STM32、FreeRTOS 与嵌入式系统调试</p>
         <p><span>02</span> 传感器融合、执行器控制与多端交互</p>
-        <p><span>03</span> AI Agent 与真实硬件、知识系统的结合</p>
+        <p><span>03</span> 模拟、数字电路的设计、仿真与实物验证</p>
         <p><span>04</span> 将实验和课程项目整理为可复现的开源作品</p>
       </div>
     </section>
@@ -206,7 +206,7 @@
     <section id="contact" class="section-shell contact-section">
       <p class="section-index">05 / CONTACT</p>
       <h2>一起做点真正能运行的东西。</h2>
-      <p>欢迎通过 GitHub 查看项目、提交 Issue，或交流嵌入式系统、智能硬件与 AI 应用。</p>
+      <p>欢迎通过 GitHub 查看项目、提交 Issue，或交流嵌入式系统、智能硬件与电子电路。</p>
       <a class="button button-primary" href="https://github.com/yythlss" target="_blank" rel="noreferrer">github.com/yythlss ↗</a>
     </section>
   </main>

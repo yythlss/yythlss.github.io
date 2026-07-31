@@ -2,13 +2,13 @@
 
 个人项目主页：[https://yythlss.github.io](https://yythlss.github.io)
 
-使用原生 HTML、CSS 与 JavaScript 构建，集中展示嵌入式系统、智能硬件、电子电路和 AI 应用项目。
+使用原生 HTML、CSS 与 JavaScript 构建，集中展示嵌入式系统、智能硬件和电子电路项目。
 
 ---
 
 # Hi, I'm yythlss 👋
 
-武汉理工大学电子信息工程本科生，主要关注嵌入式系统、智能硬件、数字与模拟电路，以及 AI 应用开发。
+武汉理工大学电子信息工程本科生，主要关注嵌入式系统、智能硬件、数字与模拟电路。
 
 我喜欢把课程设计和实验原型继续完善成结构清晰、资料完整、可以复现的开源项目：从电路设计、传感器接入和实时任务，到 Web 应用、知识库与 Agent 工作流。
 
@@ -17,7 +17,7 @@
 - 🎯 方向：嵌入式软件、智能硬件与硬件系统开发
 - 🔧 实践：STM32、ESP32-S3、FreeRTOS、传感器、舵机、语音模块和串口屏
 - ⚡ 电路：模拟电子技术、数字电子技术、Multisim 仿真与嘉立创 EDA
-- 🤖 AI：OpenAI-compatible API、知识库问答、产品原型 Agent 与 MCP 工具链
+- 🧰 软件：Python、FastAPI、Web 应用、Git、Docker 与 REST API
 - 📚 习惯：重视 README、接线说明、调试记录、测试验证和可复现交付
 
 ## Featured Embedded & Hardware Projects
@@ -77,7 +77,9 @@
 - 抢答成功后停止计时并封锁后续输入，超时则触发报警。
 - 提供完整系统及脉冲、计数、报警、锁存等单元仿真。
 
-## AI & Software Projects
+## Side Experiments
+
+以下是业余完成的软件与 Agent 小实验，作为技术探索记录。
 
 ### [MemoStudy Agent](https://github.com/yythlss/MemoStudy-Agent)
 
