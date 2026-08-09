@@ -924,27 +924,37 @@
       html, body { width: 100%; height: 100%; overscroll-behavior: none; }
 
       body {
+        position: fixed;
+        inset: 0;
         overflow: hidden;
         background-size: 22px 22px;
       }
 
       .app {
-        width: 100%;
-        min-height: 100vh;
-        min-height: 100svh;
-        height: 100dvh;
+        position: fixed;
+        top: var(--mobile-viewport-top, 0px);
+        left: var(--mobile-viewport-left, 0px);
+        width: var(--mobile-viewport-width, 100%);
+        min-height: 0;
+        height: var(--mobile-viewport-height, 100dvh);
         border: 0;
         overflow: hidden;
       }
 
       .chat-shell {
         width: 100%;
-        height: 100vh;
-        height: 100svh;
-        height: 100dvh;
+        min-height: 0;
+        height: 100%;
         border-radius: 0;
         grid-template-rows: auto minmax(0, 1fr) auto;
       }
+
+      .keyboard-open .app,
+      .keyboard-open .chat-shell { transition: none; }
+
+      .keyboard-open .composer-hint { display: none; }
+      .keyboard-open .composer-area { padding-bottom: 6px; }
+      .keyboard-open .messages { padding-bottom: 14px; }
 
       .topbar {
         min-height: 66px;
@@ -1041,7 +1051,7 @@
       dialog {
         width: 100%;
         max-width: none;
-        max-height: min(88dvh, 720px);
+        max-height: min(calc(var(--mobile-viewport-height, 100dvh) - 4px), 720px);
         margin: auto 0 0;
         border-width: 1px 0 0;
         box-shadow: 0 -8px 0 rgba(90, 0, 189, 0.15);
@@ -1064,7 +1074,7 @@
       .dialog-head h3 { font-size: 18px; font-weight: 900; }
 
       .dialog-body {
-        max-height: calc(88dvh - 58px);
+        max-height: calc(var(--mobile-viewport-height, 100dvh) - 62px);
         padding: 18px max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
         overflow-y: auto;
         overscroll-behavior: contain;
@@ -1098,8 +1108,8 @@
       .messages { padding-top: 12px; padding-bottom: 14px; }
       .composer-area { padding-top: 7px; padding-bottom: max(7px, env(safe-area-inset-bottom)); }
       textarea { max-height: 76px; }
-      dialog { max-height: 96dvh; }
-      .dialog-body { max-height: calc(96dvh - 58px); }
+      dialog { max-height: calc(var(--mobile-viewport-height, 100dvh) - 4px); }
+      .dialog-body { max-height: calc(var(--mobile-viewport-height, 100dvh) - 62px); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1769,6 +1779,53 @@
         if (!els.configDialog.open) els.configDialog.showModal();
       }
 
+      let mobileViewportFrame = 0;
+      let stableMobileViewportHeight = 0;
+      let pinConversationToBottom = true;
+
+      function isMobileLayout() {
+        return window.matchMedia('(max-width: 820px)').matches;
+      }
+
+      function syncMobileViewport() {
+        mobileViewportFrame = 0;
+        const root = document.documentElement;
+        if (!isMobileLayout()) {
+          root.classList.remove('keyboard-open');
+          ['--mobile-viewport-height', '--mobile-viewport-width', '--mobile-viewport-top', '--mobile-viewport-left']
+            .forEach((name) => root.style.removeProperty(name));
+          stableMobileViewportHeight = 0;
+          return;
+        }
+
+        const viewport = window.visualViewport;
+        const height = Math.max(1, Math.round(viewport?.height || window.innerHeight));
+        const width = Math.max(1, Math.round(viewport?.width || window.innerWidth));
+        const top = Math.max(0, Math.round(viewport?.offsetTop || 0));
+        const left = Math.max(0, Math.round(viewport?.offsetLeft || 0));
+        const active = document.activeElement;
+        const editing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+
+        root.style.setProperty('--mobile-viewport-height', `${height}px`);
+        root.style.setProperty('--mobile-viewport-width', `${width}px`);
+        root.style.setProperty('--mobile-viewport-top', `${top}px`);
+        root.style.setProperty('--mobile-viewport-left', `${left}px`);
+
+        if (!editing) stableMobileViewportHeight = Math.max(stableMobileViewportHeight, height);
+        if (!stableMobileViewportHeight) stableMobileViewportHeight = height;
+        const keyboardOpen = Boolean(editing && stableMobileViewportHeight - height > 100);
+        root.classList.toggle('keyboard-open', keyboardOpen);
+
+        if (keyboardOpen && active === els.messageInput && pinConversationToBottom) {
+          els.messages.scrollTop = els.messages.scrollHeight;
+        }
+      }
+
+      function scheduleMobileViewportSync() {
+        if (mobileViewportFrame) cancelAnimationFrame(mobileViewportFrame);
+        mobileViewportFrame = requestAnimationFrame(syncMobileViewport);
+      }
+
       els.modelSelect.addEventListener('change', () => {
         els.customModelField.hidden = els.modelSelect.value !== '__custom__';
         if (!els.customModelField.hidden) els.customModel.focus();
@@ -1789,6 +1846,11 @@
       els.sendBtn.addEventListener('click', sendMessage);
       els.clearBtn.addEventListener('click', clearHistory);
       els.messageInput.addEventListener('input', autoResizeTextarea);
+      els.messageInput.addEventListener('focus', () => {
+        const bottomGap = els.messages.scrollHeight - els.messages.scrollTop - els.messages.clientHeight;
+        pinConversationToBottom = bottomGap < 120;
+        scheduleMobileViewportSync();
+      });
       els.messageInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
           event.preventDefault();
@@ -1820,11 +1882,21 @@
       window.addEventListener('storage', (event) => {
         if (event.key === STORAGE.messages) { loadMessages(); renderMessages(true); }
       });
+      window.addEventListener('resize', scheduleMobileViewportSync, { passive: true });
+      window.addEventListener('orientationchange', () => {
+        stableMobileViewportHeight = 0;
+        setTimeout(scheduleMobileViewportSync, 320);
+      });
+      document.addEventListener('focusin', scheduleMobileViewportSync);
+      document.addEventListener('focusout', () => setTimeout(scheduleMobileViewportSync, 180));
+      window.visualViewport?.addEventListener('resize', scheduleMobileViewportSync, { passive: true });
+      window.visualViewport?.addEventListener('scroll', scheduleMobileViewportSync, { passive: true });
 
       loadSettings();
       loadMessages();
       renderMessages();
       autoResizeTextarea();
+      syncMobileViewport();
     })();
   </script>
 </body>
