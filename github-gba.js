@@ -246,6 +246,7 @@
       commits: cur.commits || 0,
       branches: cur.branches || 1,
       license: api.license ? (api.license.name || '许可证') : (cur.license || '无许可证'),
+      defaultBranch: api.default_branch || 'main',
       updated: '更新于 ' + relTime(new Date(api.pushed_at || api.updated_at)),
       pushedAt: new Date(api.pushed_at || api.updated_at).getTime() || 0,
       createdAt: api.created_at || null,
@@ -452,6 +453,7 @@
     $('#tab-pulls').textContent = repo.pulls.length;
 
     // 代码页
+    $('#branch-chip').textContent = '⎇ ' + (repo.defaultBranch || 'main');
     $('#stat-commits').textContent = repo.commits;
     $('#stat-branches').textContent = repo.branches;
     $('#stat-license').textContent = repo.license;
@@ -493,6 +495,30 @@
     // 实时仓库：懒加载文件列表与 README（一次请求，缓存）
     if (repo.live && !repo._files) fetchLiveFiles(repo);
     if (repo.live && !repo._readme) fetchLiveReadme(repo);
+    if (repo.live) fetchLiveRepoStats(repo);
+  }
+
+  /* 提交数（Link 头 rel="last" 页码）与分支数：仅实时仓库，打开代码页时一次拉取 */
+  function fetchLiveRepoStats(repo) {
+    if (repo._statsFetched) return;
+    repo._statsFetched = true;
+    var base = '/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name);
+    fetch('https://api.github.com' + base + '/commits?per_page=1', {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var link = r.headers.get('Link') || '';
+      var m = /[?&]page=(\d+)>;\s*rel="last"/.exec(link);
+      repo.commits = m ? +m[1] : 1;
+      if (currentRepo === repo) $('#stat-commits').textContent = repo.commits;
+    }).catch(function () {});
+    ghFetch(base + '/branches?per_page=100')
+      .then(function (list) {
+        if (!Array.isArray(list)) throw new Error('bad');
+        repo.branches = list.length || 1;
+        if (currentRepo === repo) $('#stat-branches').textContent = repo.branches;
+      })
+      .catch(function () {});
   }
 
   function fetchLiveFiles(repo) {
@@ -507,8 +533,15 @@
           $('#file-list').innerHTML = repo._files.map(fileRowHtml).join('');
         }
       })
-      .catch(function () {
-        repo._files = repo.filesCurated || [{ name: '（文件列表获取失败，可能是 API 限流）', dir: false, update: '', time: '' }];
+      .catch(function (err) {
+        var m = /HTTP (\d+)/.exec(err && err.message || '');
+        var status = m ? +m[1] : 0;
+        var hint = status === 404
+          ? '（这个仓库还是空的——尚无任何提交，push 代码后会自动显示）'
+          : status === 403
+            ? '（文件列表获取失败：API 限流，1 小时后自动恢复）'
+            : '（文件列表获取失败' + (status ? '：HTTP ' + status : '') + '）';
+        repo._files = repo.filesCurated || [{ name: hint, dir: false, update: '', time: '' }];
         if (currentRepo === repo) {
           $('#file-list').innerHTML = repo._files.map(fileRowHtml).join('');
         }
@@ -559,7 +592,15 @@
           }).join('');
         }
       })
-      .catch(function () { /* 保留内置文案 */ });
+      .catch(function (err) {
+        var m = /HTTP (\d+)/.exec(err && err.message || '');
+        var status = m ? +m[1] : 0;
+        if (status === 404 && currentRepo === repo) {
+          $('#readme-lede').textContent = '这个仓库还没有 README。';
+          $('#readme-list').innerHTML = '<li>先去看看代码，或者稍后再来。</li>';
+        }
+        /* 其余失败（如限流）保留内置文案 */
+      });
   }
 
   /* 议题 / 拉取请求懒加载（切到对应标签页时才请求） */
