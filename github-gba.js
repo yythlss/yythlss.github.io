@@ -43,14 +43,25 @@
   }
 
   function ghFetch(path, raw) {
+    // 12 秒超时：api.github.com 在部分网络下会"挂住"（既不成功也不失败），必须主动中断
+    var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : 0;
     return fetch('https://api.github.com' + path, {
       headers: raw
         ? { 'Accept': 'application/vnd.github.raw' }
-        : { 'Accept': 'application/vnd.github+json' }
-    }).then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return raw ? r.text() : r.json();
-    });
+        : { 'Accept': 'application/vnd.github+json' },
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(
+      function (r) {
+        clearTimeout(timer);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return raw ? r.text() : r.json();
+      },
+      function (e) {
+        clearTimeout(timer);
+        throw e;
+      }
+    );
   }
 
   /* --------------------------------------------------- 本地兜底数据 + 精灵映射 */
@@ -503,15 +514,22 @@
     if (repo._statsFetched) return;
     repo._statsFetched = true;
     var base = '/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name);
+    var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : 0;
     fetch('https://api.github.com' + base + '/commits?per_page=1', {
-      headers: { 'Accept': 'application/vnd.github+json' }
-    }).then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      var link = r.headers.get('Link') || '';
-      var m = /[?&]page=(\d+)>;\s*rel="last"/.exec(link);
-      repo.commits = m ? +m[1] : 1;
-      if (currentRepo === repo) $('#stat-commits').textContent = repo.commits;
-    }).catch(function () {});
+      headers: { 'Accept': 'application/vnd.github+json' },
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(
+      function (r) {
+        clearTimeout(timer);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        var link = r.headers.get('Link') || '';
+        var m = /[?&]page=(\d+)>;\s*rel="last"/.exec(link);
+        repo.commits = m ? +m[1] : 1;
+        if (currentRepo === repo) $('#stat-commits').textContent = repo.commits;
+      },
+      function (e) { clearTimeout(timer); throw e; }
+    ).catch(function () {});
     ghFetch(base + '/branches?per_page=100')
       .then(function (list) {
         if (!Array.isArray(list)) throw new Error('bad');
@@ -536,14 +554,19 @@
       .catch(function (err) {
         var m = /HTTP (\d+)/.exec(err && err.message || '');
         var status = m ? +m[1] : 0;
-        var hint = status === 404
-          ? '（这个仓库还是空的——尚无任何提交，push 代码后会自动显示）'
-          : status === 403
-            ? '（文件列表获取失败：API 限流，1 小时后自动恢复）'
-            : '（文件列表获取失败' + (status ? '：HTTP ' + status : '') + '）';
-        repo._files = repo.filesCurated || [{ name: hint, dir: false, update: '', time: '' }];
+        var hint;
+        if (status === 404) hint = '（这个仓库还是空的——push 代码后重新点开即可显示）';
+        else if (status === 403) hint = '（文件列表获取失败：API 限流，1 小时后自动恢复）';
+        else hint = '（拉取超时或网络受阻，重新点开此仓库可重试）';
+        // 仅限流（403）缓存失败结果避免反复消耗配额；其余失败不缓存，下次点开自动重试
+        if (status === 403) {
+          repo._files = repo.filesCurated || [{ name: hint, dir: false, update: '', time: '' }];
+        } else {
+          repo._files = null;
+        }
         if (currentRepo === repo) {
-          $('#file-list').innerHTML = repo._files.map(fileRowHtml).join('');
+          $('#file-list').innerHTML = (repo._files || repo.filesCurated ||
+            [{ name: hint, dir: false, update: '', time: '' }]).map(fileRowHtml).join('');
         }
       });
   }
