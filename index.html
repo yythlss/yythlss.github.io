@@ -1,226 +1,268 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="yythlss 的个人主页：嵌入式系统、智能硬件与电子电路项目。">
-  <meta name="theme-color" content="#f4f0e8">
-  <title>yythlss | Embedded Systems & Electronics</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="yythlss 的 GitHub 主页：宝可梦像素风格重绘，木质招牌、野外场景、浅绿色像素面板、贡献热力图与宝可梦精灵，展示嵌入式系统、智能硬件与电子电路项目。">
+<meta name="theme-color" content="#3a7d34">
+<title>yythlss | GitHub · 宝可梦像素主页</title>
+<link rel="stylesheet" href="github-gba.css">
+<link rel="stylesheet" href="github-firered.css">
+<link rel="stylesheet" href="github-real.css">
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="返回首页">
-      <span class="brand-mark">Y</span>
-      <span>yythlss</span>
-    </a>
-    <nav class="site-nav" aria-label="主导航">
-      <a href="#about">关于</a>
-      <a href="#projects">项目</a>
-      <a href="#skills">技能</a>
-      <a href="#contact">联系</a>
-    </nav>
-    <a class="header-link" href="https://github.com/yythlss" target="_blank" rel="noreferrer">GitHub ↗</a>
-  </header>
+<body class="gba-body">
 
-  <main id="top">
-    <section class="hero section-shell">
-      <div class="hero-kicker-bar">
-        <span class="bar-mark" aria-hidden="true"></span>
-        <span>YYTHLSS / PROJECT INDEX</span>
-        <span class="bar-state">ONLINE · 2026</span>
-      </div>
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="status-dot"></span> Embedded Systems / Electronics</p>
-        <h1>从电路到智能系统，<br><span>把想法做成可运行的作品。</span></h1>
-        <p class="hero-description">
-          专注嵌入式系统、智能硬件、数字与模拟电路，
-          喜欢把课程设计和实验原型继续完善成可运行、可复现的作品。
-        </p>
-        <ul class="hero-stack" aria-label="核心技术">
-          <li>ESP32-S3</li><li>STM32</li><li>FreeRTOS</li><li>Analog</li><li>Digital</li>
-        </ul>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#projects">查看项目</a>
-          <a class="button button-secondary" href="https://github.com/yythlss" target="_blank" rel="noreferrer">访问 GitHub</a>
+<div class="console-frame">
+  <div class="console-screen">
+    <div class="game-root" id="game-root">
+
+      <!-- ============================================================ 顶部：野外场景横幅（取自参考图） -->
+      <header class="scene">
+        <img class="scene-img" src="assets/banner.jpg" alt="宝可梦野外场景横幅：木质 GitHub 招牌、宝可梦中心与草地小径" width="1402" height="206">
+      </header>
+
+      <!-- ============================================================ 顶部导航栏 -->
+      <nav class="gba-nav" aria-label="GitHub 主导航">
+        <a class="nav-logo" href="#top" aria-label="GitHub 首页">
+          <span class="gba-logo" aria-hidden="true"></span>
+        </a>
+        <form class="nav-search" role="search" onsubmit="return false">
+          <label class="sr-only" for="search-input">搜索或跳转到…</label>
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="search-input" type="search" placeholder="搜索仓库，无匹配回车搜全站…" autocomplete="off">
+          <span class="search-key">/</span>
+        </form>
+        <div class="nav-user">
+          <span class="star-chip" title="全部公开仓库共获得 9 颗星标"><span class="icon-star" aria-hidden="true"></span>9</span>
+          <span class="trainer-chip" data-sprite="trainerFront" data-label="yythlss" data-scale="2"></span>
+          <span class="user-chip">
+            <span class="user-name">yythlss</span>
+            <span class="user-caret" aria-hidden="true"></span>
+          </span>
         </div>
-      </div>
+      </nav>
 
-      <aside class="hero-panel" aria-label="个人方向概览">
-        <div class="panel-label">CURRENT FOCUS</div>
-        <p class="panel-title">Embedded × Hardware × Circuits</p>
-        <div class="signal-lines" aria-hidden="true">
-          <span></span><span></span><span></span><span></span><span></span>
+      <!-- ============================================================ 主内容：左 / 中 / 右 -->
+      <main class="gba-main" id="top">
+        <!-- ---------------------------------------------------- 左：仓库列表 -->
+        <aside class="panel panel-repos" id="repositories" aria-labelledby="repos-title">
+          <div class="panel-bar">
+            <span class="pokeball-mark" data-sprite="pokeball" data-label="精灵球" data-scale="2"></span>
+            <h2 id="repos-title">你的仓库</h2>
+            <button class="btn-add" type="button" aria-label="新建仓库">＋</button>
+          </div>
+          <div class="panel-body">
+            <div class="repo-search">
+              <input id="repo-search-input" type="search" placeholder="搜索仓库…" aria-label="搜索仓库">
+              <span class="search-icon" aria-hidden="true"></span>
+            </div>
+
+            <ul class="repo-list" id="repo-list">
+              <li><a class="repo-item is-active" href="#repo-smart-home" data-repo="Smart-Home-Controller">
+                <span class="repo-ic" data-sprite="pikachu" data-scale="1"></span>
+                <span class="repo-name">Smart-Home-Controller</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-warehouse" data-repo="FreeRTOS-Warehouse-Count-Access-System">
+                <span class="repo-ic" data-sprite="squirtle" data-scale="1"></span>
+                <span class="repo-name">FreeRTOS-Warehouse-Count-Access-System</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-desktop-pet" data-repo="Smart-Desktop-Pet">
+                <span class="repo-ic" data-sprite="eevee" data-scale="1"></span>
+                <span class="repo-name">Smart-Desktop-Pet</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-alarm" data-repo="Temperature-Limit-Alarm-Based-on-Analog-Electronics">
+                <span class="repo-ic" data-sprite="charmander" data-scale="1"></span>
+                <span class="repo-name">Temperature-Limit-Alarm-Based-on-Analog-Electronics</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-responder" data-repo="Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits">
+                <span class="repo-ic" data-sprite="gengar" data-scale="1"></span>
+                <span class="repo-name">Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-memostudy" data-repo="MemoStudy-Agent">
+                <span class="repo-ic" data-sprite="bulbasaur" data-scale="1"></span>
+                <span class="repo-name">MemoStudy-Agent</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-protovibe" data-repo="ProtoVibe-Agent">
+                <span class="repo-ic" data-sprite="pokeball" data-scale="1"></span>
+                <span class="repo-name">ProtoVibe-Agent</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-homepage" data-repo="yythlss.github.io">
+                <span class="repo-ic" data-sprite="berry" data-scale="1"></span>
+                <span class="repo-name">yythlss.github.io</span>
+                <span class="repo-star">★</span>
+              </a></li>
+            </ul>
+
+            <p class="panel-hint" id="repo-hint">8 个公开仓库 · 最近更新 2 天前</p>
+
+            <button class="btn-new-repo" type="button">
+              <span data-sprite="pikachu" data-scale="1"></span>新建仓库
+            </button>
+          </div>
+        </aside>
+
+        <!-- ---------------------------------------------------- 中：所选仓库详情 -->
+        <section class="panel panel-repo" id="overview" aria-labelledby="repo-title">
+          <div class="panel-bar repo-bar">
+            <span class="repo-bar-sprite" id="repo-bar-sprite" data-sprite="pikachu" data-label="皮卡丘" data-scale="2"></span>
+            <h2 id="repo-title">yythlss / Smart-Home-Controller</h2>
+            <span class="pill">公开</span>
+            <div class="panel-bar-actions">
+              <button class="btn btn-small" type="button">关注 <span class="count">3</span></button>
+              <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">42</span></button>
+              <button class="btn btn-small" type="button">⎇ 复刻 <span class="count" id="fork-count">6</span></button>
+            </div>
+          </div>
+          <div class="panel-body repo-detail">
+            <p class="repo-detail-desc" id="repo-desc">ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、串口屏与微信小程序。</p>
+            <div class="tag-stack" id="repo-topics">
+              <span class="tag">esp32</span><span class="tag">smart-home</span><span class="tag">iot</span>
+            </div>
+
+            <div class="repo-tabs" id="repo-tabs">
+              <button class="repo-tab is-active" type="button" data-tab="code">代码</button>
+              <button class="repo-tab" type="button" data-tab="issues">议题 <span class="count" id="tab-issues">2</span></button>
+              <button class="repo-tab" type="button" data-tab="pulls">拉取请求 <span class="count" id="tab-pulls">1</span></button>
+              <button class="repo-tab" type="button" data-tab="actions">Actions</button>
+              <button class="repo-tab" type="button" data-tab="wiki">Wiki</button>
+            </div>
+
+            <div class="repo-tabpanel is-active" data-panel="code">
+              <div class="repo-toolbar">
+                <span class="branch-chip">⎇ main</span>
+                <span class="m">▰ 提交 <b id="stat-commits">128</b></span>
+                <span class="m">分支 <b id="stat-branches">2</b></span>
+                <span class="toolbar-right" id="stat-license">MIT 许可证</span>
+              </div>
+              <ul class="file-list" id="file-list"></ul>
+              <div class="readme-card">
+                <div class="readme-head">
+                  <span class="readme-icon" aria-hidden="true"></span>
+                  <h3>README.md</h3>
+                  <span class="readme-badge">预览</span>
+                </div>
+                <p class="readme-lede" id="readme-lede"></p>
+                <ul class="readme-list" id="readme-list"></ul>
+              </div>
+            </div>
+
+            <div class="repo-tabpanel" data-panel="issues">
+              <ul class="issue-list" id="issue-list"></ul>
+            </div>
+
+            <div class="repo-tabpanel" data-panel="pulls">
+              <ul class="issue-list" id="pull-list"></ul>
+            </div>
+
+            <div class="repo-tabpanel" data-panel="actions">
+              <ul class="action-list" id="action-list"></ul>
+            </div>
+
+            <div class="repo-tabpanel" data-panel="wiki">
+              <div class="readme-card">
+                <div class="readme-head">
+                  <span class="readme-icon" aria-hidden="true"></span>
+                  <h3>项目文档</h3>
+                  <span class="readme-badge">Wiki</span>
+                </div>
+                <p class="readme-lede" id="wiki-lede">这个仓库的文档还在孵化中，训练家正在补充更多图鉴条目。</p>
+                <ul class="readme-list">
+                  <li><a href="#overview" onclick="return false">快速上手指南</a></li>
+                  <li><a href="#overview" onclick="return false">硬件连接与引脚说明</a></li>
+                  <li><a href="#overview" onclick="return false">常见问题（草丛遇敌篇）</a></li>
+                  <li><a href="#overview" onclick="return false">版本路线图</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------------------------------------------------- 右：贡献热力图 + 动态 -->
+        <aside class="right-rail">
+          <section class="panel panel-grass" aria-labelledby="grass-title">
+            <div class="panel-bar">
+              <span class="pokeball-mark" data-sprite="pokeball" data-label="精灵球" data-scale="2"></span>
+              <h2 id="grass-title">贡献图</h2>
+              <span class="grass-year" id="grass-year">1,247 次贡献</span>
+            </div>
+            <div class="panel-body">
+              <div class="heatmap-layout">
+                <span class="heat-rows" aria-hidden="true"><i>一</i><i>三</i><i>五</i></span>
+                <div class="heatmap-wrap">
+                  <div class="heatmap" id="heatmap" role="img" aria-label="贡献热力图"></div>
+                </div>
+              </div>
+              <div class="heat-months" aria-hidden="true">
+                <span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span><span>9月</span>
+              </div>
+              <div class="heatmap-legend">
+                <span>少</span>
+                <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i>
+                <span>多</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel-activity" aria-labelledby="activity-title">
+            <div class="panel-bar">
+              <span class="pokeball-mark" data-sprite="berry" data-label="树果" data-scale="2"></span>
+              <h2 id="activity-title">动态</h2>
+            </div>
+            <div class="panel-body">
+              <ul class="activity-list" id="activity-list">
+                <li><span class="act-sprite" data-sprite="pikachu" data-scale="2"></span><p>推送了 3 次提交到 <b>Smart-Home-Controller</b><span class="act-time">2 天前</span></p></li>
+                <li><span class="act-sprite" data-sprite="squirtle" data-scale="2"></span><p>创建了仓库 <b>yythlss.github.io</b><span class="act-time">3 天前</span></p></li>
+                <li><span class="act-sprite" data-sprite="eevee" data-scale="2"></span><p>合并了拉取请求 <b>#12 · 优化语音唤醒</b><span class="act-time">4 天前</span></p></li>
+                <li><span class="act-sprite" data-sprite="gengar" data-scale="2"></span><p>关闭了议题 <b>#8 · 串口屏偶发花屏</b><span class="act-time">5 天前</span></p></li>
+                <li><span class="act-sprite" data-sprite="bulbasaur" data-scale="2"></span><p>给 <b>MemoStudy-Agent</b> 点了星标<span class="act-time">1 周前</span></p></li>
+                <li><span class="act-sprite" data-sprite="charmander" data-scale="2"></span><p>发布了 <b>v1.2.0</b> 版本<span class="act-time">2 周前</span></p></li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <!-- ============================================================ 底部：杰尼龟 + 对话气泡 -->
+      <footer class="gba-footer">
+        <div class="footer-strip" aria-hidden="true">
+          <span class="strip-grass"></span>
+          <span class="strip-flower sf1"></span><span class="strip-flower sf2"></span>
+          <span class="strip-flower sf3"></span><span class="strip-flower sf4"></span>
         </div>
-        <dl class="quick-stats">
-          <div><dt>05</dt><dd>重点项目</dd></div>
-          <div><dt>03</dt><dd>嵌入式与硬件</dd></div>
-          <div><dt>02</dt><dd>电子电路</dd></div>
-        </dl>
-      </aside>
-    </section>
-
-    <section id="about" class="section-shell content-section">
-      <div class="section-heading">
-        <p class="section-index">01 / ABOUT</p>
-        <h2>关注系统如何真正运行</h2>
-        <p>不只让功能“能跑”，也重视供电、接口、并发、状态管理、测试和文档。</p>
-      </div>
-
-      <div class="about-grid">
-        <article class="capability-card">
-          <span class="card-number">01</span>
-          <h3>嵌入式系统</h3>
-          <p>使用 STM32、ESP32-S3 与 FreeRTOS 完成传感器采集、设备控制、通信和实时任务设计。</p>
-        </article>
-        <article class="capability-card">
-          <span class="card-number">02</span>
-          <h3>智能硬件</h3>
-          <p>关注电源、舵机、语音、显示、雷达与环境传感器的系统集成，重视真实硬件中的稳定性问题。</p>
-        </article>
-        <article class="capability-card">
-          <span class="card-number">03</span>
-          <h3>电路与验证</h3>
-          <p>使用 Multisim 与嘉立创 EDA 完成模拟、数字电路设计，并通过仿真、实物调试和文档记录验证方案。</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="projects" class="section-shell content-section">
-      <div class="section-heading heading-row">
-        <div>
-          <p class="section-index">02 / PROJECTS</p>
-          <h2>项目作品</h2>
-          <p>课程设计、嵌入式系统与智能硬件项目的持续整理。</p>
+        <div class="bubble-row">
+          <span class="bubble-sprite" data-sprite="squirtle" data-label="杰尼龟" data-scale="4" tabindex="0"></span>
+          <div class="speech-bubble" id="dialogue" role="status" aria-live="polite">
+            <p class="dialogue-text" id="dialogue-text"></p>
+            <span class="dialogue-next" aria-hidden="true"></span>
+            <div class="dialogue-actions">
+              <button class="btn btn-small" type="button" data-dialogue="next">继续 ▶</button>
+              <button class="btn btn-small btn-ghost" type="button" data-dialogue="random">下一句</button>
+            </div>
+          </div>
         </div>
-        <div class="project-filters" aria-label="项目分类筛选">
-          <button class="filter-button active" type="button" data-filter="all">全部</button>
-          <button class="filter-button" type="button" data-filter="embedded">嵌入式</button>
-          <button class="filter-button" type="button" data-filter="electronics">电子电路</button>
-        </div>
-      </div>
 
-      <div class="project-grid">
-        <article class="project-card project-card-featured" data-category="embedded">
-          <div class="project-topline"><span>FEATURED · EMBEDDED</span><span>01</span></div>
-          <h3>Smart Home Controller</h3>
-          <p>ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、TJC 串口屏、HTTP API、微信小程序和 MCP 桥接。</p>
-          <ul class="tag-list"><li>ESP32-S3</li><li>ESP-IDF</li><li>C++</li><li>MCP</li><li>微信小程序</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/Smart-Home-Controller" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
+        <p class="gba-credit">© <span id="gba-year">2026</span> yythlss · 用 HTML / CSS / JavaScript 手搓的 16 位像素界面 ·
+          <a href="portfolio.html">旧版主页</a> · <a href="chat-lab/index.html">Chat Lab</a> · <a href="https://github.com/yythlss" target="_blank" rel="noreferrer">GitHub ↗</a></p>
+      </footer>
 
-        <article class="project-card" data-category="embedded">
-          <div class="project-topline"><span>EMBEDDED</span><span>02</span></div>
-          <h3>FreeRTOS Warehouse System</h3>
-          <p>基于 STM32F103 和 FreeRTOS 的仓库人数统计与门禁系统，使用双路超声波、OLED、RTC 和 TF 卡日志。</p>
-          <ul class="tag-list"><li>STM32</li><li>FreeRTOS</li><li>OLED</li><li>FatFs</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/FreeRTOS-Warehouse-Count-Access-System" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
+      <div class="pixel-grid" aria-hidden="true"></div>
+    </div>
+  </div>
 
-        <article class="project-card" data-category="embedded">
-          <div class="project-topline"><span>SMART HARDWARE</span><span>03</span></div>
-          <h3>Smart Desktop Pet</h3>
-          <p>优化舵机供电并加入天问 ASRPRO 离线语音交互的桌面电子宠物，支持多种动作和情绪互动。</p>
-          <ul class="tag-list"><li>ASRPRO</li><li>UART</li><li>Servo</li><li>Power Module</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/Smart-Desktop-Pet" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
+  <div class="console-meta" aria-hidden="true">
+    <span class="console-brand">POCKET&nbsp;CODE&nbsp;GITHUB</span>
+    <span class="console-led"></span>
+  </div>
+</div>
 
-        <article class="project-card" data-category="electronics">
-          <div class="project-topline"><span>ANALOG ELECTRONICS</span><span>04</span></div>
-          <h3>Temperature Limit Alarm</h3>
-          <p>由 MF58 NTC、LM358 窗口比较器和双 NE555 构成的纯模拟高低温声光报警系统。</p>
-          <ul class="tag-list"><li>LM358</li><li>NE555</li><li>NTC</li><li>Multisim</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/Temperature-Limit-Alarm-Based-on-Analog-Electronics" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
-
-        <article class="project-card" data-category="electronics">
-          <div class="project-topline"><span>DIGITAL ELECTRONICS</span><span>05</span></div>
-          <h3>Four-Channel Responder</h3>
-          <p>采用 74LS 系列芯片实现四路抢答、0～99 秒预置倒计时、首次抢答锁存和超时报警。</p>
-          <ul class="tag-list"><li>74LS148</li><li>74LS192</li><li>74LS373</li><li>NE555</li></ul>
-          <a class="project-link" href="https://github.com/yythlss/Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits" target="_blank" rel="noreferrer">查看仓库 <span>↗</span></a>
-        </article>
-
-      </div>
-
-      <aside class="side-projects" aria-labelledby="side-projects-title">
-        <div>
-          <p class="side-projects-label">SIDE EXPERIMENTS</p>
-          <h3 id="side-projects-title">兴趣实验</h3>
-          <p>业余做的一些软件小实验，作为技术探索记录。</p>
-        </div>
-        <div class="side-project-links">
-          <a href="https://github.com/yythlss/MemoStudy-Agent" target="_blank" rel="noreferrer">
-            <span>MemoStudy Agent</span><small>知识整理实验 ↗</small>
-          </a>
-          <a href="https://github.com/yythlss/ProtoVibe-Agent" target="_blank" rel="noreferrer">
-            <span>ProtoVibe Agent</span><small>产品原型实验 ↗</small>
-          </a>
-        </div>
-      </aside>
-    </section>
-
-    <section id="skills" class="section-shell content-section">
-      <div class="section-heading">
-        <p class="section-index">03 / SKILLS</p>
-        <h2>技术栈</h2>
-        <p>围绕“采集—控制—通信—交互—验证”构建完整项目链路。</p>
-      </div>
-
-      <div class="skills-grid">
-        <article class="skill-group">
-          <h3>主控与实时系统</h3>
-          <p>ESP32-S3 · STM32F103C8T6 · FreeRTOS</p>
-        </article>
-        <article class="skill-group">
-          <h3>嵌入式开发</h3>
-          <p>C · C++ · ESP-IDF 5.5 · STM32 HAL · FatFs · NVS</p>
-        </article>
-        <article class="skill-group">
-          <h3>接口与控制</h3>
-          <p>UART · I²S · ADC · PWM · GPIO · HTTP API</p>
-        </article>
-        <article class="skill-group">
-          <h3>传感器与外设</h3>
-          <p>DHT11 · MQ135 · GL5528 · HLK-LD2450 · HC-SR04 · TJC HMI · OLED · RTC · TF Card · 舵机</p>
-        </article>
-        <article class="skill-group">
-          <h3>模拟与数字电路</h3>
-          <p>MF58 NTC · LM358 · NE555 · 74LS148 · 74LS192 · 74LS373 · 74LS279</p>
-        </article>
-        <article class="skill-group">
-          <h3>工程与仿真</h3>
-          <p>Multisim 14 · 嘉立创 EDA Pro · Keil µVision · Git · Python 测试 · 微信开发者工具</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section-shell content-section focus-section">
-      <div class="section-heading">
-        <p class="section-index">04 / NOW</p>
-        <h2>正在关注</h2>
-      </div>
-      <div class="focus-list">
-        <p><span>01</span> STM32、FreeRTOS 与嵌入式系统调试</p>
-        <p><span>02</span> 传感器融合、执行器控制与多端交互</p>
-        <p><span>03</span> 模拟、数字电路的设计、仿真与实物验证</p>
-        <p><span>04</span> 将实验和课程项目整理为可复现的开源作品</p>
-      </div>
-    </section>
-
-    <section id="contact" class="section-shell contact-section">
-      <p class="section-index">05 / CONTACT</p>
-      <h2>一起做点真正能运行的东西。</h2>
-      <p>欢迎通过 GitHub 查看项目、提交 Issue，或交流嵌入式系统、智能硬件与电子电路。</p>
-      <a class="button button-primary" href="https://github.com/yythlss" target="_blank" rel="noreferrer">github.com/yythlss ↗</a>
-    </section>
-  </main>
-
-  <footer class="site-footer section-shell">
-    <span>© <span id="year">2026</span> yythlss</span>
-    <span>Built with HTML, CSS & JavaScript</span>
-  </footer>
-
-  <script src="script.js"></script>
+<script src="sprites.js"></script>
+<script src="github-gba.js"></script>
 </body>
 </html>

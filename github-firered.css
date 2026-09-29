@@ -1,0 +1,238 @@
+/* =====================================================================
+   github-firered.css — 向参考图（火红风 GitHub 界面）对齐的覆盖层
+   ---------------------------------------------------------------------
+   在 github-gba.css 之后加载，负责：招牌靠左、宝可梦中心建筑、
+   花丛、带图标导航、仓库列表精灵图标、精选/最近仓库卡片、
+   分页、热力图标注、杰尼龟对话气泡。
+   ===================================================================== */
+
+/* ------------------------------------------------------- 顶部场景 */
+/* 横幅已改为直接使用参考图裁剪（assets/banner.jpg），场景 CSS 全部移除 */
+
+/* ------------------------------------------------------- 导航栏 */
+/* 标签小图标 */
+.tab-ic {
+  display: inline-block; width: 12px; height: 12px; flex: none;
+  border: 2px solid rgba(34, 48, 31, .55);
+  background: #cfe7ad;
+}
+.ic-poke {
+  border-radius: 50%;
+  background: linear-gradient(#fdfdf8 0 44%, #2b2b26 44% 56%, #e0453a 56% 100%);
+  border-color: #2b2b26;
+}
+.ic-box   { background: var(--wood); border-color: var(--wood-dark); }
+.ic-proj  { background: #7a4bbf; border-color: #53338a; border-radius: 3px; }
+.ic-pr    { background: #2f5fb8; border-color: #1f4080; transform: rotate(45deg) scale(.9); }
+.ic-issue {
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 2px, #e0453a 2px);
+  border-color: #8f2a24;
+}
+.ic-market{ background: var(--star); border-color: var(--wood-dark); }
+.ic-search{ border-radius: 50%; background: transparent; border-color: var(--ink-soft); }
+
+/* 金色星标徽章 */
+.star-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; font-size: 13px;
+  background: linear-gradient(#ffe9a3, var(--star));
+  border: 3px solid var(--wood-dark);
+  box-shadow: 0 3px 0 var(--wood-dark), inset 0 2px 0 #fff6cf;
+  color: #3d2a10;
+}
+.star-chip .icon-star { width: 12px; height: 12px; }
+
+/* ------------------------------------------------------- 左栏：仓库列表 */
+.btn-add {
+  margin-left: auto;
+  width: 22px; height: 22px; line-height: 1;
+  font-family: inherit; font-size: 14px; color: var(--ink);
+  background: var(--panel-body); border: 2px solid var(--line-dark);
+  cursor: pointer;
+}
+.btn-add:hover { background: #fffdf0; }
+
+.repo-search {
+  position: relative; display: flex; align-items: center;
+  margin-bottom: 8px;
+}
+.repo-search input {
+  width: 100%; height: 28px; padding: 0 8px 0 26px;
+  font-family: inherit; font-size: 12px; color: var(--ink);
+  background: #fdfef6; border: 2px solid var(--line-dark);
+  box-shadow: inset 2px 2px 0 rgba(125, 156, 98, .3);
+  outline: none;
+}
+.repo-search input:focus { border-color: var(--ink); }
+.repo-search .search-icon { left: 7px; }
+
+.repo-list { display: grid; gap: 4px; }
+.repo-item {
+  display: grid !important;
+  grid-template-columns: 24px minmax(0, 1fr) 16px;
+  align-items: center; gap: 6px;
+  padding: 5px 7px;
+  border-left-width: 3px !important;
+}
+.repo-ic { width: 22px; height: 22px; display: block; }
+.repo-item .repo-name {
+  text-decoration: none; color: var(--ink);
+  font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.repo-item.is-active .repo-name { text-decoration: underline; color: var(--link); }
+.repo-star { color: var(--star); font-size: 13px; text-shadow: 1px 1px 0 rgba(34,48,31,.35); }
+
+.btn-new-repo {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 10px; padding: 7px 10px;
+  font-family: inherit; font-size: 14px; color: #3d2a10;
+  background: linear-gradient(#ffe9a3, var(--star));
+  border: 3px solid var(--wood-dark);
+  box-shadow: 0 3px 0 var(--wood-dark), inset 0 2px 0 #fff6cf;
+  cursor: pointer;
+}
+.btn-new-repo:hover { background: linear-gradient(#fff3c4, #ffd76e); }
+.btn-new-repo:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--wood-dark); }
+.btn-new-repo span { width: 20px; height: 20px; }
+
+/* ------------------------------------------------------- 三栏底部对齐（等高） */
+.gba-main { align-items: stretch; }
+.panel-repos { display: flex; flex-direction: column; }
+.panel-repos .panel-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.panel-repos .repo-list { flex: 1; align-content: start; }
+.panel-repos .panel-hint { margin-top: 8px; }
+.panel-repos .btn-new-repo { margin-top: auto; }
+.panel-repo { display: flex; flex-direction: column; }
+.panel-repo .panel-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.repo-tabpanel.is-active { flex: 1; }
+.right-rail { display: flex; flex-direction: column; gap: 14px; }
+.right-rail .panel-activity { flex: 1; }
+.right-rail .panel-activity .panel-body { height: 100%; }
+
+/* ------------------------------------------------------- 中栏：所选仓库详情 */
+.repo-bar { gap: 8px; }
+.repo-bar h2 {
+  font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.repo-bar-sprite {
+  width: 36px; height: 36px; flex: none;
+  background-repeat: no-repeat; background-position: center bottom;
+  background-size: 100% 100%; image-rendering: pixelated;
+}
+.repo-bar .pill { flex: none; }
+.repo-detail-desc { margin: 0 0 8px; font-size: 14px; }
+.repo-detail .tag-stack { margin: 0 0 10px; }
+.repo-detail .repo-tabs { margin: 0 0 10px; }
+.repo-detail .repo-tab .count { margin-left: 2px; }
+.repo-toolbar { padding: 0 0 10px; }
+.repo-toolbar .m {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--ink-soft);
+}
+.repo-toolbar .m b { color: var(--link); font-weight: normal; }
+.file-list { margin: 0 0 12px; }
+.issue-list, .action-list { margin: 0; }
+.readme-list a { color: var(--link); }
+
+/* ------------------------------------------------------- 右栏（贡献图 + 动态，trainer 卡已按需求移除） */
+
+/* 热力图：左侧星期标注 + 底部月份 */
+.heatmap-layout { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px; }
+.heat-rows { display: grid; grid-template-rows: repeat(7, 8px); gap: 2px; padding-top: 0; }
+.heat-rows i { font-style: normal; font-size: 10px; color: var(--ink-soft); display: grid; align-items: center; }
+.heat-rows i:nth-child(2) { grid-row: 3; }
+.heat-rows i:nth-child(3) { grid-row: 5; }
+.heat-months {
+  display: flex; justify-content: space-around;
+  margin: 6px 0 0 22px; font-size: 10px; color: var(--ink-soft);
+}
+.panel-grass .grass-summary { display: none; }
+
+/* 动态列表：图标 + 文字 + 右下角时间 */
+.activity-list li { grid-template-columns: 40px 1fr; padding: 7px 8px; }
+.activity-list p { display: block; font-size: 12px; }
+.activity-list b { color: var(--link); }
+.act-time { display: block; margin-top: 2px; font-size: 11px; color: #6c8a59; text-align: right; }
+.act-sub { display: none; }
+
+/* ------------------------------------------------------- 底部：草丛条 + 杰尼龟气泡 */
+.gba-footer {
+  padding: 0 14px 14px;
+  background: linear-gradient(var(--panel), #c9e3a8);
+  border-top: 4px solid var(--panel-shadow);
+}
+.footer-strip {
+  position: relative; height: 26px; margin: 0 -14px;
+  background:
+    repeating-linear-gradient(90deg, rgba(63, 122, 52, .25) 0 4px, transparent 4px 18px),
+    linear-gradient(#8cc863, var(--grass));
+  border-bottom: 3px solid #3f7a34;
+}
+.strip-flower {
+  position: absolute; bottom: 4px; width: 12px; height: 12px;
+  background: radial-gradient(circle, #ff8aa0 0 4px, #ffd24a 4px 5px, transparent 5px);
+}
+.sf1 { left: 4%; } .sf2 { left: 12%; bottom: 8px; }
+.sf3 { left: 70%; } .sf4 { left: 88%; bottom: 8px; }
+
+.bubble-row {
+  display: flex; align-items: flex-end; gap: 12px;
+  padding-top: 12px;
+}
+.bubble-sprite { width: calc(22 * 4px); height: calc(22 * 4px); flex: none; cursor: pointer; }
+.speech-bubble {
+  position: relative; flex: 1; min-height: 88px;
+  padding: 12px 96px 12px 16px;
+  background: #fdfef6;
+  border: 4px solid var(--ink);
+  box-shadow: inset 0 0 0 3px #eaf5d4, 0 4px 0 var(--shadow-ink);
+  clip-path: polygon(
+    0 10px, 10px 10px, 10px 0, calc(100% - 10px) 0, calc(100% - 10px) 10px, 100% 10px,
+    100% calc(100% - 10px), calc(100% - 10px) calc(100% - 10px), calc(100% - 10px) 100%,
+    10px 100%, 10px calc(100% - 10px), 0 calc(100% - 10px)
+  );
+}
+.speech-bubble::before {
+  content: ""; position: absolute; left: -14px; bottom: 14px;
+  width: 0; height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 14px solid var(--ink);
+}
+.speech-bubble::after {
+  content: ""; position: absolute; left: -8px; bottom: 17px;
+  width: 0; height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 9px solid #fdfef6;
+}
+.dialogue-text { margin: 0; font-size: 15px; min-height: 2.6em; }
+.dialogue-next {
+  position: absolute; right: 16px; bottom: 40px;
+  width: 0; height: 0;
+  border-left: 8px solid transparent; border-right: 8px solid transparent;
+  border-top: 10px solid var(--accent);
+  animation: nudge 1s steps(2, end) infinite;
+}
+.dialogue-actions { position: absolute; right: 12px; bottom: 8px; display: flex; gap: 6px; }
+
+/* 对话框旧样式退场 */
+.dialogue-box, .dialogue-head, .footer-rail, .footer-party, .footer-stats, .footer-buttons { display: none; }
+
+/* ------------------------------------------------------- 响应式微调 */
+@media (max-width: 860px) {
+  .pokecenter { width: 140px; height: 96px; bottom: 26%; }
+  .pc-wall { top: 30px; }
+  .pc-roof { height: 34px; }
+  .pc-window { display: none; }
+  .repo-bar { flex-wrap: wrap; }
+  .repo-bar h2 { white-space: normal; }
+  .bubble-sprite { width: calc(22 * 3px); height: calc(22 * 3px); }
+  .speech-bubble { padding-right: 16px; padding-bottom: 40px; }
+  .dialogue-next { bottom: 12px; }
+}
+@media (max-width: 520px) {
+  .star-chip { display: none; }
+  .heat-months { margin-left: 18px; }
+}

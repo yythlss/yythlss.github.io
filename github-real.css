@@ -1,0 +1,283 @@
+/* =====================================================================
+   github-real.css — 「去像素化」真实风格覆盖层（最后加载，优先级最高）
+   ---------------------------------------------------------------------
+   横幅直接使用参考图裁剪（assets/banner.jpg），配色从横幅主色提取：
+   天蓝 #1664d3 / 深绿 #2c5a2b / 米黄 #e9d59e / 木色 #a79164
+   UI 改为圆润、细边框、柔和阴影的现代插画风。
+   ===================================================================== */
+
+/* ------------------------------------------------------- 字体与基础 */
+body.gba-body {
+  font-family: "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  background: linear-gradient(180deg, #e9f2fb 0%, #e6efdb 34%, #dfe9d2 100%);
+  -webkit-font-smoothing: antialiased;
+  font-smooth: auto;
+  text-rendering: auto;
+}
+
+/* 去掉像素栅格与扫描线 */
+.pixel-grid { display: none; }
+.game-root::after { content: none; }
+
+/* ------------------------------------------------------- 掌机外壳扁平化 */
+.console-frame {
+  background: none;
+  padding: 0;
+  clip-path: none;
+  box-shadow: none;
+}
+.console-screen {
+  background: none;
+  padding: 0;
+  clip-path: none;
+}
+.console-meta { display: none; }
+.game-root {
+  border-radius: 16px;
+  border: 1px solid #c6d7b4;
+  box-shadow: 0 12px 32px rgba(44, 90, 43, .16);
+}
+
+/* ------------------------------------------------------- 顶部横幅（参考图裁剪） */
+.scene {
+  height: auto;
+  border-bottom: none;
+  background: #fff;
+}
+.scene-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ------------------------------------------------------- 导航栏 */
+.gba-nav {
+  padding: 10px 16px;
+  background: linear-gradient(#f7faf0, #eaf2dc);
+  border-bottom: 1px solid #c9dabb;
+  box-shadow: none;
+}
+.nav-logo {
+  width: 36px; height: 36px;
+  background: #24292f;
+  border: none;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.nav-tab {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  color: #4a5d42;
+}
+.nav-tab:hover {
+  background: #fff;
+  border-color: #d3e1c2;
+  color: #2c3a28;
+}
+.nav-tab.is-active {
+  background: #fff;
+  color: #243020;
+  border-color: #c9dabb;
+  box-shadow: 0 1px 3px rgba(44, 90, 43, .12);
+}
+.nav-search input {
+  border-radius: 8px;
+  border: 1px solid #c9dabb;
+  background: #fff;
+  box-shadow: none;
+  height: 32px;
+}
+.search-key { border-radius: 4px; border: 1px solid #d3e1c2; background: #f2f7e8; }
+.star-chip {
+  border-radius: 999px;
+  border: 1px solid #d9b53a;
+  box-shadow: none;
+  background: linear-gradient(#ffe9a3, #f7cf4e);
+}
+.user-chip { border-radius: 999px; border: 1px solid #c9dabb; background: #fff; }
+
+/* ------------------------------------------------------- 主区背景 */
+.gba-main {
+  background: #edf3e2;
+  gap: 16px;
+  padding: 16px;
+}
+
+/* ------------------------------------------------------- 面板 */
+.panel {
+  border-radius: 14px;
+  clip-path: none;
+  border: 1px solid #cfdec2;
+  box-shadow: 0 2px 10px rgba(44, 90, 43, .08);
+  background: #fdfef9;
+}
+.panel-bar {
+  border-radius: 13px 13px 0 0;
+  background: linear-gradient(#f0f6e4, #e2eece);
+  border-bottom: 1px solid #cfdec2;
+  box-shadow: none;
+}
+.panel-body { background: #fdfef9; border-radius: 0 0 13px 13px; }
+.panel-bar h2 { font-size: 15px; color: #33452d; text-shadow: none; }
+.panel-hint { color: #7d8f70; }
+.pill { border-radius: 999px; border: 1px solid #c3d4ae; background: #f2f7e8; }
+
+/* ------------------------------------------------------- 按钮 */
+.btn {
+  border-radius: 8px;
+  border: 1px solid #b9cfa6;
+  box-shadow: 0 1px 2px rgba(44, 90, 43, .14);
+  background: linear-gradient(#ffffff, #eef5e2);
+}
+.btn:hover { background: linear-gradient(#ffffff, #e5f0d4); }
+.btn:active { transform: translateY(1px); box-shadow: none; }
+.btn[aria-pressed="true"] {
+  background: linear-gradient(#ffe9a3, #f2c83c);
+  border-color: #d9b53a;
+  color: #4a370f;
+  border-radius: 8px;
+}
+.btn-add {
+  border-radius: 8px;
+  border: 1px solid #c3d4ae;
+  box-shadow: none;
+  background: #fff;
+}
+.btn-new-repo {
+  border-radius: 8px;
+  border: 1px solid #d9b53a;
+  box-shadow: 0 1px 2px rgba(120, 90, 20, .18);
+  background: linear-gradient(#ffe9a3, #f7cf4e);
+}
+.btn-new-repo:hover { background: linear-gradient(#fff3c4, #ffd76e); }
+.btn-new-repo:active { transform: translateY(1px); box-shadow: none; }
+
+/* ------------------------------------------------------- 左栏仓库列表 */
+.repo-search input {
+  border-radius: 8px;
+  border: 1px solid #c9dabb;
+  background: #fff;
+  box-shadow: none;
+  height: 30px;
+}
+.repo-item {
+  border-radius: 8px;
+  border: 1px solid #d5e3c4;
+  border-left: 3px solid #9dba85;
+  background: #fff;
+  box-shadow: none;
+}
+.repo-item:hover { background: #f6faf0; border-color: #c3d4ae; border-left-color: #7ba463; }
+.repo-item.is-active {
+  background: #f2fae4;
+  border-color: #a9c48e;
+  border-left-color: #3f8f3b;
+  box-shadow: 0 1px 3px rgba(63, 143, 59, .18);
+}
+.repo-item .repo-name { font-size: 12.5px; color: #35603a; }
+
+/* ------------------------------------------------------- 中栏仓库详情 */
+.repo-bar { padding: 10px 14px; }
+.repo-bar h2 { font-size: 16px; color: #243020; }
+.repo-detail-desc { color: #4a5d42; }
+.repo-detail .tag-stack { gap: 6px; }
+.tag {
+  border-radius: 999px;
+  border: 1px solid #bfd4e8;
+  background: #eef4fb;
+  color: #2b5aa6;
+  font-size: 11px;
+}
+.repo-tabs { border-bottom: 1px solid #d5e3c4; }
+.repo-tab {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #4a5d42;
+  box-shadow: none;
+}
+.repo-tab:hover { background: #f2f7e8; }
+.repo-tab.is-active {
+  background: #fff;
+  border-color: #c9dabb;
+  color: #243020;
+  box-shadow: 0 1px 3px rgba(44, 90, 43, .12);
+}
+.branch-chip { border-radius: 8px; border: 1px solid #c9dabb; background: #f2f7e8; }
+.file-list {
+  border: 1px solid #d5e3c4;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(44, 90, 43, .06);
+}
+.file-row {
+  background: #fff;
+  border-bottom: 1px solid #e7efda;
+  font-size: 13px;
+}
+.file-row:last-child { border-bottom: 0; }
+.file-row:hover { background: #f6faf0; }
+.readme-card {
+  border-radius: 10px;
+  border: 1px solid #d5e3c4;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(44, 90, 43, .06);
+}
+.readme-badge { border-radius: 999px; border: 1px solid #c3d4ae; background: #f2f7e8; }
+.issue-list li, .action-list li {
+  border-radius: 8px;
+  border: 1px solid #d5e3c4;
+  background: #fff;
+}
+.dot-lang { border-radius: 50%; border: 1px solid rgba(34, 48, 31, .25); }
+
+/* ------------------------------------------------------- 右栏：热力图 */
+.cell { border-radius: 2px; box-shadow: none; }
+.heatmap-legend { gap: 3px; }
+.grass-year { color: #6a7f5c; font-size: 12px; }
+.heat-months { margin-left: 18px; }
+
+/* 动态列表 */
+.act-time { color: #8a9b7d; }
+
+/* ------------------------------------------------------- 底部 */
+.gba-footer {
+  background: linear-gradient(#f2f7e8, #e2eed2);
+  border-top: 1px solid #c9dabb;
+}
+.footer-strip {
+  background: linear-gradient(#8cc863, #6fae4f);
+  border-bottom: none;
+}
+.speech-bubble {
+  border-radius: 14px;
+  clip-path: none;
+  border: 2px solid #9db389;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(44, 90, 43, .12);
+}
+.speech-bubble::before { border-right-color: #9db389; }
+.speech-bubble::after { border-right-color: #fff; }
+.dialogue-text { color: #33452d; }
+.gba-credit { color: #7d8f70; }
+.gba-credit a { color: #35603a; }
+
+/* 悬停提示气泡 */
+.sprite-tip {
+  border-radius: 6px;
+  border: 1px solid #9db389;
+  font-family: inherit;
+  box-shadow: 0 2px 6px rgba(44, 90, 43, .2);
+}
+
+/* ------------------------------------------------------- 响应式 */
+@media (max-width: 860px) {
+  .game-root { border-radius: 10px; }
+  .panel { border-radius: 10px; }
+  .panel-bar, .panel-body { border-radius: 9px 9px 0 0; }
+  .panel-body { border-radius: 0 0 9px 9px; }
+}
