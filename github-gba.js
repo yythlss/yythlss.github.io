@@ -226,6 +226,13 @@
       readme: { lede: '用 HTML / CSS / JavaScript 搭的界面，把 GitHub 主页重绘成宝可梦风格的野外画面。', list: ['横幅取自参考图', 'GitHub API 实时数据', '贡献热力图 + 对话气泡'] },
       issues: [], pulls: [],
       actions: [{ name: '部署 Pages deploy', state: 'pass', time: '3 天前' }]
+    },
+    { name: 'rsoc-rtt', sprite: 'squirtle', lang: 'C', color: '#555555',
+      desc: '2026 RT-Thread 暑期夏令营仓库。',
+      stars: 0, forks: 0, watchers: 0, commits: 1, branches: 1, license: '无许可证',
+      updated: '更新于刚刚', topics: ['rt-thread', 'rsoc'],
+      url: 'https://github.com/yythlss/rsoc-rtt',
+      files: null, readme: null, issues: [], pulls: [], actions: []
     }
   ];
 
@@ -470,11 +477,13 @@
     $('#stat-license').textContent = repo.license;
     $('#fork-count').textContent = repo.forks;
 
-    // 文件列表：实时数据 > 内置数据 > 占位
+    // 文件列表：实时数据 > 内置数据 > 占位（实时仓等待拉取；兜底仓提示离线）
     var files = repo._files || repo.filesCurated;
     $('#file-list').innerHTML = files
       ? files.map(fileRowHtml).join('')
-      : '<li class="file-row"><span class="file-icon"></span><span class="file-name">正在从 GitHub 拉取文件列表…</span><span class="file-update"></span><span class="file-time"></span></li>';
+      : repo.live
+        ? '<li class="file-row"><span class="file-icon"></span><span class="file-name">正在从 GitHub 拉取文件列表…</span><span class="file-update"></span><span class="file-time"></span></li>'
+        : '<li class="file-row"><span class="file-icon"></span><span class="file-name">（离线兜底模式：实时文件列表暂不可用，刷新页面或稍后重试）</span><span class="file-update"></span><span class="file-time"></span></li>';
 
     // README：实时数据 > 内置数据
     var readme = repo._readme || repo.readmeCurated;
