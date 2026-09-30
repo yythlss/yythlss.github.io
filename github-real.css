@@ -244,6 +244,42 @@ body.gba-body {
 /* 动态列表 */
 .act-time { color: #8a9b7d; }
 
+/* ------------------------------------------------------- 数据状态徽章
+   如实标注当前数据的来源：实时 / 缓存 / 配额用尽 / 离线 */
+.live-badge {
+  margin-left: auto;
+  margin-right: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: nowrap;
+  border: 1px solid #c3d4ae;
+  background: #f2f7e8;
+  color: #5d7050;
+}
+.live-badge::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  background: #9aa88c;
+}
+.live-badge.is-live { border-color: #9ed09a; background: #eef8ea; color: #2f6b31; }
+.live-badge.is-live::before { background: #4caf50; }
+.live-badge.is-cache { border-color: #dcd0a4; background: #fbf6e4; color: #7a6a2f; }
+.live-badge.is-cache::before { background: #e0b93c; }
+.live-badge.is-quota { border-color: #e8c48c; background: #fdf1de; color: #8a5a1e; }
+.live-badge.is-quota::before { background: #f08a24; }
+.live-badge.is-offline { border-color: #e0b3ac; background: #fbeceb; color: #8f3c33; }
+.live-badge.is-offline::before { background: #d9534f; }
+
+/* 热力图兜底：ghchart 的真实贡献图 */
+.heatmap-img { display: block; width: 100%; max-width: 100%; height: auto; }
+
 /* ------------------------------------------------------- 底部 */
 .gba-footer {
   background: linear-gradient(#f2f7e8, #e2eed2);

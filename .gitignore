@@ -1,0 +1,13 @@
+# 本地开发辅助产物（截图、脚本、临时目录），不进仓库也不部署
+.pixel-tools/
+.workbuddy/
+.codebuddy/
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+
+# 依赖与日志
+node_modules/
+npm-debug.log*
+*.log

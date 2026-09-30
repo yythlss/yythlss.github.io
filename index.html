@@ -6,6 +6,23 @@
 <meta name="description" content="yythlss 的 GitHub 主页：宝可梦像素风格重绘，木质招牌、野外场景、浅绿色像素面板、贡献热力图与宝可梦精灵，展示嵌入式系统、智能硬件与电子电路项目。">
 <meta name="theme-color" content="#3a7d34">
 <title>yythlss | GitHub · 宝可梦像素风格主页</title>
+
+<!-- 社交分享卡片（微信 / QQ / Twitter 预览） -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="yythlss · GitHub">
+<meta property="og:title" content="yythlss | GitHub · 宝可梦像素风格主页">
+<meta property="og:description" content="嵌入式系统、智能硬件与电子电路项目主页，实时展示 GitHub 仓库、贡献热力图与动态。">
+<meta property="og:url" content="https://yythlss.github.io/">
+<meta property="og:image" content="https://yythlss.github.io/assets/banner.jpg">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="yythlss | GitHub · 宝可梦像素风格主页">
+<meta name="twitter:description" content="嵌入式系统、智能硬件与电子电路项目主页，实时展示 GitHub 仓库、贡献热力图与动态。">
+<meta name="twitter:image" content="https://yythlss.github.io/assets/banner.jpg">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><clipPath id='c'><circle cx='16' cy='16' r='15'/></clipPath></defs><g clip-path='url(%23c)'><rect width='32' height='32' fill='%23fdfdf8'/><rect y='16' width='32' height='16' fill='%23e0453a'/><rect y='14' width='32' height='4' fill='%232b2b26'/></g><circle cx='16' cy='16' r='5.5' fill='%23fdfdf8' stroke='%232b2b26' stroke-width='2'/><circle cx='16' cy='16' r='2' fill='%232b2b26'/><circle cx='16' cy='16' r='15' fill='none' stroke='%232b2b26' stroke-width='2'/></svg>">
+<link rel="preconnect" href="https://api.github.com" crossorigin>
+<link rel="dns-prefetch" href="https://api.github.com">
 <link rel="stylesheet" href="github-gba.css">
 <link rel="stylesheet" href="github-firered.css">
 <link rel="stylesheet" href="github-real.css">
@@ -33,7 +50,7 @@
           <span class="search-key">/</span>
         </form>
         <div class="nav-user">
-          <span class="star-chip" title="全部公开仓库共获得 9 颗星标"><span class="icon-star" aria-hidden="true"></span>9</span>
+          <span class="star-chip" title="全部公开仓库共获得 14 颗星标（离线快照）"><span class="icon-star" aria-hidden="true"></span>14</span>
           <span class="trainer-chip" data-sprite="trainerFront" data-label="yythlss" data-scale="2"></span>
           <span class="user-chip">
             <span class="user-name">yythlss</span>
@@ -49,6 +66,7 @@
           <div class="panel-bar">
             <span class="pokeball-mark" data-sprite="pokeball" data-label="精灵球" data-scale="2"></span>
             <h2 id="repos-title">我的仓库</h2>
+            <span class="live-badge is-loading" id="live-status" role="status" aria-live="polite">正在获取实时数据…</span>
             <button class="btn-add" type="button" aria-label="新建仓库">＋</button>
           </div>
           <div class="panel-body">
@@ -57,15 +75,52 @@
               <span class="search-icon" aria-hidden="true"></span>
             </div>
 
+            <!-- 静态骨架：与内置兜底数据一致的 13 个真实仓库（2026-09-30 快照），
+                 JS 拿到实时数据后会整体重建 -->
             <ul class="repo-list" id="repo-list">
-              <li><a class="repo-item is-active" href="#repo-smart-home" data-repo="Smart-Home-Controller">
-                <span class="repo-ic" data-sprite="pikachu" data-scale="1"></span>
-                <span class="repo-name">Smart-Home-Controller</span>
+              <li><a class="repo-item is-active" href="#repo-farm-game" data-repo="farm-game">
+                <span class="repo-ic" data-sprite="bulbasaur" data-scale="1"></span>
+                <span class="repo-name">farm-game</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-keep-track" data-repo="keep-track-of-expense">
+                <span class="repo-ic" data-sprite="eevee" data-scale="1"></span>
+                <span class="repo-name">keep-track-of-expense</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-d12x" data-repo="d12x">
+                <span class="repo-ic" data-sprite="charmander" data-scale="1"></span>
+                <span class="repo-name">d12x</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-homepage" data-repo="yythlss.github.io">
+                <span class="repo-ic" data-sprite="berry" data-scale="1"></span>
+                <span class="repo-name">yythlss.github.io</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-rsoc-rtt" data-repo="rsoc-rtt">
+                <span class="repo-ic" data-sprite="gengar" data-scale="1"></span>
+                <span class="repo-name">rsoc-rtt</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-protovibe" data-repo="ProtoVibe-Agent">
+                <span class="repo-ic" data-sprite="pokeball" data-scale="1"></span>
+                <span class="repo-name">ProtoVibe-Agent</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-profile" data-repo="yythlss">
+                <span class="repo-ic" data-sprite="trainerFront" data-scale="1"></span>
+                <span class="repo-name">yythlss</span>
                 <span class="repo-star">★</span>
               </a></li>
               <li><a class="repo-item" href="#repo-warehouse" data-repo="FreeRTOS-Warehouse-Count-Access-System">
                 <span class="repo-ic" data-sprite="squirtle" data-scale="1"></span>
                 <span class="repo-name">FreeRTOS-Warehouse-Count-Access-System</span>
+                <span class="repo-star">★</span>
+              </a></li>
+              <li><a class="repo-item" href="#repo-responder" data-repo="Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits">
+                <span class="repo-ic" data-sprite="gengar" data-scale="1"></span>
+                <span class="repo-name">Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits</span>
                 <span class="repo-star">★</span>
               </a></li>
               <li><a class="repo-item" href="#repo-desktop-pet" data-repo="Smart-Desktop-Pet">
@@ -78,9 +133,9 @@
                 <span class="repo-name">Temperature-Limit-Alarm-Based-on-Analog-Electronics</span>
                 <span class="repo-star">★</span>
               </a></li>
-              <li><a class="repo-item" href="#repo-responder" data-repo="Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits">
-                <span class="repo-ic" data-sprite="gengar" data-scale="1"></span>
-                <span class="repo-name">Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits</span>
+              <li><a class="repo-item" href="#repo-smart-home" data-repo="Smart-Home-Controller">
+                <span class="repo-ic" data-sprite="pikachu" data-scale="1"></span>
+                <span class="repo-name">Smart-Home-Controller</span>
                 <span class="repo-star">★</span>
               </a></li>
               <li><a class="repo-item" href="#repo-memostudy" data-repo="MemoStudy-Agent">
@@ -88,19 +143,9 @@
                 <span class="repo-name">MemoStudy-Agent</span>
                 <span class="repo-star">★</span>
               </a></li>
-              <li><a class="repo-item" href="#repo-protovibe" data-repo="ProtoVibe-Agent">
-                <span class="repo-ic" data-sprite="pokeball" data-scale="1"></span>
-                <span class="repo-name">ProtoVibe-Agent</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-homepage" data-repo="yythlss.github.io">
-                <span class="repo-ic" data-sprite="berry" data-scale="1"></span>
-                <span class="repo-name">yythlss.github.io</span>
-                <span class="repo-star">★</span>
-              </a></li>
             </ul>
 
-            <p class="panel-hint" id="repo-hint">8 个公开仓库 · 最近更新 2 天前</p>
+            <p class="panel-hint" id="repo-hint">13 个公开仓库 · 正在获取实时数据…</p>
 
             <button class="btn-new-repo" type="button">
               <span data-sprite="pikachu" data-scale="1"></span>新建仓库
@@ -111,25 +156,25 @@
         <!-- ---------------------------------------------------- 中：所选仓库详情 -->
         <section class="panel panel-repo" id="overview" aria-labelledby="repo-title">
           <div class="panel-bar repo-bar">
-            <span class="repo-bar-sprite" id="repo-bar-sprite" data-sprite="pikachu" data-label="皮卡丘" data-scale="2"></span>
-            <h2 id="repo-title">yythlss / Smart-Home-Controller</h2>
+            <span class="repo-bar-sprite" id="repo-bar-sprite" data-sprite="bulbasaur" data-label="妙蛙种子" data-scale="2"></span>
+            <h2 id="repo-title">yythlss / farm-game</h2>
             <span class="pill">公开</span>
             <div class="panel-bar-actions">
-              <button class="btn btn-small" type="button">关注 <span class="count">3</span></button>
-              <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">42</span></button>
-              <button class="btn btn-small" type="button">⎇ 复刻 <span class="count" id="fork-count">6</span></button>
+              <button class="btn btn-small" type="button">关注 <span class="count">1</span></button>
+              <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">1</span></button>
+              <button class="btn btn-small" type="button">⎇ 复刻 <span class="count" id="fork-count">0</span></button>
             </div>
           </div>
           <div class="panel-body repo-detail">
-            <p class="repo-detail-desc" id="repo-desc">ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、串口屏与微信小程序。</p>
+            <p class="repo-detail-desc" id="repo-desc">AI 种田经营小游戏：规则引擎负责公平结算，大模型负责让每一天都不重样。</p>
             <div class="tag-stack" id="repo-topics">
-              <span class="tag">esp32</span><span class="tag">smart-home</span><span class="tag">iot</span>
+              <span class="tag">python</span><span class="tag">game</span><span class="tag">llm</span>
             </div>
 
             <div class="repo-tabs" id="repo-tabs">
               <button class="repo-tab is-active" type="button" data-tab="code">代码</button>
-              <button class="repo-tab" type="button" data-tab="issues">议题 <span class="count" id="tab-issues">2</span></button>
-              <button class="repo-tab" type="button" data-tab="pulls">拉取请求 <span class="count" id="tab-pulls">1</span></button>
+              <button class="repo-tab" type="button" data-tab="issues">议题 <span class="count" id="tab-issues">0</span></button>
+              <button class="repo-tab" type="button" data-tab="pulls">拉取请求 <span class="count" id="tab-pulls">·</span></button>
               <button class="repo-tab" type="button" data-tab="actions">Actions</button>
               <button class="repo-tab" type="button" data-tab="wiki">Wiki</button>
             </div>
@@ -137,9 +182,9 @@
             <div class="repo-tabpanel is-active" data-panel="code">
               <div class="repo-toolbar">
                 <span class="branch-chip" id="branch-chip">⎇ main</span>
-                <span class="m">▰ 提交 <b id="stat-commits">128</b></span>
-                <span class="m">分支 <b id="stat-branches">2</b></span>
-                <span class="toolbar-right" id="stat-license">MIT 许可证</span>
+                <span class="m">▰ 提交 <b id="stat-commits">—</b></span>
+                <span class="m">分支 <b id="stat-branches">—</b></span>
+                <span class="toolbar-right" id="stat-license">无许可证</span>
               </div>
               <ul class="file-list" id="file-list"></ul>
               <div class="readme-card">
@@ -190,7 +235,7 @@
             <div class="panel-bar">
               <span class="pokeball-mark" data-sprite="pokeball" data-label="精灵球" data-scale="2"></span>
               <h2 id="grass-title">贡献图</h2>
-              <span class="grass-year" id="grass-year">1,247 次贡献</span>
+              <span class="grass-year" id="grass-year">贡献数据加载中…</span>
             </div>
             <div class="panel-body">
               <div class="heatmap-layout">
@@ -199,9 +244,8 @@
                   <div class="heatmap" id="heatmap" role="img" aria-label="贡献热力图"></div>
                 </div>
               </div>
-              <div class="heat-months" aria-hidden="true">
-                <span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span><span>9月</span>
-              </div>
+              <!-- 月份标签由 JS 按当前日期生成，不再写死 -->
+              <div class="heat-months" aria-hidden="true"></div>
               <div class="heatmap-legend">
                 <span>少</span>
                 <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i>
@@ -216,13 +260,9 @@
               <h2 id="activity-title">动态</h2>
             </div>
             <div class="panel-body">
+              <!-- 真实动态由 events API + 仓库推送时间生成，这里只是加载中的占位 -->
               <ul class="activity-list" id="activity-list">
-                <li><span class="act-sprite" data-sprite="pikachu" data-scale="2"></span><p>推送了 3 次提交到 <b>Smart-Home-Controller</b><span class="act-time">2 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="squirtle" data-scale="2"></span><p>创建了仓库 <b>yythlss.github.io</b><span class="act-time">3 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="eevee" data-scale="2"></span><p>合并了拉取请求 <b>#12 · 优化语音唤醒</b><span class="act-time">4 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="gengar" data-scale="2"></span><p>关闭了议题 <b>#8 · 串口屏偶发花屏</b><span class="act-time">5 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="bulbasaur" data-scale="2"></span><p>给 <b>MemoStudy-Agent</b> 点了星标<span class="act-time">1 周前</span></p></li>
-                <li><span class="act-sprite" data-sprite="charmander" data-scale="2"></span><p>发布了 <b>v1.2.0</b> 版本<span class="act-time">2 周前</span></p></li>
+                <li><span class="act-sprite" data-sprite="pokeball" data-scale="2"></span><p>正在获取真实动态…<span class="act-time">—</span></p></li>
               </ul>
             </div>
           </section>

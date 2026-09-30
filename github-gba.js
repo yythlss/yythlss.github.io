@@ -2,12 +2,20 @@
    github-gba.js — 页面行为：精灵挂载、贡献热力图、仓库详情切换、
    仓库标签页、左栏搜索过滤、杰尼龟对话气泡
    ---------------------------------------------------------------------
-   数据来源（双层）：
+   数据来源（三层，逐级降级，并在界面上如实标注当前用的是哪一层）：
    1. GitHub REST API（实时）：仓库列表 / 仓库详情 / 文件列表 / README /
       议题 / 拉取请求 / 公开动态 —— 用户 yythlss
-   2. 本地内置数据（兜底）：API 不可用或限流时页面照常工作
-   贡献热力图来自 github-contributions-api.jogruber.de，失败则回退随机图
-   注意：未认证的 API 限额 60 次/小时，文件/README/议题按需懒加载并缓存
+   2. 缓存：localStorage + ETag 条件请求（304 不消耗配额），标注缓存时间
+   3. 本地内置数据（兜底）：明确标注「离线数据」，不再假装实时
+
+   为什么之前看起来"不更新"：未认证 API 只有 60 次/小时/IP，
+   而一次访问最多要发 11 个请求 → 配额很快耗尽，之后全部静默失败，
+   页面退回写死的内置数据。现在的做法：
+   - 所有请求走缓存（列表 10 分钟、详情 30 分钟、热力图 6 小时）
+   - 带 If-None-Match，命中 304 不消耗配额
+   - 读取 X-RateLimit-Remaining，配额耗尽后不再发新请求，直接用缓存
+   - 文件 / README / 议题 / PR 只在切到对应标签页时才请求
+   - 状态徽章实时显示：实时 / 缓存 / 配额用尽 / 离线
    ===================================================================== */
 (function () {
   'use strict';
@@ -42,32 +50,164 @@
     return Math.floor(diff / 31536000) + ' 年前';
   }
 
-  function ghFetch(path, raw) {
-    // 12 秒超时：api.github.com 在部分网络下会"挂住"（既不成功也不失败），必须主动中断
+  /* ------------------------------------------------- 缓存（localStorage）
+     私有模式 / 禁用存储时 localStorage 会抛错，全部包 try-catch，失败即不缓存 */
+  var CACHE_PREFIX = 'gba.v2.';
+  var TTL = { list: 10 * 60 * 1000, detail: 30 * 60 * 1000, heat: 6 * 60 * 60 * 1000, long: 6 * 60 * 60 * 1000 };
+
+  function cacheGet(key) {
+    try {
+      var raw = localStorage.getItem(CACHE_PREFIX + key);
+      if (!raw) return null;
+      var v = JSON.parse(raw);
+      return (v && typeof v === 'object' && 'body' in v) ? v : null;
+    } catch (e) { return null; }
+  }
+  function cacheSet(key, value) {
+    try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  /* ------------------------------------------------- 配额与状态
+     未认证 API：60 次/小时/IP。剩余为 0 时停止发新请求，改用缓存兜底 */
+  var quota = { remaining: -1, resetAt: 0, limited: false };
+  var feed = { live: 0, cache: 0, fail: 0, liveAt: 0, cacheAt: 0 };
+
+  function noteQuota(headers) {
+    if (!headers || typeof headers.get !== 'function') return;
+    var rem = headers.get('X-RateLimit-Remaining');
+    var reset = headers.get('X-RateLimit-Reset');
+    if (rem !== null) {
+      quota.remaining = parseInt(rem, 10);
+      if (quota.remaining <= 0) quota.limited = true;
+    }
+    if (reset !== null) quota.resetAt = parseInt(reset, 10) * 1000;
+    refreshStatus();
+  }
+
+  function quotaBlocked() {
+    if (!quota.limited) return false;
+    if (quota.resetAt && Date.now() > quota.resetAt) { // 到点自动解除
+      quota.limited = false;
+      quota.remaining = -1;
+      return false;
+    }
+    return true;
+  }
+
+  function servedLive() {
+    feed.live++; feed.liveAt = Date.now();
+    refreshStatus();
+  }
+  function servedCache(at) {
+    feed.cache++;
+    if (at) feed.cacheAt = Math.max(feed.cacheAt || 0, at);
+    refreshStatus();
+  }
+  function servedFail() { feed.fail++; refreshStatus(); }
+
+  function clock(ts) {
+    if (!ts) return '—';
+    var d = new Date(ts);
+    var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    var sameDay = new Date().toDateString() === d.toDateString();
+    return sameDay ? hm : (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hm;
+  }
+
+  /* 状态徽章：如实告诉访问者当前看到的是实时数据还是缓存/离线数据 */
+  function refreshStatus() {
+    var el = $('#live-status');
+    if (!el) return;
+    var kind, text;
+    if (feed.live > 0) {
+      kind = 'live';
+      text = 'GitHub API 实时 · ' + clock(feed.liveAt);
+    } else if (feed.cache > 0) {
+      kind = quota.limited ? 'quota' : 'cache';
+      text = (quota.limited ? 'API 配额用尽，' + clock(quota.resetAt) + ' 恢复' : '网络较慢，已降级') +
+        ' · 显示 ' + clock(feed.cacheAt) + ' 的数据';
+    } else if (feed.fail > 0) {
+      kind = 'offline';
+      text = '无法连接 GitHub API，显示离线数据';
+    } else {
+      kind = 'loading';
+      text = '正在获取实时数据…';
+    }
+    el.className = 'live-badge is-' + kind;
+    el.textContent = text;
+    el.title = text + '（未认证 API 限额 60 次/小时/IP）';
+  }
+
+  /* ------------------------------------------------- 带超时与缓存的请求 */
+  function timedFetch(url, init, ms) {
+    // api.github.com 在部分网络下会"挂住"（既不成功也不失败），必须主动中断
     var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : 0;
-    return fetch('https://api.github.com' + path, {
-      headers: raw
-        ? { 'Accept': 'application/vnd.github.raw' }
-        : { 'Accept': 'application/vnd.github+json' },
-      signal: ctrl ? ctrl.signal : undefined
-    }).then(
-      function (r) {
-        clearTimeout(timer);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return raw ? r.text() : r.json();
-      },
-      function (e) {
-        clearTimeout(timer);
-        throw e;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, ms || 8000) : 0;
+    var opt = init || {};
+    if (ctrl) opt.signal = ctrl.signal;
+    return fetch(url, opt).then(function (r) { clearTimeout(timer); return r; },
+      function (e) { clearTimeout(timer); throw e; });
+  }
+
+  /* 通用缓存请求：handler(res) 把响应转成要缓存的值（JSON / 文本 / 数字） */
+  function cachedFetch(url, key, ttl, handler, accept) {
+    var cached = cacheGet(key);
+    if (cached && Date.now() - cached.t < ttl) {
+      servedCache(cached.t);
+      return Promise.resolve(cached.body);
+    }
+    if (quotaBlocked()) {
+      if (cached) { servedCache(cached.t); return Promise.resolve(cached.body); }
+      return Promise.reject(new Error('QUOTA'));
+    }
+    var headers = { 'Accept': accept || 'application/vnd.github+json' };
+    if (cached && cached.etag) headers['If-None-Match'] = cached.etag;
+    return timedFetch(url, { headers: headers }, 8000).then(function (r) {
+      noteQuota(r.headers);
+      if (r.status === 304 && cached) {           // 内容未变：不消耗配额
+        cached.t = Date.now();
+        cacheSet(key, cached);
+        servedCache(cached.t);
+        return cached.body;
       }
-    );
+      if (r.status === 403 || r.status === 429) {  // 限流
+        quota.limited = true;
+        noteQuota(r.headers);
+        if (cached) { servedCache(cached.t); return cached.body; }
+        throw new Error('QUOTA');
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return handler(r).then(function (body) {
+        cacheSet(key, { t: Date.now(), etag: r.headers.get('ETag') || '', body: body });
+        servedLive();
+        return body;
+      });
+    });
+  }
+
+  /* GitHub API：opts = { raw, key, ttl }（也兼容旧的 ghFetch(path, true)） */
+  function ghFetch(path, opts) {
+    var o = (opts === true) ? { raw: true } : (opts || {});
+    var base = 'https://api.github.com' + path;
+    var key = o.key || ((o.raw ? 'raw:' : 'json:') + path);
+    var ttl = o.ttl || (o.raw ? TTL.detail : TTL.list);
+    return cachedFetch(base, key, ttl, function (r) {
+      return o.raw ? r.text() : r.json();
+    }, o.raw ? 'application/vnd.github.raw' : 'application/vnd.github+json');
+  }
+
+  /* 靠 Link 头取总数（只取 1 条，最省配额），结果同样进缓存 */
+  function ghCount(path, key) {
+    return cachedFetch('https://api.github.com' + path, key, TTL.detail, function (r) {
+      var m = /[?&]page=(\d+)>;\s*rel="last"/.exec(r.headers.get('Link') || '');
+      return Promise.resolve(m ? +m[1] : 1);
+    });
   }
 
   /* --------------------------------------------------- 本地兜底数据 + 精灵映射 */
   var SPRITE_NAMES = {
     pikachu: '皮卡丘', squirtle: '杰尼龟', eevee: '伊布', bulbasaur: '妙蛙种子',
-    charmander: '小火龙', gengar: '耿鬼', pokeball: '精灵球', berry: '树果'
+    charmander: '小火龙', gengar: '耿鬼', pokeball: '精灵球', berry: '树果',
+    trainerFront: '训练家'
   };
 
   var LANG_SPRITE = {
@@ -83,151 +223,190 @@
     'Rust': '#dea584', 'Arduino': '#bd79d1', 'Multisim': '#f69e1d'
   };
 
+  /* 内置兜底数据：2026-09-30 从 GitHub API 抓的真实快照
+     仅在「配额用尽 + 无缓存 + 网络不通」时显示，界面会标注为离线数据
+     星标 / 复刻 / 语言 / 默认分支均为真实值；commits、branches 未知故留空（显示 —） */
   var REPOS = [
-    { name: 'Smart-Home-Controller', sprite: 'pikachu', lang: 'C++', color: '#f34b7d',
-      desc: 'ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、串口屏与微信小程序。',
-      stars: 42, forks: 6, watchers: 3, commits: 128, branches: 2, license: 'MIT 许可证',
-      updated: '更新于 2 天前', topics: ['esp32-s3', 'smart-home', 'iot', 'xiaozhi-ai', 'wechat-miniprogram'],
-      url: 'https://github.com/yythlss/Smart-Home-Controller',
-      files: [
-        { name: '.github/', dir: true, update: '初始化 CI 工作流', time: '2 个月前' },
-        { name: 'components/', dir: true, update: 'feat: 毫米波雷达存在检测', time: '2 天前' },
-        { name: 'docs/', dir: true, update: 'docs: 补充接线图', time: '3 周前' },
-        { name: 'main/', dir: true, update: 'feat: 小智 AI 语音对话', time: '2 天前' },
-        { name: 'README.md', dir: false, update: 'docs: 更新演示 GIF', time: '2 天前' }
-      ],
-      readme: {
-        lede: '基于 ESP32-S3 的智能家居中控终端：一块串口屏 + 一路语音 + 一堆传感器，把房间变成会说话的宝可梦小屋。',
-        list: [
-          '小智 AI 离线唤醒 + 流式语音对话',
-          'SHT30 温湿度 / MQ-2 烟雾 / 毫米波雷达存在检测',
-          '2.4 寸串口屏实时仪表盘，微信小程序远程查看',
-          'ESP-IDF 5.2 + FreeRTOS 双核任务调度'
-        ]
-      },
-      issues: [
-        { title: '串口屏偶发花屏，怀疑 SPI 时序', sub: '打开于 2 天前 · #12', state: 'open' }
-      ],
-      pulls: [
-        { title: 'perf: 语音队列改为环形缓冲', sub: '合并于 3 天前 · #10', state: 'merged' }
-      ],
-      actions: [
-        { name: '构建固件 build.yml', state: 'pass', time: '2 天前' },
-        { name: '发布 Release', state: 'pass', time: '1 周前' }
-      ]
-    },
-    { name: 'FreeRTOS-Warehouse-Count-Access-System', sprite: 'squirtle', lang: 'C', color: '#555555',
-      desc: '基于 STM32F103 和 FreeRTOS 的仓库人数统计与门禁系统。',
-      stars: 24, forks: 8, watchers: 2, commits: 86, branches: 1, license: 'Apache-2.0 许可证',
-      updated: '更新于 3 天前', topics: ['stm32', 'freertos', 'rtos', 'access-control'],
-      url: 'https://github.com/yythlss/FreeRTOS-Warehouse-Count-Access-System',
-      files: [
-        { name: 'Core/', dir: true, update: 'fix: 红外对射计数消抖', time: '3 天前' },
-        { name: 'Drivers/', dir: true, update: 'init: HAL 库工程', time: '2 个月前' },
-        { name: 'README.md', dir: false, update: 'docs: 任务调度说明', time: '3 天前' }
-      ],
-      readme: {
-        lede: '仓库门口的「人数守门员」：进一个人加一，出一个人减一，超限就拉警报——像杰尼龟守住自己的水枪阵地。',
-        list: ['FreeRTOS 四任务：计数 / 门禁 / 显示 / 报警', '红外对射传感器双向进出识别', 'OLED 实时显示在场人数']
-      },
-      issues: [{ title: '断电重启后计数丢失', sub: '打开于 5 天前 · #7', state: 'open' }],
-      pulls: [{ title: 'feat: 增加 RFID 刷卡开门', sub: '打开于 4 天前 · #8', state: 'pr' }],
-      actions: [{ name: '静态检查 cppcheck', state: 'pass', time: '3 天前' }]
-    },
-    { name: 'Smart-Desktop-Pet', sprite: 'eevee', lang: 'C', color: '#555555',
-      desc: '离线语音交互的桌面电子宠物，支持多种动作和情绪互动。',
-      stars: 18, forks: 4, watchers: 2, commits: 64, branches: 1, license: 'MIT 许可证',
-      updated: '更新于 1 周前', topics: ['desktop-pet', 'voice-interaction', 'stm32'],
-      url: 'https://github.com/yythlss/Smart-Desktop-Pet',
-      files: [
-        { name: 'firmware/', dir: true, update: 'feat: 摸头交互动作', time: '1 周前' },
-        { name: 'hardware/', dir: true, update: 'init: 原理图与外壳', time: '2 个月前' },
-        { name: 'README.md', dir: false, update: 'docs: 演示视频链接', time: '1 周前' }
-      ],
-      readme: {
-        lede: '一只住在你桌上的伊布：离线语音唤醒、摸头会开心、久不理会会睡觉的桌面电子宠物。',
-        list: ['离线语音识别，不联网也能互动', '六种情绪状态机', '1.54 寸 LCD 像素动画']
-      },
-      issues: [{ title: '增加「投喂」小游戏', sub: '打开于 1 周前 · #5', state: 'open' }],
-      pulls: [{ title: 'feat: 新增睡觉呼吸灯', sub: '合并于 1 周前 · #6', state: 'merged' }],
-      actions: [{ name: '构建固件', state: 'pass', time: '1 周前' }]
-    },
-    { name: 'MemoStudy-Agent', sprite: 'bulbasaur', lang: 'Python', color: '#3572A5',
-      desc: '本地优先的个人知识管理与学习助手，支持知识库问答与复盘。',
-      stars: 15, forks: 3, watchers: 2, commits: 210, branches: 3, license: 'GPL-3.0 许可证',
-      updated: '更新于 1 周前', topics: ['python', 'rag', 'knowledge-base', 'llm'],
-      url: 'https://github.com/yythlss/MemoStudy-Agent',
-      files: [
-        { name: 'src/', dir: true, update: 'feat: 混合检索重排序', time: '1 周前' },
-        { name: 'tests/', dir: true, update: 'test: 评测集覆盖 92%', time: '2 周前' },
-        { name: 'README.md', dir: false, update: 'docs: 快速上手指南', time: '1 周前' }
-      ],
-      readme: {
-        lede: '像妙蛙种子慢慢发芽一样积累知识：本地优先的 RAG 学习助手，笔记、问答、复盘一条龙。',
-        list: ['本地向量库 + BM25 混合检索', 'Markdown 笔记自动索引', '数据完全留在本机']
-      },
-      issues: [{ title: '支持 PDF 讲义导入', sub: '打开于 1 周前 · #15', state: 'open' }],
-      pulls: [{ title: 'refactor: 检索管线模块化', sub: '合并于 1 周前 · #16', state: 'merged' }],
-      actions: [{ name: '单元测试 pytest', state: 'pass', time: '1 周前' }]
-    },
-    { name: 'ProtoVibe-Agent', sprite: 'pokeball', lang: 'TypeScript', color: '#3178c6',
-      desc: '面向 AI 产品原型与交互 Agent 的结构化产品工作台。',
-      stars: 12, forks: 2, watchers: 1, commits: 156, branches: 4, license: 'MIT 许可证',
-      updated: '更新于 2 周前', topics: ['typescript', 'agent', 'prototype', 'react'],
-      url: 'https://github.com/yythlss/ProtoVibe-Agent',
-      files: [
-        { name: 'src/', dir: true, update: 'feat: 流程画布节点编排', time: '2 周前' },
-        { name: 'package.json', dir: false, update: 'chore: 依赖升级', time: '2 周前' },
-        { name: 'README.md', dir: false, update: 'docs: 架构图', time: '2 周前' }
-      ],
-      readme: {
-        lede: '收服一个想法就像投出一颗精灵球：把 AI 产品原型拆成节点，在画布上连一连就能跑。',
-        list: ['可视化 Agent 流程编排画布', '内置提示词模板与变量插槽', 'React 18 + Zustand + Vite']
-      },
-      issues: [{ title: '画布撤销/重做偶发丢步骤', sub: '打开于 2 周前 · #9', state: 'open' }],
-      pulls: [],
-      actions: [{ name: '类型检查 tsc', state: 'pass', time: '2 周前' }]
-    },
-    { name: 'Temperature-Limit-Alarm-Based-on-Analog-Electronics', sprite: 'charmander', lang: 'Multisim', color: '#f69e1d',
-      desc: 'MF58 NTC + LM358 窗口比较器 + 双 NE555 的纯模拟高低温声光报警系统。',
-      stars: 11, forks: 2, watchers: 1, commits: 38, branches: 1, license: '无许可证',
-      updated: '更新于 2 周前', topics: ['analog-electronics', 'multisim', 'ne555'],
-      url: 'https://github.com/yythlss/Temperature-Limit-Alarm-Based-on-Analog-Electronics',
-      files: [
-        { name: 'schematic/', dir: true, update: 'docs: 元件清单核对', time: '2 周前' },
-        { name: 'simulation/', dir: true, update: 'fix: 迟滞比较器阈值', time: '2 周前' },
-        { name: 'README.md', dir: false, update: 'docs: 仿真截图', time: '2 周前' }
-      ],
-      readme: { lede: '纯模拟电路课程设计：温度越界，灯亮蜂鸣器叫，没有任何单片机参与。', list: ['MF58 NTC 测温电桥', 'LM358 窗口比较器', '双 NE555 声光报警'] },
-      issues: [], pulls: [], actions: []
-    },
-    { name: 'Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits', sprite: 'gengar', lang: 'Multisim', color: '#f69e1d',
-      desc: '74LS 系列芯片实现的四路抢答、倒计时、锁存与超时报警抢答器。',
-      stars: 9, forks: 2, watchers: 1, commits: 30, branches: 1, license: '无许可证',
-      updated: '更新于 2 周前', topics: ['digital-circuits', '74ls', 'multisim'],
-      url: 'https://github.com/yythlss/Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits',
-      files: [
-        { name: 'multisim/', dir: true, update: 'feat: 主持人复位电路', time: '2 周前' },
-        { name: 'README.md', dir: false, update: 'docs: 状态转移说明', time: '2 周前' }
-      ],
-      readme: { lede: '数电课设：四只耿鬼抢答一只精灵球——74LS148 编码、74LS279 锁存、555 倒计时。', list: ['优先编码 + 锁存', '倒计时与超时报警'] },
-      issues: [], pulls: [], actions: []
-    },
+    { name: 'farm-game', sprite: 'bulbasaur', lang: 'Python', color: '#3572A5',
+      desc: 'AI 种田经营小游戏：规则引擎负责公平结算，大模型负责让每一天都不重样。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-09-30T07:29:44Z', createdAt: '2026-09-30T07:26:51Z',
+      topics: ['python', 'game', 'llm'],
+      url: 'https://github.com/yythlss/farm-game',
+      files: null,
+      readme: { lede: '30 天，把一块薄田经营成产业——规则引擎负责公平结算，大模型负责让每一天都不重样。',
+        list: ['无需下载，点击即玩', '规则引擎负责公平结算', '大模型生成每日事件'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'keep-track-of-expense', sprite: 'eevee', lang: 'Python', color: '#3572A5',
+      desc: '小账本 · 一句话记账：AI 自动识别金额、分类与日期，日历经松回看每天开销。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-09-30T07:23:51Z', createdAt: '2026-09-30T07:19:12Z',
+      topics: ['python', 'expense', 'llm'],
+      url: 'https://github.com/yythlss/keep-track-of-expense',
+      files: null,
+      readme: { lede: '说一句话就能记账，AI 帮你看懂钱包：自动识别金额、分类与日期。',
+        list: ['一句话完成记账', '日历回看每天开销', '月度看板自动统计'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'd12x', sprite: 'charmander', lang: 'C', color: '#555555',
+      desc: 'C 语言项目（仓库暂无简介）。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'start', pushedAt: '2026-09-30T01:57:52Z', createdAt: '2026-09-30T01:57:52Z',
+      topics: ['c'],
+      url: 'https://github.com/yythlss/d12x',
+      files: null,
+      readme: { lede: 'C 语言项目，仓库暂无 README。',
+        list: ['（离线数据：连接 GitHub 后显示真实 README）'] },
+      issues: [], pulls: [], actions: [] },
+
     { name: 'yythlss.github.io', sprite: 'berry', lang: 'HTML', color: '#e34c26',
       desc: '就是你现在看到的这个宝可梦风格主页。',
-      stars: 5, forks: 1, watchers: 1, commits: 52, branches: 1, license: 'MIT 许可证',
-      updated: '更新于 3 天前', topics: ['github-pages', 'css'],
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-09-29T13:50:13Z', createdAt: '2026-07-31T00:00:00Z',
+      topics: ['github-pages', 'css'],
       url: 'https://github.com/yythlss/yythlss.github.io',
       files: [
-        { name: 'assets/', dir: true, update: 'add: 横幅图', time: '3 天前' },
-        { name: 'index.html', dir: false, update: 'feat: 仓库详情布局', time: '3 天前' },
-        { name: 'sprites.js', dir: false, update: 'feat: 像素精灵数据', time: '3 天前' }
+        { name: 'assets/', dir: true, update: 'add: 横幅图', time: '离线快照' },
+        { name: 'index.html', dir: false, update: 'feat: 仓库详情布局', time: '离线快照' },
+        { name: 'sprites.js', dir: false, update: 'feat: 像素精灵数据', time: '离线快照' }
       ],
-      readme: { lede: '用 HTML / CSS / JavaScript 搭的界面，把 GitHub 主页重绘成宝可梦风格的野外画面。', list: ['横幅取自参考图', 'GitHub API 实时数据', '贡献热力图 + 对话气泡'] },
-      issues: [], pulls: [],
-      actions: [{ name: '部署 Pages deploy', state: 'pass', time: '3 天前' }]
-    }
+      readme: { lede: '用 HTML / CSS / JavaScript 搭的界面，把 GitHub 主页重绘成宝可梦风格的野外画面。',
+        list: ['横幅取自参考图', 'GitHub API 实时数据（带缓存与配额控制）', '贡献热力图 + 对话气泡'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'rsoc-rtt', sprite: 'gengar', lang: 'C', color: '#555555',
+      desc: '2026 RT-Thread 暑期夏令营仓库，含学员笔记与每日作业。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'master', pushedAt: '2026-09-29T13:34:13Z', createdAt: '2026-09-29T13:34:13Z',
+      topics: ['rt-thread', 'rtos', 'embedded'],
+      url: 'https://github.com/yythlss/rsoc-rtt',
+      files: null,
+      readme: { lede: '2026 RT-Thread 暑期夏令营学员仓库：按「年份 / 分组 / 姓名」组织笔记与作业。',
+        list: ['内核笔记与驱动笔记', '每日作业归档', '夏令营学习记录'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'ProtoVibe-Agent', sprite: 'pokeball', lang: 'TypeScript', color: '#3178c6',
+      desc: '面向 AI 产品原型与交互 Agent 的结构化产品工作台。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-08-15T14:34:24Z', createdAt: '2026-07-29T00:00:00Z',
+      topics: ['typescript', 'agent', 'prototype', 'react'],
+      url: 'https://github.com/yythlss/ProtoVibe-Agent',
+      files: [
+        { name: 'src/', dir: true, update: 'feat: 流程画布节点编排', time: '离线快照' },
+        { name: 'package.json', dir: false, update: 'chore: 依赖升级', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 架构图', time: '离线快照' }
+      ],
+      readme: { lede: '收服一个想法就像投出一颗精灵球：把 AI 产品原型拆成节点，在画布上连一连就能跑。',
+        list: ['可视化 Agent 流程编排画布', '内置提示词模板与变量插槽', 'React 18 + Zustand + Vite'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'yythlss', sprite: 'trainerFront', lang: 'Other', color: '#8b949e',
+      desc: 'GitHub 个人主页 README。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-08-09T10:54:24Z', createdAt: '2026-07-31T00:00:00Z',
+      topics: ['profile'],
+      url: 'https://github.com/yythlss/yythlss',
+      files: null,
+      readme: { lede: '武汉理工大学电子信息工程本科生，关注嵌入式系统、智能硬件与数字 / 模拟电路。',
+        list: ['精选嵌入式与硬件项目', '技术栈与当前方向', '联系方式'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'FreeRTOS-Warehouse-Count-Access-System', sprite: 'squirtle', lang: 'C', color: '#555555',
+      desc: '基于 STM32F103C8T6 与 FreeRTOS 的仓库人数统计和门禁演示系统。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-08-01T06:51:26Z', createdAt: '2026-07-28T00:00:00Z',
+      topics: ['stm32', 'freertos', 'rtos', 'access-control'],
+      url: 'https://github.com/yythlss/FreeRTOS-Warehouse-Count-Access-System',
+      files: [
+        { name: 'Core/', dir: true, update: 'fix: 红外对射计数消抖', time: '离线快照' },
+        { name: 'Drivers/', dir: true, update: 'init: HAL 库工程', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 任务调度说明', time: '离线快照' }
+      ],
+      readme: { lede: '仓库门口的「人数守门员」：进一个人加一，出一个人减一，超限就拉警报。',
+        list: ['FreeRTOS 四任务：计数 / 门禁 / 显示 / 报警', '红外对射传感器双向进出识别', 'OLED 实时显示在场人数'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits', sprite: 'gengar', lang: 'Other', color: '#f69e1d',
+      desc: '基于 74LS 系列数字集成电路的四路限时抢答器。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-08-01T06:24:06Z', createdAt: '2026-07-31T00:00:00Z',
+      topics: ['digital-circuits', '74ls', 'multisim'],
+      url: 'https://github.com/yythlss/Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits',
+      files: [
+        { name: 'multisim/', dir: true, update: 'feat: 主持人复位电路', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 状态转移说明', time: '离线快照' }
+      ],
+      readme: { lede: '数电课设：四只耿鬼抢答一只精灵球——74LS148 编码、74LS279 锁存、555 倒计时。',
+        list: ['优先编码 + 锁存', '倒计时与超时报警'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'Smart-Desktop-Pet', sprite: 'eevee', lang: 'C', color: '#555555',
+      desc: '基于嘉立创开源电子宠物项目优化的离线语音桌面宠物。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-07-31T05:16:38Z', createdAt: '2026-07-31T00:00:00Z',
+      topics: ['desktop-pet', 'voice-interaction'],
+      url: 'https://github.com/yythlss/Smart-Desktop-Pet',
+      files: [
+        { name: 'firmware/', dir: true, update: 'feat: 摸头交互动作', time: '离线快照' },
+        { name: 'hardware/', dir: true, update: 'init: 原理图与外壳', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 演示视频链接', time: '离线快照' }
+      ],
+      readme: { lede: '一只住在你桌上的伊布：离线语音唤醒、摸头会开心、久不理会会睡觉的桌面电子宠物。',
+        list: ['离线语音识别，不联网也能互动', '六种情绪状态机', '1.54 寸 LCD 像素动画'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'Temperature-Limit-Alarm-Based-on-Analog-Electronics', sprite: 'charmander', lang: 'Other', color: '#f69e1d',
+      desc: 'MF58 NTC + LM358 窗口比较器 + 双 NE555 的纯模拟高低温声光报警系统。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-07-31T04:51:36Z', createdAt: '2026-07-31T00:00:00Z',
+      topics: ['analog-electronics', 'multisim', 'ne555'],
+      url: 'https://github.com/yythlss/Temperature-Limit-Alarm-Based-on-Analog-Electronics',
+      files: [
+        { name: 'schematic/', dir: true, update: 'docs: 元件清单核对', time: '离线快照' },
+        { name: 'simulation/', dir: true, update: 'fix: 迟滞比较器阈值', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 仿真截图', time: '离线快照' }
+      ],
+      readme: { lede: '纯模拟电路课程设计：温度越界，灯亮蜂鸣器叫，没有任何单片机参与。',
+        list: ['MF58 NTC 测温电桥', 'LM358 窗口比较器', '双 NE555 声光报警'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'Smart-Home-Controller', sprite: 'pikachu', lang: 'C++', color: '#f34b7d',
+      desc: 'ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、串口屏与微信小程序。',
+      stars: 2, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-07-30T14:39:40Z', createdAt: '2026-07-21T00:00:00Z',
+      topics: ['esp32-s3', 'smart-home', 'iot', 'xiaozhi-ai', 'wechat-miniprogram'],
+      url: 'https://github.com/yythlss/Smart-Home-Controller',
+      files: [
+        { name: 'components/', dir: true, update: 'feat: 毫米波雷达存在检测', time: '离线快照' },
+        { name: 'main/', dir: true, update: 'feat: 小智 AI 语音对话', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 更新演示说明', time: '离线快照' }
+      ],
+      readme: { lede: '基于 ESP32-S3 的智能家居中控终端：一块串口屏 + 一路语音 + 一堆传感器。',
+        list: ['小智 AI 离线唤醒 + 流式语音对话', '温湿度 / 烟雾 / 毫米波雷达存在检测', '串口屏仪表盘 + 微信小程序远程查看'] },
+      issues: [], pulls: [], actions: [] },
+
+    { name: 'MemoStudy-Agent', sprite: 'bulbasaur', lang: 'Python', color: '#3572A5',
+      desc: '本地优先的个人知识管理与学习助手，支持知识库问答与复盘。',
+      stars: 1, forks: 0, watchers: 1, commits: null, branches: null, license: '无许可证',
+      defaultBranch: 'main', pushedAt: '2026-07-29T11:27:11Z', createdAt: '2026-07-29T00:00:00Z',
+      topics: ['python', 'rag', 'knowledge-base', 'llm'],
+      url: 'https://github.com/yythlss/MemoStudy-Agent',
+      files: [
+        { name: 'src/', dir: true, update: 'feat: 混合检索重排序', time: '离线快照' },
+        { name: 'tests/', dir: true, update: 'test: 评测集覆盖', time: '离线快照' },
+        { name: 'README.md', dir: false, update: 'docs: 快速上手指南', time: '离线快照' }
+      ],
+      readme: { lede: '像妙蛙种子慢慢发芽一样积累知识：本地优先的 RAG 学习助手。',
+        list: ['本地向量库 + BM25 混合检索', 'Markdown 笔记自动索引', '数据完全留在本机'] },
+      issues: [], pulls: [], actions: [] }
   ];
+
+  /* 兜底数据归一化：pushedAt 转时间戳，生成"离线快照"标注 */
+  REPOS.forEach(function (r) {
+    if (typeof r.pushedAt === 'string') r.pushedAt = Date.parse(r.pushedAt);
+    if (!r.updated) r.updated = '离线快照 · ' + dateKey(new Date(r.pushedAt || Date.now()));
+  });
 
   function findRepo(name) {
     for (var i = 0; i < REPOS.length; i++) {
@@ -237,8 +416,9 @@
   }
 
   /* 实时数据状态 */
-  var live = { ok: false, repos: [], user: null };
+  var live = { ok: false, repos: [], user: null, at: 0, fromCache: false };
   var currentRepo = null;
+  var currentTab = 'code';
 
   /* 把 GitHub API 返回的仓库与本地兜底数据合并 */
   function mergeRepo(api) {
@@ -254,8 +434,8 @@
       forks: api.forks_count || 0,
       watchers: api.subscribers_count || cur.watchers || 0,
       openIssues: api.open_issues_count || 0,
-      commits: cur.commits || 0,
-      branches: cur.branches || 1,
+      commits: cur.commits != null ? cur.commits : null,
+      branches: cur.branches != null ? cur.branches : null,
       license: api.license ? (api.license.name || '许可证') : (cur.license || '无许可证'),
       defaultBranch: api.default_branch || 'main',
       updated: '更新于 ' + relTime(new Date(api.pushed_at || api.updated_at)),
@@ -331,17 +511,60 @@
     });
   }
 
-  function initHeatmap() {
+  function setMonths(labels) {
+    var months = $('.heat-months');
+    if (!months) return;
+    months.innerHTML = labels.map(function (m) { return '<span>' + m + '</span>'; }).join('');
+  }
+
+  /* 统一渲染近 26 周热力图：byDate = { 'YYYY-MM-DD': count } */
+  function renderHeatmap(byDate, meta) {
     var host = $('#heatmap');
     if (!host) return;
+    var weeks = 26, days = 7;
+    var today = new Date();
+    var frag = document.createDocumentFragment();
+    var total = 0;
+    var monthLabels = [];
+    var lastMonth = -1;
 
-    // 兜底：固定种子随机图（API 失败时保留）
+    for (var w = 0; w < weeks; w++) {
+      for (var d = 0; d < days; d++) {
+        var date = new Date(today.getTime() - ((weeks - 1 - w) * 7 + (6 - d)) * 86400000);
+        var key = dateKey(date);
+        var count = byDate[key] || 0;
+        total += count;
+        var level = count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : count <= 9 ? 3 : 4;
+        frag.appendChild(heatmapCell(level, key, count));
+      }
+      // 每列第一天的月份变化时记录标签（月份标签因此永远是真实的）
+      var colDate = new Date(today.getTime() - ((weeks - 1 - w) * 7) * 86400000);
+      if (colDate.getMonth() !== lastMonth) {
+        lastMonth = colDate.getMonth();
+        monthLabels.push((colDate.getMonth() + 1) + '月');
+      }
+    }
+    host.innerHTML = '';
+    host.appendChild(frag);
+    if (!host._clickBound) { bindHeatmapClick(host); host._clickBound = true; }
+    setMonths(monthLabels);
+
+    var year = $('#grass-year');
+    if (year) {
+      year.textContent = meta.sample
+        ? '示例数据 · 未连上贡献数据源'
+        : total.toLocaleString() + ' 次贡献（近半年' + (meta.suffix || '') + '）';
+    }
+  }
+
+  /* 兜底：固定种子随机图 —— 只作为占位，明确标注为示例数据 */
+  function sampleHeatmap() {
+    var host = $('#heatmap');
+    if (!host) return;
     var weeks = 26, days = 7;
     var rand = makeRandom(20260214);
     var today = new Date();
-    var total = 0;
-    var frag = document.createDocumentFragment();
-
+    var byDate = {};
     for (var w = 0; w < weeks; w++) {
       for (var d = 0; d < days; d++) {
         var isWeekend = d === 0 || d === 6;
@@ -354,60 +577,77 @@
         var perLevel = [0, 2, 5, 9, 16];
         var count = level === 0 ? 0 : perLevel[level] - Math.floor(rand() * 2);
         if (count < 0) count = 0;
-        total += count;
         var date = new Date(today.getTime() - ((weeks - 1 - w) * 7 + (6 - d)) * 86400000);
-        frag.appendChild(heatmapCell(level, dateKey(date), count));
+        byDate[dateKey(date)] = count;
       }
     }
-    host.appendChild(frag);
-    var year = $('#grass-year');
-    if (year) year.textContent = total.toLocaleString() + ' 次贡献';
-    bindHeatmapClick(host);
+    renderHeatmap(byDate, { sample: true });
   }
 
-  /* 实时热力图：github-contributions-api（含真实贡献数） */
+  /* 首屏：有缓存先用缓存，否则渲染示例图占位 */
+  function initHeatmap() {
+    var cached = cacheGet('heat');
+    if (cached && Date.now() - cached.t < TTL.heat) {
+      renderHeatmap(cached.body, { suffix: ' · 缓存' });
+      return;
+    }
+    var year = $('#grass-year');
+    if (year) year.textContent = '贡献数据加载中…';
+    sampleHeatmap();
+  }
+
+  /* 真实贡献数据：依次尝试多个数据源（各 7 秒超时）→ ghchart 真实图 → 保留示例图 */
+  var HEAT_SOURCES = [
+    'https://github-contributions-api.jogruber.de/v4/' + GITHUB_USER,
+    'https://github-contributions-api.jogruber.de/v4/' + GITHUB_USER + '?y=last'
+  ];
+
+  function ghChartFallback() {
+    var host = $('#heatmap');
+    if (!host) return;
+    var img = new Image();
+    img.className = 'heatmap-img';
+    img.alt = 'yythlss 的 GitHub 真实贡献图（来自 ghchart）';
+    img.onload = function () {
+      host.innerHTML = '';
+      host.appendChild(img);
+      var year = $('#grass-year');
+      if (year) year.textContent = '真实贡献图 · ghchart（无精确总数）';
+    };
+    img.onerror = function () {
+      var year = $('#grass-year');
+      if (year) year.textContent = '示例数据 · 未连上贡献数据源';
+    };
+    img.src = 'https://ghchart.rshah.org/' + GITHUB_USER;
+  }
+
   function tryLiveHeatmap() {
     var host = $('#heatmap');
     if (!host || typeof fetch !== 'function') return;
-    fetch('https://github-contributions-api.jogruber.de/v4/' + GITHUB_USER)
-      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (data) {
-        if (!data || !Array.isArray(data.contributions)) return;
-        var byDate = {};
-        data.contributions.forEach(function (c) { byDate[c.date] = c.count; });
+    var cached = cacheGet('heat');
+    if (cached && Date.now() - cached.t < TTL.heat) {
+      renderHeatmap(cached.body, { suffix: ' · 缓存' });
+      return;
+    }
 
-        var weeks = 26, days = 7;
-        var today = new Date();
-        var frag = document.createDocumentFragment();
-        var total = 0;
-        var monthLabels = [];
-        var lastMonth = -1;
-
-        for (var w = 0; w < weeks; w++) {
-          for (var d = 0; d < days; d++) {
-            var date = new Date(today.getTime() - ((weeks - 1 - w) * 7 + (6 - d)) * 86400000);
-            var key = dateKey(date);
-            var count = byDate[key] || 0;
-            total += count;
-            var level = count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : count <= 9 ? 3 : 4;
-            frag.appendChild(heatmapCell(level, key, count));
-          }
-          // 每列第一天的月份变化时记录标签
-          var colDate = new Date(today.getTime() - ((weeks - 1 - w) * 7) * 86400000);
-          if (colDate.getMonth() !== lastMonth) {
-            lastMonth = colDate.getMonth();
-            monthLabels.push((colDate.getMonth() + 1) + '月');
-          }
-        }
-        host.innerHTML = '';
-        host.appendChild(frag);
-
-        var year = $('#grass-year');
-        if (year) year.textContent = total.toLocaleString() + ' 次贡献（近半年）';
-        var months = $('.heat-months');
-        if (months) months.innerHTML = monthLabels.map(function (m) { return '<span>' + m + '</span>'; }).join('');
-      })
-      .catch(function () { /* 静默回退随机图 */ });
+    var i = 0;
+    (function next() {
+      if (i >= HEAT_SOURCES.length) { ghChartFallback(); return; }
+      var url = HEAT_SOURCES[i++];
+      timedFetch(url, { headers: { 'Accept': 'application/json' } }, 7000)
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (!data || !Array.isArray(data.contributions)) throw new Error('bad');
+          var byDate = {};
+          data.contributions.forEach(function (c) { byDate[c.date] = c.count; });
+          cacheSet('heat', { t: Date.now(), etag: '', body: byDate });
+          renderHeatmap(byDate, { suffix: ' · 实时' });
+        })
+        .catch(next);
+    })();
   }
 
   /* ------------------------------------- 3. 仓库详情渲染 */
@@ -459,31 +699,24 @@
       return '<span class="tag">' + esc(t) + '</span>';
     }).join('');
 
-    // 标签页计数（实时仓库用 openIssues）
+    // 标签页计数
+    // 实时仓库的议题数用 openIssues；PR 数要拉取后才知道，未拉取时显示 ·（不编造数字）
     $('#tab-issues').textContent = repo.live ? repo.openIssues : repo.issues.length;
-    $('#tab-pulls').textContent = repo.pulls.length;
+    $('#tab-pulls').textContent = repo._pullsLive ? pullCountLabel(repo._pullsLive.length)
+      : (repo.live ? '·' : repo.pulls.length);
 
-    // 代码页
+    // 代码页：提交数 / 分支数未知时显示 —，不用内置假数字顶替
     $('#branch-chip').textContent = '⎇ ' + (repo.defaultBranch || 'main');
-    $('#stat-commits').textContent = repo.commits;
-    $('#stat-branches').textContent = repo.branches;
+    $('#stat-commits').textContent = repo.commits == null ? '—' : repo.commits;
+    $('#stat-branches').textContent = repo.branches == null ? '—' : repo.branches;
     $('#stat-license').textContent = repo.license;
     $('#fork-count').textContent = repo.forks;
 
-    // 文件列表：实时数据 > 内置数据 > 占位
-    var files = repo._files || repo.filesCurated;
-    $('#file-list').innerHTML = files
-      ? files.map(fileRowHtml).join('')
-      : '<li class="file-row"><span class="file-icon"></span><span class="file-name">正在从 GitHub 拉取文件列表…</span><span class="file-update"></span><span class="file-time"></span></li>';
+    // 文件列表：实时数据 > 内置数据 > 占位（拉取中 / 离线 / 配额用尽）
+    renderFiles(repo);
 
     // README：实时数据 > 内置数据
-    var readme = repo._readme || repo.readmeCurated;
-    if (readme) {
-      $('#readme-lede').textContent = readme.lede;
-      $('#readme-list').innerHTML = readme.list.map(function (line) {
-        return '<li>' + esc(line) + '</li>';
-      }).join('');
-    }
+    renderReadme(repo);
 
     // 议题 / 拉取请求 / Actions
     var issues = repo._issuesLive || repo.issues;
@@ -503,34 +736,60 @@
     starBtn.setAttribute('aria-pressed', 'false');
     $('#star-count').textContent = repo.stars;
 
-    // 实时仓库：懒加载文件列表与 README（一次请求，缓存）
-    if (repo.live && !repo._files) fetchLiveFiles(repo);
-    if (repo.live && !repo._readme) fetchLiveReadme(repo);
-    if (repo.live) fetchLiveRepoStats(repo);
+    // 实时仓库：文件 / README / 提交数只在「代码」页可见时才请求，省配额
+    if (repo.live && currentTab === 'code') fetchLiveCodeData(repo);
   }
 
-  /* 提交数（Link 头 rel="last" 页码）与分支数：仅实时仓库，打开代码页时一次拉取 */
+  function pullCountLabel(n) { return n >= 8 ? '8+' : String(n); }
+
+  /* 代码页需要的数据，按需加载（结果全部进缓存，30 分钟内不再发请求） */
+  function fetchLiveCodeData(repo) {
+    if (!repo._files) fetchLiveFiles(repo);
+    if (!repo._readme) fetchLiveReadme(repo);
+    fetchLiveRepoStats(repo);
+  }
+
+  /* 文件列表渲染：实时 > 内置 > 占位文案（并把失败原因如实说出来） */
+  function renderFiles(repo, err) {
+    var el = $('#file-list');
+    if (!el) return;
+    // 实时仓库用 filesCurated，内置兜底数据用 files，两者都要兼容
+    var files = (repo._files && repo._files.length) ? repo._files : (repo.filesCurated || repo.files);
+    if (files && files.length) {
+      el.innerHTML = files.map(fileRowHtml).join('');
+      return;
+    }
+    var msg;
+    if (repo._filesLoading) msg = '正在从 GitHub 拉取文件列表…';
+    else if (err && /QUOTA/.test(err.message || '')) msg = 'API 配额用尽，暂无法拉取文件列表';
+    else if (err && /HTTP 404/.test(err.message || '')) msg = '这个仓库还是空的——push 代码后再点开即可显示';
+    else if (err) msg = '拉取超时或网络受阻，重新点开此仓库可重试';
+    else msg = '离线数据：连接 GitHub 后显示文件列表';
+    el.innerHTML = '<li class="file-row"><span class="file-icon"></span><span class="file-name">' +
+      esc(msg) + '</span><span class="file-update"></span><span class="file-time"></span></li>';
+  }
+
+  function renderReadme(repo) {
+    var readme = repo._readme || repo.readmeCurated || repo.readme;
+    if (!readme) return;
+    $('#readme-lede').textContent = readme.lede;
+    $('#readme-list').innerHTML = readme.list.map(function (line) {
+      return '<li>' + esc(line) + '</li>';
+    }).join('');
+  }
+
+  /* 提交数（Link 头 rel="last" 页码）与分支数：带缓存，30 分钟内不重复请求 */
   function fetchLiveRepoStats(repo) {
     if (repo._statsFetched) return;
     repo._statsFetched = true;
     var base = '/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name);
-    var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : 0;
-    fetch('https://api.github.com' + base + '/commits?per_page=1', {
-      headers: { 'Accept': 'application/vnd.github+json' },
-      signal: ctrl ? ctrl.signal : undefined
-    }).then(
-      function (r) {
-        clearTimeout(timer);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        var link = r.headers.get('Link') || '';
-        var m = /[?&]page=(\d+)>;\s*rel="last"/.exec(link);
-        repo.commits = m ? +m[1] : 1;
-        if (currentRepo === repo) $('#stat-commits').textContent = repo.commits;
-      },
-      function (e) { clearTimeout(timer); throw e; }
-    ).catch(function () {});
-    ghFetch(base + '/branches?per_page=100')
+    ghCount(base + '/commits?per_page=1', 'commits:' + repo.name)
+      .then(function (n) {
+        repo.commits = n;
+        if (currentRepo === repo) $('#stat-commits').textContent = n;
+      })
+      .catch(function () {});
+    ghFetch(base + '/branches?per_page=100', { key: 'branches:' + repo.name, ttl: TTL.detail })
       .then(function (list) {
         if (!Array.isArray(list)) throw new Error('bad');
         repo.branches = list.length || 1;
@@ -540,34 +799,21 @@
   }
 
   function fetchLiveFiles(repo) {
-    repo._files = []; // 防重复请求
-    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/contents')
+    repo._filesLoading = true;
+    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/contents',
+      { key: 'files:' + repo.name, ttl: TTL.detail })
       .then(function (entries) {
+        repo._filesLoading = false;
         if (!Array.isArray(entries)) throw new Error('bad');
         repo._files = entries.map(function (e) {
           return { name: e.type === 'dir' ? e.name + '/' : e.name, dir: e.type === 'dir', update: '', time: '' };
         });
-        if (currentRepo === repo) {
-          $('#file-list').innerHTML = repo._files.map(fileRowHtml).join('');
-        }
+        if (currentRepo === repo) renderFiles(repo);
       })
       .catch(function (err) {
-        var m = /HTTP (\d+)/.exec(err && err.message || '');
-        var status = m ? +m[1] : 0;
-        var hint;
-        if (status === 404) hint = '（这个仓库还是空的——push 代码后重新点开即可显示）';
-        else if (status === 403) hint = '（文件列表获取失败：API 限流，1 小时后自动恢复）';
-        else hint = '（拉取超时或网络受阻，重新点开此仓库可重试）';
-        // 仅限流（403）缓存失败结果避免反复消耗配额；其余失败不缓存，下次点开自动重试
-        if (status === 403) {
-          repo._files = repo.filesCurated || [{ name: hint, dir: false, update: '', time: '' }];
-        } else {
-          repo._files = null;
-        }
-        if (currentRepo === repo) {
-          $('#file-list').innerHTML = (repo._files || repo.filesCurated ||
-            [{ name: hint, dir: false, update: '', time: '' }]).map(fileRowHtml).join('');
-        }
+        repo._filesLoading = false;
+        repo._files = null; // 失败不写入缓存，下次点开自动重试
+        if (currentRepo === repo) renderFiles(repo, err);
       });
   }
 
@@ -604,33 +850,27 @@
   }
 
   function fetchLiveReadme(repo) {
-    repo._readme = null;
-    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/readme', true)
+    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/readme',
+      { raw: true, key: 'readme:' + repo.name, ttl: TTL.detail })
       .then(function (md) {
         repo._readme = parseReadme(md);
-        if (currentRepo === repo) {
-          $('#readme-lede').textContent = repo._readme.lede;
-          $('#readme-list').innerHTML = repo._readme.list.map(function (line) {
-            return '<li>' + esc(line) + '</li>';
-          }).join('');
-        }
+        if (currentRepo === repo) renderReadme(repo);
       })
       .catch(function (err) {
-        var m = /HTTP (\d+)/.exec(err && err.message || '');
-        var status = m ? +m[1] : 0;
-        if (status === 404 && currentRepo === repo) {
+        if (/HTTP 404/.test(err && err.message || '') && currentRepo === repo) {
           $('#readme-lede').textContent = '这个仓库还没有 README。';
           $('#readme-list').innerHTML = '<li>先去看看代码，或者稍后再来。</li>';
         }
-        /* 其余失败（如限流）保留内置文案 */
+        /* 其余失败（限流 / 超时）保留内置文案 */
       });
   }
 
-  /* 议题 / 拉取请求懒加载（切到对应标签页时才请求） */
+  /* 议题 / 拉取请求懒加载（切到对应标签页时才请求，结果进缓存） */
   function fetchLiveIssues(repo) {
     if (repo._issuesLive) return;
     repo._issuesLive = [];
-    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/issues?state=open&per_page=8')
+    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/issues?state=open&per_page=8',
+      { key: 'issues:' + repo.name, ttl: TTL.detail })
       .then(function (list) {
         repo._issuesLive = (Array.isArray(list) ? list : [])
           .filter(function (i) { return !i.pull_request; })
@@ -649,7 +889,8 @@
   function fetchLivePulls(repo) {
     if (repo._pullsLive) return;
     repo._pullsLive = [];
-    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/pulls?state=all&per_page=8')
+    ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(repo.name) + '/pulls?state=all&per_page=8',
+      { key: 'pulls:' + repo.name, ttl: TTL.detail })
       .then(function (list) {
         repo._pullsLive = (Array.isArray(list) ? list : []).map(function (p) {
           return {
@@ -659,6 +900,8 @@
             state: p.merged_at ? 'merged' : (p.state === 'closed' ? 'closed' : 'pr')
           };
         });
+        // PR 数拉取到了，把标签页上的 · 换成真实数量
+        if (currentRepo === repo) $('#tab-pulls').textContent = pullCountLabel(repo._pullsLive.length);
         if (currentRepo === repo) {
           $('#pull-list').innerHTML = repo._pullsLive.length
             ? repo._pullsLive.map(issueRowHtml).join('')
@@ -669,6 +912,7 @@
   }
 
   function activateTab(name) {
+    currentTab = name;
     $$('#repo-tabs .repo-tab').forEach(function (tab) {
       tab.classList.toggle('is-active', tab.getAttribute('data-tab') === name);
     });
@@ -676,6 +920,7 @@
       panel.classList.toggle('is-active', panel.getAttribute('data-panel') === name);
     });
     if (currentRepo && currentRepo.live) {
+      if (name === 'code') fetchLiveCodeData(currentRepo);
       if (name === 'issues') fetchLiveIssues(currentRepo);
       if (name === 'pulls') fetchLivePulls(currentRepo);
     }
@@ -745,18 +990,21 @@
     var hint = $('#repo-hint');
     if (!hint) return;
     var n = live.ok ? live.repos.length : REPOS.length;
-    hint.textContent = n + ' 个公开仓库' + (live.ok ? ' · GitHub API 实时' : ' · 内置数据');
+    var suffix = live.ok ? (live.fromCache ? ' · 缓存数据' : ' · GitHub API 实时') : ' · 离线快照';
+    hint.textContent = n + ' 个公开仓库' + suffix;
   }
 
-  /* 右上角星标徽章：全部公开仓库的星标总数（真实数据） */
+  /* 右上角星标徽章：全部公开仓库的星标总数（实时优先，离线用真实快照值） */
   function updateStarChip() {
     var chip = $('.star-chip');
-    if (!chip || !live.ok) return;
+    if (!chip) return;
+    var source = live.ok ? live.repos : REPOS;
     var total = 0;
-    live.repos.forEach(function (r) { total += r.stars || 0; });
+    source.forEach(function (r) { total += r.stars || 0; });
     chip.innerHTML = '<span class="icon-star" aria-hidden="true"></span>' + total +
       '<span class="sr-only"> 颗星标</span>';
-    chip.title = '全部公开仓库共获得 ' + total + ' 颗星标';
+    chip.title = '全部公开仓库共获得 ' + total + ' 颗星标' +
+      (live.ok ? (live.fromCache ? '（缓存数据）' : '（GitHub API 实时）') : '（离线快照）');
   }
 
   /* ------------------------------------- 4. 仓库搜索过滤（左栏与顶栏共用） */
@@ -906,7 +1154,8 @@
     if (!list) return;
     if (!currentActivity.length) {
       list.innerHTML = '<li><span class="act-sprite" data-sprite="pokeball" data-scale="2"></span>' +
-        '<p>最近没有公开动态<span class="act-time">—</span></p></li>';
+        '<p>' + (live.ok ? '最近没有公开动态' : '离线数据：连接 GitHub 后显示真实动态') +
+        '<span class="act-time">—</span></p></li>';
     } else {
       list.innerHTML = currentActivity.map(function (it) {
         return '<li><span class="act-sprite" data-sprite="' + spriteForRepo(it.repo) + '" data-scale="2"></span>' +
@@ -917,12 +1166,13 @@
     if (window._bindSpriteTips) window._bindSpriteTips(list);
   }
 
-  /* 用真实提交信息补全「推送了 …」条目（最多 4 个仓库，结果缓存） */
+  /* 用真实提交信息补全「推送了 …」条目（最多 2 个仓库，结果缓存，省配额） */
   function enrichPushMessages(items) {
-    var targets = items.filter(function (it) { return it.kind === 'push' && !it.msg && !it._fetched; }).slice(0, 4);
+    var targets = items.filter(function (it) { return it.kind === 'push' && !it.msg && !it._fetched; }).slice(0, 2);
     targets.forEach(function (it) {
       it._fetched = true; // 避免重复请求
-      ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(it.repo) + '/commits?per_page=1')
+      ghFetch('/repos/' + GITHUB_USER + '/' + encodeURIComponent(it.repo) + '/commits?per_page=1',
+        { key: 'lastcommit:' + it.repo, ttl: TTL.detail })
         .then(function (commits) {
           if (Array.isArray(commits) && commits[0] && commits[0].commit) {
             it.msg = shortMsg(commits[0].commit.message) || '代码更新';
@@ -954,7 +1204,8 @@
   /* ----------------------------------------------------- 7. 对话气泡 */
   var LINES = [
     '一起探索宝可梦的世界，用代码收服无限可能！',
-    '欢迎来到 GitHub 草丛！页面数据直接来自 GitHub API。',
+    '欢迎来到 GitHub 草丛！仓库、星标和动态都来自 GitHub API，并带缓存。',
+    '「我的仓库」上面的徽章会告诉你：现在看到的是实时数据、缓存还是离线数据。',
     '这里是 yythlss 的图鉴：嵌入式系统、智能硬件、数字与模拟电路。',
     '按 / 可以直接跳进搜索框，就像在野外使用「飞翔」。',
     '心血来潮的时候，去草丛里 commit 一次，贡献图就会变绿。',
@@ -1041,20 +1292,21 @@
     }
   }
 
-  /* ------------------------------------------ 8. 实时数据加载入口 */
+  /* ------------------------------------------ 8. 实时数据加载入口
+     仓库列表是页面骨架，优先请求；事件与热力图失败不影响主体，只影响状态徽章 */
   function loadLive() {
-    if (typeof fetch !== 'function') return;
+    if (typeof fetch !== 'function') { servedFail(); return; }
 
-    // 用户信息
-    ghFetch('/users/' + GITHUB_USER)
-      .then(function (u) { live.user = u; updateHint(); })
-      .catch(function () {});
+    var cachedList = cacheGet('list:repos');
+    var listFromCache = !!(cachedList && Date.now() - cachedList.t < TTL.list);
 
     // 仓库列表（按最近推送排序，排除复刻仓库）
-    ghFetch('/users/' + GITHUB_USER + '/repos?per_page=100&sort=pushed')
+    ghFetch('/users/' + GITHUB_USER + '/repos?per_page=100&sort=pushed', { key: 'list:repos', ttl: TTL.list })
       .then(function (list) {
         if (!Array.isArray(list) || !list.length) return;
         live.ok = true;
+        live.at = Date.now();
+        live.fromCache = listFromCache;
         live.repos = list
           .filter(function (r) { return !r.fork; })
           .map(mergeRepo)
@@ -1068,17 +1320,22 @@
         updateStarChip();
         buildActivity(); // 仓库时间线（推送 / 建仓）就绪
       })
-      .catch(function () { /* 限流或断网：保留内置数据 */ });
+      .catch(function () {
+        servedFail(); // 限流或断网：保留内置数据，并在状态徽章上说明
+        updateHint();
+        updateStarChip();
+        renderActivityList(); // 把「正在获取…」占位换成离线说明
+      });
 
     // 公开事件（星标 / 议题 / PR / 发版），到达后与仓库时间线合并
-    ghFetch('/users/' + GITHUB_USER + '/events/public?per_page=40')
+    ghFetch('/users/' + GITHUB_USER + '/events/public?per_page=40', { key: 'list:events', ttl: TTL.list })
       .then(function (events) {
         liveEvents = (Array.isArray(events) ? events : [])
           .map(eventToItem)
           .filter(Boolean);
         buildActivity();
       })
-      .catch(function () { /* 静默：仓库时间线仍可单独成流 */ });
+      .catch(function () { servedFail(); });
 
     // 真实贡献热力图
     tryLiveHeatmap();
@@ -1098,6 +1355,7 @@
     initNavSearch();
     initDialogue();
     initYear();
+    refreshStatus();
     renderRepo(REPOS[0]);
     loadLive(); // 异步接管为实时数据
   }
