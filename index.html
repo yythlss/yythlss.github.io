@@ -3,266 +3,317 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="yythlss 的 GitHub 主页：宝可梦像素风格重绘，木质招牌、野外场景、浅绿色像素面板、贡献热力图与宝可梦精灵，展示嵌入式系统、智能硬件与电子电路项目。">
-<meta name="theme-color" content="#3a7d34">
-<title>yythlss | GitHub · 宝可梦像素风格主页</title>
+<meta name="description" content="yythlss 的 GitHub 主页：星露谷物语像素风格，木框面板、人物头像、贡献热力图，仓库按作物分类展示嵌入式系统、智能硬件与电子电路项目。">
+<meta name="theme-color" content="#6b4523">
+<title>yythlss | GitHub · 星露谷像素风格主页</title>
 <link rel="stylesheet" href="github-gba.css">
-<link rel="stylesheet" href="github-firered.css">
-<link rel="stylesheet" href="github-real.css">
+<link rel="stylesheet" href="github-stardew.css">
 </head>
 <body class="gba-body">
 
-<div class="console-frame">
-  <div class="console-screen">
-    <div class="game-root" id="game-root">
+<div class="game-root" id="game-root">
 
-      <!-- ============================================================ 顶部：野外场景横幅（取自参考图） -->
-      <header class="scene">
-        <img class="scene-img" src="assets/banner.jpg" alt="宝可梦野外场景横幅：木质 GitHub 招牌、宝可梦中心与草地小径" width="1402" height="206">
-      </header>
+  <!-- ========================================================= 顶部栏：头像 / 搜索 / 时间 / Star -->
+  <header class="stardew-topbar" id="topbar">
+    <div class="topbar-left">
+      <a class="topbar-avatar" href="https://github.com/yythlss" target="_blank" rel="noreferrer" aria-label="yythlss 的 GitHub">
+        <img class="avatar-img" src="stardew/assets/avatar-yythlss.png" alt="yythlss 头像">
+      </a>
+      <div class="topbar-brand">
+        <strong>yythlss</strong>
+        <span>鹈鹕镇 · 开发者农场</span>
+      </div>
+    </div>
 
-      <!-- ============================================================ 顶部导航栏 -->
-      <nav class="gba-nav" aria-label="GitHub 主导航">
-        <a class="nav-logo" href="#top" aria-label="GitHub 首页">
-          <span class="gba-logo" aria-hidden="true"></span>
-        </a>
-        <form class="nav-search" role="search" onsubmit="return false">
-          <label class="sr-only" for="search-input">搜索或跳转到…</label>
-          <span class="search-icon" aria-hidden="true"></span>
-          <input id="search-input" type="search" placeholder="搜索仓库，无匹配回车搜全站…" autocomplete="off">
-          <span class="search-key">/</span>
-        </form>
-        <div class="nav-user">
-          <span class="star-chip" title="全部公开仓库共获得 9 颗星标"><span class="icon-star" aria-hidden="true"></span>9</span>
-          <span class="trainer-chip" data-sprite="trainerFront" data-label="yythlss" data-scale="2"></span>
-          <span class="user-chip">
-            <span class="user-name">yythlss</span>
-            <span class="user-caret" aria-hidden="true"></span>
-          </span>
-        </div>
-      </nav>
+    <form class="nav-search" role="search" onsubmit="return false">
+      <label class="sr-only" for="search-input">搜索或跳转到…</label>
+      <span class="search-icon" aria-hidden="true"></span>
+      <input id="search-input" type="search" placeholder="搜索仓库…" autocomplete="off">
+      <span class="search-key">/</span>
+    </form>
 
-      <!-- ============================================================ 主内容：左 / 中 / 右 -->
-      <main class="gba-main" id="top">
-        <!-- ---------------------------------------------------- 左：仓库列表 -->
-        <aside class="panel panel-repos" id="repositories" aria-labelledby="repos-title">
-          <div class="panel-bar">
-            <span class="pokeball-mark" data-sprite="pokeball" data-label="精灵球" data-scale="2"></span>
-            <h2 id="repos-title">我的仓库</h2>
-            <button class="btn-add" type="button" aria-label="新建仓库">＋</button>
+    <div class="topbar-right">
+      <div class="sd-clock" id="sd-clock" aria-live="polite">
+        <div class="sd-clock-box">
+          <span class="sd-clock-season" id="sd-clock-season" aria-hidden="true">春</span>
+          <div class="sd-clock-line">
+            <span class="sd-clock-date" id="sd-board-date">星期五 12日</span>
+            <span class="sd-clock-ampm" id="sd-clock-ampm">上午</span>
+            <span class="sd-clock-time" id="sd-board-time">7:10</span>
           </div>
-          <div class="panel-body">
-            <div class="repo-search">
-              <input id="repo-search-input" type="search" placeholder="搜索仓库…" aria-label="搜索仓库">
-              <span class="search-icon" aria-hidden="true"></span>
-            </div>
-
-            <ul class="repo-list" id="repo-list">
-              <li><a class="repo-item is-active" href="#repo-smart-home" data-repo="Smart-Home-Controller">
-                <span class="repo-ic" data-sprite="pikachu" data-scale="1"></span>
-                <span class="repo-name">Smart-Home-Controller</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-warehouse" data-repo="FreeRTOS-Warehouse-Count-Access-System">
-                <span class="repo-ic" data-sprite="squirtle" data-scale="1"></span>
-                <span class="repo-name">FreeRTOS-Warehouse-Count-Access-System</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-desktop-pet" data-repo="Smart-Desktop-Pet">
-                <span class="repo-ic" data-sprite="eevee" data-scale="1"></span>
-                <span class="repo-name">Smart-Desktop-Pet</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-alarm" data-repo="Temperature-Limit-Alarm-Based-on-Analog-Electronics">
-                <span class="repo-ic" data-sprite="charmander" data-scale="1"></span>
-                <span class="repo-name">Temperature-Limit-Alarm-Based-on-Analog-Electronics</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-responder" data-repo="Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits">
-                <span class="repo-ic" data-sprite="gengar" data-scale="1"></span>
-                <span class="repo-name">Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-memostudy" data-repo="MemoStudy-Agent">
-                <span class="repo-ic" data-sprite="bulbasaur" data-scale="1"></span>
-                <span class="repo-name">MemoStudy-Agent</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-protovibe" data-repo="ProtoVibe-Agent">
-                <span class="repo-ic" data-sprite="pokeball" data-scale="1"></span>
-                <span class="repo-name">ProtoVibe-Agent</span>
-                <span class="repo-star">★</span>
-              </a></li>
-              <li><a class="repo-item" href="#repo-homepage" data-repo="yythlss.github.io">
-                <span class="repo-ic" data-sprite="berry" data-scale="1"></span>
-                <span class="repo-name">yythlss.github.io</span>
-                <span class="repo-star">★</span>
-              </a></li>
-            </ul>
-
-            <p class="panel-hint" id="repo-hint">8 个公开仓库 · 最近更新 2 天前</p>
-
-            <button class="btn-new-repo" type="button">
-              <span data-sprite="pikachu" data-scale="1"></span>新建仓库
-            </button>
-          </div>
-        </aside>
-
-        <!-- ---------------------------------------------------- 中：所选仓库详情 -->
-        <section class="panel panel-repo" id="overview" aria-labelledby="repo-title">
-          <div class="panel-bar repo-bar">
-            <span class="repo-bar-sprite" id="repo-bar-sprite" data-sprite="pikachu" data-label="皮卡丘" data-scale="2"></span>
-            <h2 id="repo-title">yythlss / Smart-Home-Controller</h2>
-            <span class="pill">公开</span>
-            <div class="panel-bar-actions">
-              <button class="btn btn-small" type="button">关注 <span class="count">3</span></button>
-              <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">42</span></button>
-              <button class="btn btn-small" type="button">⎇ 复刻 <span class="count" id="fork-count">6</span></button>
-            </div>
-          </div>
-          <div class="panel-body repo-detail">
-            <p class="repo-detail-desc" id="repo-desc">ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、串口屏与微信小程序。</p>
-            <div class="tag-stack" id="repo-topics">
-              <span class="tag">esp32</span><span class="tag">smart-home</span><span class="tag">iot</span>
-            </div>
-
-            <div class="repo-tabs" id="repo-tabs">
-              <button class="repo-tab is-active" type="button" data-tab="code">代码</button>
-              <button class="repo-tab" type="button" data-tab="issues">议题 <span class="count" id="tab-issues">2</span></button>
-              <button class="repo-tab" type="button" data-tab="pulls">拉取请求 <span class="count" id="tab-pulls">1</span></button>
-              <button class="repo-tab" type="button" data-tab="actions">Actions</button>
-              <button class="repo-tab" type="button" data-tab="wiki">Wiki</button>
-            </div>
-
-            <div class="repo-tabpanel is-active" data-panel="code">
-              <div class="repo-toolbar">
-                <span class="branch-chip" id="branch-chip">⎇ main</span>
-                <span class="m">▰ 提交 <b id="stat-commits">128</b></span>
-                <span class="m">分支 <b id="stat-branches">2</b></span>
-                <span class="toolbar-right" id="stat-license">MIT 许可证</span>
-              </div>
-              <ul class="file-list" id="file-list"></ul>
-              <div class="readme-card">
-                <div class="readme-head">
-                  <span class="readme-icon" aria-hidden="true"></span>
-                  <h3>README.md</h3>
-                  <span class="readme-badge">预览</span>
-                </div>
-                <p class="readme-lede" id="readme-lede"></p>
-                <ul class="readme-list" id="readme-list"></ul>
-              </div>
-            </div>
-
-            <div class="repo-tabpanel" data-panel="issues">
-              <ul class="issue-list" id="issue-list"></ul>
-            </div>
-
-            <div class="repo-tabpanel" data-panel="pulls">
-              <ul class="issue-list" id="pull-list"></ul>
-            </div>
-
-            <div class="repo-tabpanel" data-panel="actions">
-              <ul class="action-list" id="action-list"></ul>
-            </div>
-
-            <div class="repo-tabpanel" data-panel="wiki">
-              <div class="readme-card">
-                <div class="readme-head">
-                  <span class="readme-icon" aria-hidden="true"></span>
-                  <h3>项目文档</h3>
-                  <span class="readme-badge">Wiki</span>
-                </div>
-                <p class="readme-lede" id="wiki-lede">这个仓库的文档还在孵化中，训练家正在补充更多图鉴条目。</p>
-                <ul class="readme-list">
-                  <li><a href="#overview" onclick="return false">快速上手指南</a></li>
-                  <li><a href="#overview" onclick="return false">硬件连接与引脚说明</a></li>
-                  <li><a href="#overview" onclick="return false">常见问题（草丛遇敌篇）</a></li>
-                  <li><a href="#overview" onclick="return false">版本路线图</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------------------------------------------------- 右：贡献热力图 + 动态 -->
-        <aside class="right-rail">
-          <section class="panel panel-grass" aria-labelledby="grass-title">
-            <div class="panel-bar">
-              <span class="pokeball-mark" data-sprite="pokeball" data-label="精灵球" data-scale="2"></span>
-              <h2 id="grass-title">贡献图</h2>
-              <span class="grass-year" id="grass-year">1,247 次贡献</span>
-            </div>
-            <div class="panel-body">
-              <div class="heatmap-layout">
-                <span class="heat-rows" aria-hidden="true"><i>一</i><i>三</i><i>五</i></span>
-                <div class="heatmap-wrap">
-                  <div class="heatmap" id="heatmap" role="img" aria-label="贡献热力图"></div>
-                </div>
-              </div>
-              <div class="heat-months" aria-hidden="true">
-                <span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span><span>9月</span>
-              </div>
-              <div class="heatmap-legend">
-                <span>少</span>
-                <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i>
-                <span>多</span>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel panel-activity" aria-labelledby="activity-title">
-            <div class="panel-bar">
-              <span class="pokeball-mark" data-sprite="berry" data-label="树果" data-scale="2"></span>
-              <h2 id="activity-title">动态</h2>
-            </div>
-            <div class="panel-body">
-              <ul class="activity-list" id="activity-list">
-                <li><span class="act-sprite" data-sprite="pikachu" data-scale="2"></span><p>推送了 3 次提交到 <b>Smart-Home-Controller</b><span class="act-time">2 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="squirtle" data-scale="2"></span><p>创建了仓库 <b>yythlss.github.io</b><span class="act-time">3 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="eevee" data-scale="2"></span><p>合并了拉取请求 <b>#12 · 优化语音唤醒</b><span class="act-time">4 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="gengar" data-scale="2"></span><p>关闭了议题 <b>#8 · 串口屏偶发花屏</b><span class="act-time">5 天前</span></p></li>
-                <li><span class="act-sprite" data-sprite="bulbasaur" data-scale="2"></span><p>给 <b>MemoStudy-Agent</b> 点了星标<span class="act-time">1 周前</span></p></li>
-                <li><span class="act-sprite" data-sprite="charmander" data-scale="2"></span><p>发布了 <b>v1.2.0</b> 版本<span class="act-time">2 周前</span></p></li>
-              </ul>
-            </div>
-          </section>
-        </aside>
-      </main>
-
-      <!-- ============================================================ 底部：杰尼龟 + 对话气泡 -->
-      <footer class="gba-footer">
-        <div class="footer-strip" aria-hidden="true">
-          <span class="strip-grass"></span>
-          <span class="strip-flower sf1"></span><span class="strip-flower sf2"></span>
-          <span class="strip-flower sf3"></span><span class="strip-flower sf4"></span>
-        </div>
-        <div class="bubble-row">
-          <span class="bubble-sprite" data-sprite="squirtle" data-label="杰尼龟" data-scale="4" tabindex="0"></span>
-          <div class="speech-bubble" id="dialogue" role="status" aria-live="polite">
-            <p class="dialogue-text" id="dialogue-text"></p>
-            <span class="dialogue-next" aria-hidden="true"></span>
-            <div class="dialogue-actions">
-              <button class="btn btn-small" type="button" data-dialogue="next">继续 ▶</button>
-              <button class="btn btn-small btn-ghost" type="button" data-dialogue="random">下一句</button>
-            </div>
+          <div class="sd-clock-money">
+            <span class="sd-coin" aria-hidden="true">G</span>
+            <span id="sd-clock-gold">0</span>
           </div>
         </div>
+      </div>
+      <span class="star-chip" title="全部公开仓库共获得的星标">
+        <span class="icon-star" aria-hidden="true"></span>
+        <span id="top-star-count">9</span>
+      </span>
+    </div>
+  </header>
 
-        <p class="gba-credit">© <span id="gba-year">2026</span> yythlss · 用 HTML / CSS / JavaScript 手搓的 16 位像素界面 ·
-          <a href="portfolio.html">旧版主页</a> · <a href="chat-lab/index.html">Chat Lab</a> · <a href="https://github.com/yythlss" target="_blank" rel="noreferrer">GitHub ↗</a></p>
-      </footer>
-
-      <div class="pixel-grid" aria-hidden="true"></div>
+  <!-- ========================================================= 横幅：星露谷全居民滚动 -->
+  <div class="scene-strip" aria-hidden="true">
+    <div class="scene-scroll">
+      <img class="scene-img" src="stardew/assets/banner-all-villagers.png" alt="星露谷居民横幅">
+      <img class="scene-img" src="stardew/assets/banner-all-villagers.png" alt="" aria-hidden="true">
     </div>
   </div>
 
-  <div class="console-meta" aria-hidden="true">
-    <span class="console-brand">POCKET&nbsp;CODE&nbsp;GITHUB</span>
-    <span class="console-led"></span>
-  </div>
+  <!-- ========================================================= 主内容：左 / 中 / 右 -->
+  <main class="gba-main" id="top">
+    <!-- ---------------------------------------------------- 左：导航 / 仓库列表 -->
+    <aside class="panel panel-repos" id="repositories" aria-labelledby="repos-title">
+      <div class="panel-bar">
+        <span class="pokeball-mark" data-sprite="junimo" data-label="祝尼魔" data-scale="1"></span>
+        <h2 id="repos-title">导航 / 仓库</h2>
+        <button class="btn-add" type="button" aria-label="新建仓库">＋</button>
+      </div>
+      <div class="panel-body">
+        <div class="repo-search">
+          <input id="repo-search-input" type="search" placeholder="搜索仓库…" aria-label="搜索仓库">
+          <span class="search-icon" aria-hidden="true"></span>
+        </div>
+
+        <label class="cat-label" for="cat-filter">分类筛选</label>
+        <select class="cat-select" id="cat-filter" aria-label="仓库分类筛选"></select>
+
+        <ul class="repo-list" id="repo-list"></ul>
+
+        <p class="panel-hint" id="repo-hint"></p>
+
+        <button class="btn-new-repo" type="button">
+          <span data-sprite="parsnip" data-scale="1"></span>新建仓库
+        </button>
+      </div>
+    </aside>
+
+    <!-- ---------------------------------------------------- 中：所选仓库详情 -->
+    <section class="panel panel-repo" id="overview" aria-labelledby="repo-title">
+      <div class="panel-bar repo-bar">
+        <span class="repo-bar-sprite" id="repo-bar-sprite" data-sprite="starfruit" data-label="星之果实" data-scale="2"></span>
+        <h2 id="repo-title">yythlss</h2>
+        <span class="pill">公开</span>
+        <div class="panel-bar-actions">
+          <button class="btn btn-small" type="button">关注 <span class="count">3</span></button>
+          <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">42</span></button>
+          <button class="btn btn-small" type="button">⎇ 复刻 <span class="count" id="fork-count">6</span></button>
+        </div>
+      </div>
+      <div class="panel-body repo-detail">
+        <p class="repo-detail-desc" id="repo-desc"></p>
+        <div class="tag-stack" id="repo-topics"></div>
+
+        <div class="repo-tabs" id="repo-tabs">
+          <button class="repo-tab is-active" type="button" data-tab="code">代码</button>
+          <button class="repo-tab" type="button" data-tab="issues">议题 <span class="count" id="tab-issues">2</span></button>
+          <button class="repo-tab" type="button" data-tab="pulls">拉取请求 <span class="count" id="tab-pulls">1</span></button>
+          <button class="repo-tab" type="button" data-tab="actions">Actions</button>
+          <button class="repo-tab" type="button" data-tab="wiki">Wiki</button>
+        </div>
+
+        <div class="repo-tabpanel is-active" data-panel="code">
+          <div class="repo-toolbar">
+            <span class="branch-chip" id="branch-chip">⎇ main</span>
+            <span class="m">▰ 提交 <b id="stat-commits">128</b></span>
+            <span class="m">分支 <b id="stat-branches">2</b></span>
+            <span class="toolbar-right" id="stat-license">MIT 许可证</span>
+          </div>
+          <ul class="file-list" id="file-list"></ul>
+          <div class="readme-card">
+            <div class="readme-head">
+              <span class="readme-icon" aria-hidden="true"></span>
+              <h3>README.md</h3>
+              <span class="readme-badge">预览</span>
+            </div>
+            <p class="readme-lede" id="readme-lede"></p>
+            <ul class="readme-list" id="readme-list"></ul>
+          </div>
+        </div>
+
+        <div class="repo-tabpanel" data-panel="issues">
+          <ul class="issue-list" id="issue-list"></ul>
+        </div>
+
+        <div class="repo-tabpanel" data-panel="pulls">
+          <ul class="issue-list" id="pull-list"></ul>
+        </div>
+
+        <div class="repo-tabpanel" data-panel="actions">
+          <ul class="action-list" id="action-list"></ul>
+        </div>
+
+        <div class="repo-tabpanel" data-panel="wiki">
+          <div class="readme-card">
+            <div class="readme-head">
+              <span class="readme-icon" aria-hidden="true"></span>
+              <h3>项目文档</h3>
+              <span class="readme-badge">Wiki</span>
+            </div>
+            <p class="readme-lede" id="wiki-lede">这个仓库的文档还在孵化中，农场主正在补充更多条目。</p>
+            <ul class="readme-list">
+              <li><a href="#overview" onclick="return false">快速上手指南</a></li>
+              <li><a href="#overview" onclick="return false">硬件连接与引脚说明</a></li>
+              <li><a href="#overview" onclick="return false">常见问题（浇水篇）</a></li>
+              <li><a href="#overview" onclick="return false">版本路线图</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 右：贡献图 + 动态 -->
+    <aside class="right-rail">
+      <section class="panel panel-grass" aria-labelledby="grass-title">
+        <div class="panel-bar">
+          <span class="pokeball-mark" data-sprite="junimo" data-label="祝尼魔" data-scale="1"></span>
+          <h2 id="grass-title">贡献图</h2>
+          <span class="grass-year" id="grass-year"></span>
+        </div>
+        <div class="panel-body">
+          <div class="heatmap-layout">
+            <span class="heat-rows" aria-hidden="true"><i>一</i><i>三</i><i>五</i></span>
+            <div class="heatmap-wrap">
+              <div class="heatmap" id="heatmap" role="img" aria-label="贡献热力图"></div>
+            </div>
+          </div>
+          <div class="heat-months" aria-hidden="true">
+            <span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span><span>9月</span>
+          </div>
+          <div class="heatmap-legend">
+            <span>少</span>
+            <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i>
+            <span>多</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-activity" aria-labelledby="activity-title">
+        <div class="panel-bar">
+          <span class="pokeball-mark" data-sprite="starfruit" data-label="星之果实" data-scale="1"></span>
+          <h2 id="activity-title">动态</h2>
+        </div>
+        <div class="panel-body">
+          <div class="activity-garden" aria-hidden="true">
+            <span data-sprite="parsnip" data-scale="1" title="防风草"></span>
+            <span data-sprite="cauliflower" data-scale="1" title="花椰菜"></span>
+            <span data-sprite="pumpkin" data-scale="1" title="南瓜"></span>
+            <span data-sprite="corn" data-scale="1" title="玉米"></span>
+            <span data-sprite="blueberry" data-scale="1" title="蓝莓"></span>
+            <span data-sprite="hotpepper" data-scale="1" title="辣椒"></span>
+            <span data-sprite="starfruit" data-scale="1" title="星之果实"></span>
+            <span data-sprite="sunflower" data-scale="1" title="向日葵"></span>
+          </div>
+          <ul class="activity-list" id="activity-list"></ul>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <!-- ========================================================= 底部：人物对话气泡（人物故事） -->
+  <footer class="stardew-footer">
+    <div class="footer-grass" aria-hidden="true"></div>
+    <div class="dialogue-row">
+      <span class="bubble-sprite" data-sprite="bWizard" data-label="法师" data-scale="1.5" tabindex="0"></span>
+      <div class="speech-bubble" id="dialogue" role="status" aria-live="polite">
+        <span class="speaker-name" id="speaker-name">法师</span>
+        <p class="dialogue-text" id="dialogue-text"></p>
+        <span class="dialogue-next" aria-hidden="true"></span>
+        <div class="dialogue-actions">
+          <button class="btn btn-small" type="button" data-dialogue="next">继续 ▶</button>
+          <button class="btn btn-small btn-ghost" type="button" data-dialogue="random">下一句</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="villager-lineup" id="villager-lineup" role="list" aria-label="居民头像">
+      <button class="villager-face" data-sprite="bRobin" data-label="罗宾" data-scale="0.75" data-speaker="罗宾" type="button" aria-label="罗宾"></button>
+      <button class="villager-face" data-sprite="bAbigail" data-label="阿比盖尔" data-scale="0.75" data-speaker="阿比盖尔" type="button" aria-label="阿比盖尔"></button>
+      <button class="villager-face" data-sprite="bMaru" data-label="玛鲁" data-scale="0.75" data-speaker="玛鲁" type="button" aria-label="玛鲁"></button>
+      <button class="villager-face" data-sprite="bLewis" data-label="刘易斯" data-scale="0.75" data-speaker="刘易斯" type="button" aria-label="刘易斯"></button>
+      <button class="villager-face" data-sprite="bHarvey" data-label="哈维" data-scale="0.75" data-speaker="哈维" type="button" aria-label="哈维"></button>
+      <button class="villager-face" data-sprite="bPenny" data-label="佩妮" data-scale="0.75" data-speaker="佩妮" type="button" aria-label="佩妮"></button>
+      <button class="villager-face" data-sprite="bWizard" data-label="法师" data-scale="0.75" data-speaker="法师" type="button" aria-label="法师"></button>
+    </div>
+
+    <p class="gba-credit">© <span id="gba-year">2026</span> yythlss · 用 HTML / CSS / JavaScript 手搓的像素界面 ·
+      <a href="portfolio.html">旧版主页</a> · <a href="chat-lab/index.html">Chat Lab</a> · <a href="https://github.com/yythlss" target="_blank" rel="noreferrer">GitHub ↗</a></p>
+  </footer>
+
+  <div class="pixel-grid" aria-hidden="true"></div>
 </div>
 
+<!-- 可选的本地令牌配置（已在 .gitignore 排除）；文件不存在时浏览器报 404 属正常，会回退为未认证请求 -->
+<script src="config.local.js"></script>
 <script src="sprites.js"></script>
 <script src="github-gba.js"></script>
+<script>
+/* 顶部星露谷 HUD 时钟盒 —— 参考截图 DayTimeMoneyBox 木牌样式
+   · 左侧季节色块；中间「星期 日期」；右侧「上午/下午 时间」；下方金钱 G
+   · 季节按北半球划分：12/1/2 冬，3/4/5 春，6/7/8 夏，9/10/11 秋 */
+(function () {
+  var clock = document.getElementById('sd-clock');
+  if (!clock) return;
+  var dateEl = document.getElementById('sd-board-date');
+  var timeEl = document.getElementById('sd-board-time');
+  var ampmEl = document.getElementById('sd-clock-ampm');
+  var seasonEl = document.getElementById('sd-clock-season');
+  var goldEl = document.getElementById('sd-clock-gold');
+
+  var week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function tick() {
+    var now = new Date();
+    var month = now.getMonth();                 // 0 = 1 月
+    var season = (month === 11 || month <= 1) ? 'winter'
+               : month <= 4 ? 'spring'
+               : month <= 7 ? 'summer'
+               : 'autumn';
+    var seasonNames = {spring:'春季',summer:'夏季',autumn:'秋季',winter:'冬季'};
+    var seasonChars = {spring:'春',summer:'夏',autumn:'秋',winter:'冬'};
+    var h = now.getHours(), m = now.getMinutes();
+    var ampm = h < 12 ? '上午' : '下午';
+    var displayH = h % 12; if (displayH === 0) displayH = 12;
+
+    if (seasonEl) {
+      seasonEl.className = 'sd-clock-season ' + season;
+      seasonEl.textContent = seasonChars[season];
+    }
+    if (dateEl) dateEl.textContent = week[now.getDay()] + ' ' + now.getDate() + '日';
+    if (ampmEl) ampmEl.textContent = ampm;
+    if (timeEl) timeEl.textContent = displayH + ':' + pad(m);
+    /* 金钱显示为 GitHub 总 star 数，更像“资产” */
+    var starEl = document.getElementById('top-star-count');
+    if (goldEl && starEl) {
+      var n = parseInt(starEl.textContent.replace(/\D/g,'') || '0', 10);
+      goldEl.textContent = n.toLocaleString();
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* 小祝尼魔点击特效：点击页面任意位置跳出一只彩色 Junimo */
+(function () {
+  var colors = ['red','green','blue','yellow','purple'];
+  var isTouch = 'ontouchstart' in window;
+  document.addEventListener(isTouch ? 'touchstart' : 'click', function (e) {
+    if (e.target.closest('a,button,input,select,textarea')) return;
+    var x = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX) || 0;
+    var y = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY) || 0;
+    var el = document.createElement('img');
+    el.className = 'junimo-pop';
+    el.src = 'stardew/assets/characters/junimo-' + colors[Math.floor(Math.random()*colors.length)] + '.png';
+    el.alt = '';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    document.body.appendChild(el);
+    el.addEventListener('animationend', function () { el.remove(); });
+  }, { passive: true });
+})();
+</script>
 </body>
 </html>

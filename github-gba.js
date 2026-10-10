@@ -1,6 +1,6 @@
 /* =====================================================================
    github-gba.js — 页面行为：精灵挂载、贡献热力图、仓库详情切换、
-   仓库标签页、左栏搜索过滤、杰尼龟对话气泡
+   仓库标签页、左栏分类与搜索过滤、祝尼魔对话气泡
    ---------------------------------------------------------------------
    数据来源（双层）：
    1. GitHub REST API（实时）：仓库列表 / 仓库详情 / 文件列表 / README /
@@ -42,14 +42,24 @@
     return Math.floor(diff / 31536000) + ' 年前';
   }
 
+  /* 可选的个人访问令牌：从 config.local.js 读取（该文件已被 .gitignore 排除）。
+     配了之后 API 限额从 60 次/小时 提升到 5000 次/小时。
+     注意：token 只用于本地/私有环境；公开站点请不要提交真实 token。 */
+  function githubToken() {
+    return (typeof window !== 'undefined' && window.GITHUB_TOKEN) || '';
+  }
+
   function ghFetch(path, raw) {
     // 12 秒超时：api.github.com 在部分网络下会"挂住"（既不成功也不失败），必须主动中断
     var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 12000) : 0;
+    var headers = raw
+      ? { 'Accept': 'application/vnd.github.raw' }
+      : { 'Accept': 'application/vnd.github+json' };
+    var token = githubToken();
+    if (token) headers.Authorization = 'Bearer ' + token;
     return fetch('https://api.github.com' + path, {
-      headers: raw
-        ? { 'Accept': 'application/vnd.github.raw' }
-        : { 'Accept': 'application/vnd.github+json' },
+      headers: headers,
       signal: ctrl ? ctrl.signal : undefined
     }).then(
       function (r) {
@@ -66,15 +76,77 @@
 
   /* --------------------------------------------------- 本地兜底数据 + 精灵映射 */
   var SPRITE_NAMES = {
-    pikachu: '皮卡丘', squirtle: '杰尼龟', eevee: '伊布', bulbasaur: '妙蛙种子',
-    charmander: '小火龙', gengar: '耿鬼', pokeball: '精灵球', berry: '树果'
+    parsnip: '防风草', cauliflower: '花椰菜', pumpkin: '南瓜', corn: '玉米',
+    strawberry: '草莓', blueberry: '蓝莓', melon: '甜瓜', hotpepper: '辣椒',
+    starfruit: '星之果实', eggplant: '茄子', sunflower: '向日葵', chicken: '小鸡',
+    junimo: '祝尼魔', chest: '木箱', sign: '木牌', chip: '芯片', bolt: '电流',
+    wateringcan: '洒水壶', farmer: '农场主',
+    vFarmer: '农场主', vCarpenter: '木匠', vBlacksmith: '铁匠', vShop: '杂货店老板',
+    vDoctor: '医生', vWizard: '法师', vMayor: '镇长', vMiner: '矿工', cow: '奶牛',
+    bFarmer: '农场主', bRobin: '木匠罗宾', bClint: '铁匠克林特', bPierre: '店主皮埃尔',
+    bHarvey: '医生哈维', bWizard: '法师拉斯莫迪斯', bLewis: '镇长刘易斯', bMaru: '工程师玛鲁',
+    bPenny: '教师佩妮', bCaroline: '卡罗琳', bAbigail: '阿比盖尔',
+    robin: '罗宾', clint: '克林特', pierre: '皮埃尔', harvey: '哈维',
+    wizard: '法师', lewis: '刘易斯', penny: '佩妮', caroline: '卡罗琳', abigail: '阿比盖尔'
   };
 
+  /* 语言 → 作物图标（星露谷风格：不同作物代表不同技术栈） */
   var LANG_SPRITE = {
-    'C': 'squirtle', 'C++': 'pikachu', 'Python': 'bulbasaur', 'TypeScript': 'eevee',
-    'HTML': 'berry', 'JavaScript': 'pikachu', 'Java': 'gengar', 'C#': 'charmander',
-    'Shell': 'charmander', 'Vue': 'eevee', 'Go': 'bulbasaur', 'Rust': 'gengar'
+    'C': 'corn', 'C++': 'starfruit', 'Python': 'eggplant', 'TypeScript': 'blueberry',
+    'HTML': 'parsnip', 'JavaScript': 'melon', 'Java': 'pumpkin', 'C#': 'cauliflower',
+    'Shell': 'hotpepper', 'Vue': 'strawberry', 'Go': 'cauliflower', 'Rust': 'pumpkin',
+    'Arduino': 'chip', 'Multisim': 'bolt', 'CSS': 'sunflower'
   };
+
+  /* --------------------------------------------------- 仓库分类（左栏分组 + 筛选） */
+  var CATEGORIES = [
+    {
+      id: 'embedded', name: '嵌入式与物联网', icon: 'corn',
+      keys: ['esp32', 'esp8266', 'stm32', 'freertos', 'rtos', 'rt-thread', 'rtt', 'arduino',
+        'embedded', 'firmware', 'iot', 'sensor', '智能家居', '嵌入式', '单片机', '硬件']
+    },
+    {
+      id: 'circuit', name: '电路与仿真', icon: 'hotpepper',
+      keys: ['multisim', 'ne555', '74ls', 'lm358', 'analog', 'digital', 'circuit', 'schematic',
+        'proteus', '电路', '模电', '数电', '仿真', 'pcb']
+    },
+    {
+      id: 'ai', name: 'AI 与智能体', icon: 'junimo',
+      keys: ['agent', 'llm', 'rag', 'ai', 'gpt', 'knowledge', 'chatbot', '模型',
+        '智能体', '知识库', '语音']
+    },
+    {
+      id: 'web', name: '前端与主页', icon: 'sunflower',
+      keys: ['html', 'css', 'javascript', 'typescript', 'react', 'vue', 'pages',
+        'website', 'homepage', '前端', '主页']
+    },
+    { id: 'other', name: '其他', icon: 'parsnip', keys: [] }
+  ];
+
+  function catById(id) {
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].id === id) return CATEGORIES[i];
+    }
+    return CATEGORIES[CATEGORIES.length - 1];
+  }
+
+  /* 自动归类：显式 cat > 关键词命中（话题/名称/简介/语言）> 其他 */
+  function categorize(repo) {
+    if (repo && repo.cat && catById(repo.cat).id === repo.cat) return repo.cat;
+    var hay = [
+      repo && repo.name || '',
+      repo && repo.desc || '',
+      (repo && repo.topics || []).join(' '),
+      repo && repo.lang || ''
+    ].join(' ').toLowerCase();
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      var c = CATEGORIES[i];
+      for (var j = 0; j < c.keys.length; j++) {
+        if (hay.indexOf(c.keys[j]) > -1) return c.id;
+      }
+    }
+    return 'other';
+  }
 
   var LANG_COLOR = {
     'C': '#555555', 'C++': '#f34b7d', 'Python': '#3572A5', 'TypeScript': '#3178c6',
@@ -84,7 +156,7 @@
   };
 
   var REPOS = [
-    { name: 'Smart-Home-Controller', sprite: 'pikachu', lang: 'C++', color: '#f34b7d',
+    { name: 'Smart-Home-Controller', sprite: 'starfruit', cat: 'embedded', lang: 'C++', color: '#f34b7d',
       desc: 'ESP32-S3 智能家居终端，集成小智 AI、环境传感器、毫米波雷达、串口屏与微信小程序。',
       stars: 42, forks: 6, watchers: 3, commits: 128, branches: 2, license: 'MIT 许可证',
       updated: '更新于 2 天前', topics: ['esp32-s3', 'smart-home', 'iot', 'xiaozhi-ai', 'wechat-miniprogram'],
@@ -97,7 +169,7 @@
         { name: 'README.md', dir: false, update: 'docs: 更新演示 GIF', time: '2 天前' }
       ],
       readme: {
-        lede: '基于 ESP32-S3 的智能家居中控终端：一块串口屏 + 一路语音 + 一堆传感器，把房间变成会说话的宝可梦小屋。',
+        lede: '基于 ESP32-S3 的智能家居中控终端：一块串口屏 + 一路语音 + 一堆传感器，把房间变成会说话的小屋。',
         list: [
           '小智 AI 离线唤醒 + 流式语音对话',
           'SHT30 温湿度 / MQ-2 烟雾 / 毫米波雷达存在检测',
@@ -116,7 +188,7 @@
         { name: '发布 Release', state: 'pass', time: '1 周前' }
       ]
     },
-    { name: 'FreeRTOS-Warehouse-Count-Access-System', sprite: 'squirtle', lang: 'C', color: '#555555',
+    { name: 'FreeRTOS-Warehouse-Count-Access-System', sprite: 'corn', cat: 'embedded', lang: 'C', color: '#555555',
       desc: '基于 STM32F103 和 FreeRTOS 的仓库人数统计与门禁系统。',
       stars: 24, forks: 8, watchers: 2, commits: 86, branches: 1, license: 'Apache-2.0 许可证',
       updated: '更新于 3 天前', topics: ['stm32', 'freertos', 'rtos', 'access-control'],
@@ -127,14 +199,14 @@
         { name: 'README.md', dir: false, update: 'docs: 任务调度说明', time: '3 天前' }
       ],
       readme: {
-        lede: '仓库门口的「人数守门员」：进一个人加一，出一个人减一，超限就拉警报——像杰尼龟守住自己的水枪阵地。',
+        lede: '仓库门口的「人数守门员」：进一个人加一，出一个人减一，超限就拉警报——像农场主守着自己的菜地。',
         list: ['FreeRTOS 四任务：计数 / 门禁 / 显示 / 报警', '红外对射传感器双向进出识别', 'OLED 实时显示在场人数']
       },
       issues: [{ title: '断电重启后计数丢失', sub: '打开于 5 天前 · #7', state: 'open' }],
       pulls: [{ title: 'feat: 增加 RFID 刷卡开门', sub: '打开于 4 天前 · #8', state: 'pr' }],
       actions: [{ name: '静态检查 cppcheck', state: 'pass', time: '3 天前' }]
     },
-    { name: 'Smart-Desktop-Pet', sprite: 'eevee', lang: 'C', color: '#555555',
+    { name: 'Smart-Desktop-Pet', sprite: 'chicken', cat: 'embedded', lang: 'C', color: '#555555',
       desc: '离线语音交互的桌面电子宠物，支持多种动作和情绪互动。',
       stars: 18, forks: 4, watchers: 2, commits: 64, branches: 1, license: 'MIT 许可证',
       updated: '更新于 1 周前', topics: ['desktop-pet', 'voice-interaction', 'stm32'],
@@ -152,7 +224,7 @@
       pulls: [{ title: 'feat: 新增睡觉呼吸灯', sub: '合并于 1 周前 · #6', state: 'merged' }],
       actions: [{ name: '构建固件', state: 'pass', time: '1 周前' }]
     },
-    { name: 'MemoStudy-Agent', sprite: 'bulbasaur', lang: 'Python', color: '#3572A5',
+    { name: 'MemoStudy-Agent', sprite: 'blueberry', cat: 'ai', lang: 'Python', color: '#3572A5',
       desc: '本地优先的个人知识管理与学习助手，支持知识库问答与复盘。',
       stars: 15, forks: 3, watchers: 2, commits: 210, branches: 3, license: 'GPL-3.0 许可证',
       updated: '更新于 1 周前', topics: ['python', 'rag', 'knowledge-base', 'llm'],
@@ -170,7 +242,7 @@
       pulls: [{ title: 'refactor: 检索管线模块化', sub: '合并于 1 周前 · #16', state: 'merged' }],
       actions: [{ name: '单元测试 pytest', state: 'pass', time: '1 周前' }]
     },
-    { name: 'ProtoVibe-Agent', sprite: 'pokeball', lang: 'TypeScript', color: '#3178c6',
+    { name: 'ProtoVibe-Agent', sprite: 'melon', cat: 'ai', lang: 'TypeScript', color: '#3178c6',
       desc: '面向 AI 产品原型与交互 Agent 的结构化产品工作台。',
       stars: 12, forks: 2, watchers: 1, commits: 156, branches: 4, license: 'MIT 许可证',
       updated: '更新于 2 周前', topics: ['typescript', 'agent', 'prototype', 'react'],
@@ -181,14 +253,14 @@
         { name: 'README.md', dir: false, update: 'docs: 架构图', time: '2 周前' }
       ],
       readme: {
-        lede: '收服一个想法就像投出一颗精灵球：把 AI 产品原型拆成节点，在画布上连一连就能跑。',
+        lede: '收服一个想法就像投出一颗木箱：把 AI 产品原型拆成节点，在画布上连一连就能跑。',
         list: ['可视化 Agent 流程编排画布', '内置提示词模板与变量插槽', 'React 18 + Zustand + Vite']
       },
       issues: [{ title: '画布撤销/重做偶发丢步骤', sub: '打开于 2 周前 · #9', state: 'open' }],
       pulls: [],
       actions: [{ name: '类型检查 tsc', state: 'pass', time: '2 周前' }]
     },
-    { name: 'Temperature-Limit-Alarm-Based-on-Analog-Electronics', sprite: 'charmander', lang: 'Multisim', color: '#f69e1d',
+    { name: 'Temperature-Limit-Alarm-Based-on-Analog-Electronics', sprite: 'hotpepper', cat: 'circuit', lang: 'Multisim', color: '#f69e1d',
       desc: 'MF58 NTC + LM358 窗口比较器 + 双 NE555 的纯模拟高低温声光报警系统。',
       stars: 11, forks: 2, watchers: 1, commits: 38, branches: 1, license: '无许可证',
       updated: '更新于 2 周前', topics: ['analog-electronics', 'multisim', 'ne555'],
@@ -201,7 +273,7 @@
       readme: { lede: '纯模拟电路课程设计：温度越界，灯亮蜂鸣器叫，没有任何单片机参与。', list: ['MF58 NTC 测温电桥', 'LM358 窗口比较器', '双 NE555 声光报警'] },
       issues: [], pulls: [], actions: []
     },
-    { name: 'Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits', sprite: 'gengar', lang: 'Multisim', color: '#f69e1d',
+    { name: 'Time-Limited-Four-Channel-Responder-Based-on-Digital-Circuits', sprite: 'pumpkin', cat: 'circuit', lang: 'Multisim', color: '#f69e1d',
       desc: '74LS 系列芯片实现的四路抢答、倒计时、锁存与超时报警抢答器。',
       stars: 9, forks: 2, watchers: 1, commits: 30, branches: 1, license: '无许可证',
       updated: '更新于 2 周前', topics: ['digital-circuits', '74ls', 'multisim'],
@@ -210,11 +282,11 @@
         { name: 'multisim/', dir: true, update: 'feat: 主持人复位电路', time: '2 周前' },
         { name: 'README.md', dir: false, update: 'docs: 状态转移说明', time: '2 周前' }
       ],
-      readme: { lede: '数电课设：四只耿鬼抢答一只精灵球——74LS148 编码、74LS279 锁存、555 倒计时。', list: ['优先编码 + 锁存', '倒计时与超时报警'] },
+      readme: { lede: '数电课设：四只耿鬼抢答一只木箱——74LS148 编码、74LS279 锁存、555 倒计时。', list: ['优先编码 + 锁存', '倒计时与超时报警'] },
       issues: [], pulls: [], actions: []
     },
-    { name: 'yythlss.github.io', sprite: 'berry', lang: 'HTML', color: '#e34c26',
-      desc: '就是你现在看到的这个宝可梦风格主页。',
+    { name: 'yythlss.github.io', sprite: 'parsnip', cat: 'web', lang: 'HTML', color: '#e34c26',
+      desc: '就是你现在看到的这个星露谷风格主页。',
       stars: 5, forks: 1, watchers: 1, commits: 52, branches: 1, license: 'MIT 许可证',
       updated: '更新于 3 天前', topics: ['github-pages', 'css'],
       url: 'https://github.com/yythlss/yythlss.github.io',
@@ -223,11 +295,11 @@
         { name: 'index.html', dir: false, update: 'feat: 仓库详情布局', time: '3 天前' },
         { name: 'sprites.js', dir: false, update: 'feat: 像素精灵数据', time: '3 天前' }
       ],
-      readme: { lede: '用 HTML / CSS / JavaScript 搭的界面，把 GitHub 主页重绘成宝可梦风格的野外画面。', list: ['横幅取自参考图', 'GitHub API 实时数据', '贡献热力图 + 对话气泡'] },
+      readme: { lede: '用 HTML / CSS / JavaScript 搭的界面，把 GitHub 主页重绘成星露谷的农场画面。', list: ['横幅取自参考图', 'GitHub API 实时数据', '贡献热力图 + 对话气泡'] },
       issues: [], pulls: [],
       actions: [{ name: '部署 Pages deploy', state: 'pass', time: '3 天前' }]
     },
-    { name: 'rsoc-rtt', sprite: 'squirtle', lang: 'C', color: '#555555',
+    { name: 'rsoc-rtt', sprite: 'cauliflower', cat: 'embedded', lang: 'C', color: '#555555',
       desc: '2026 RT-Thread 暑期夏令营仓库。',
       stars: 0, forks: 0, watchers: 0, commits: 1, branches: 1, license: '无许可证',
       updated: '更新于刚刚', topics: ['rt-thread', 'rsoc'],
@@ -251,9 +323,9 @@
   function mergeRepo(api) {
     var cur = findRepo(api.name) || {};
     var lang = api.language || '其它';
-    return {
+    var merged = {
       name: api.name,
-      sprite: cur.sprite || LANG_SPRITE[lang] || 'pokeball',
+      sprite: cur.sprite || LANG_SPRITE[lang] || 'parsnip',
       lang: lang,
       color: LANG_COLOR[lang] || '#8b949e',
       desc: api.description || cur.desc || '这个仓库还没有简介。',
@@ -276,6 +348,8 @@
       readmeCurated: cur.readme || null,
       _files: null, _readme: null, _issuesLive: null, _pullsLive: null
     };
+    merged.cat = categorize(merged);
+    return merged;
   }
 
   /* --------------------------------------------------- 1. 像素精灵挂载 */
@@ -287,12 +361,12 @@
     document.body.appendChild(tip);
 
     function bindTips(scope) {
-      $$('.pokeball-mark, .repo-bar-sprite, .bubble-sprite, .repo-ic, .act-sprite', scope).forEach(function (node) {
+      $$('.pokeball-mark, .repo-bar-sprite, .bubble-sprite, .repo-ic, .act-sprite, .cast-sprite, .v-ic, .cat-ic, .cat-chip-ic, .villager-face', scope).forEach(function (node) {
         if (node._tipBound) return;
         node._tipBound = true;
         node.addEventListener('mouseenter', function () {
           var label = node.getAttribute('data-label') ||
-            (node.classList.contains('pokeball-mark') ? '精灵球' : '');
+            (node.classList.contains('pokeball-mark') ? '木箱' : '');
           if (!label) return;
           var box = node.getBoundingClientRect();
           tip.textContent = label;
@@ -310,7 +384,10 @@
     var squirtle = $('.bubble-sprite');
     if (squirtle) {
       squirtle.addEventListener('click', function () {
-        say('杰尼龟：杰尼杰尼！（意思是——记得给项目点个 Star。）');
+        var who = squirtle.getAttribute('data-label') || '法师';
+        if (who === '法师') say('法师：这片农场里的每一行代码，都是一颗会发芽的星之果实。');
+        else if (who === '祝尼魔') say('祝尼魔：祝尼祝尼！（意思是——记得给项目点个 Star。）');
+        else say(who + '：欢迎来到鹈鹕镇，愿你的仓库年年丰收。');
       });
       squirtle.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); squirtle.click(); }
@@ -322,7 +399,7 @@
   function heatmapCell(level, stamp, count) {
     var el = document.createElement('i');
     el.className = 'cell l' + level;
-    el.title = stamp + '：捕获 ' + count + ' 只宝可梦（' + count + ' 次贡献）';
+    el.title = stamp + '：收获 ' + count + ' 次提交（' + count + ' 次贡献）';
     el.setAttribute('aria-label', el.title);
     el.dataset.count = count;
     el.dataset.date = stamp;
@@ -333,8 +410,8 @@
     host.addEventListener('click', function (event) {
       var cell = event.target.closest('.cell');
       if (!cell) return;
-      say('杰尼龟：' + cell.dataset.date + ' 在那片草丛里捕获了 ' + cell.dataset.count + ' 只宝可梦，' +
-        (Number(cell.dataset.count) > 9 ? '那天手感奇佳！' : '虽然不算多，但每天都要来草丛走一圈。'));
+      say('祝尼魔：' + cell.dataset.date + ' 在那片田里收获了 ' + cell.dataset.count + ' 次提交，' +
+        (Number(cell.dataset.count) > 9 ? '那天手感奇佳！' : '虽然不算多，但每天都要来田里走一圈。'));
     });
   }
 
@@ -451,13 +528,9 @@
     // 顶栏
     $('#repo-title').textContent = GITHUB_USER + ' / ' + repo.name;
     var spriteEl = $('#repo-bar-sprite');
-    spriteEl.setAttribute('data-sprite', repo.sprite);
-    spriteEl.setAttribute('data-label', SPRITE_NAMES[repo.sprite] || '宝可梦');
-    var m = (typeof window.spriteMetrics === 'function') ? window.spriteMetrics(repo.sprite) : { w: 20, h: 20 };
-    spriteEl.style.setProperty('--sw', m.w * 2);
-    spriteEl.style.setProperty('--sh', m.h * 2);
-    if (typeof window.spriteDataUri === 'function') {
-      spriteEl.style.backgroundImage = 'url("' + window.spriteDataUri(repo.sprite) + '")';
+    spriteEl.setAttribute('data-label', SPRITE_NAMES[repo.sprite] || '作物');
+    if (typeof window.applySprite === 'function') {
+      window.applySprite(spriteEl, repo.sprite, 2);
     }
 
     // 简介 + 主题
@@ -498,11 +571,11 @@
     var issues = repo._issuesLive || repo.issues;
     $('#issue-list').innerHTML = issues.length
       ? issues.map(issueRowHtml).join('')
-      : '<li><span class="issue-mark is-open"></span><div><p class="issue-title">还没有议题</p><p class="issue-sub">这片草丛非常安静</p></div></li>';
+      : '<li><span class="issue-mark is-open"></span><div><p class="issue-title">还没有议题</p><p class="issue-sub">这片田里非常安静</p></div></li>';
     var pulls = repo._pullsLive || repo.pulls;
     $('#pull-list').innerHTML = pulls.length
       ? pulls.map(issueRowHtml).join('')
-      : '<li><span class="issue-mark is-pr"></span><div><p class="issue-title">没有待处理的拉取请求</p><p class="issue-sub">训练家把分支都收服了</p></div></li>';
+      : '<li><span class="issue-mark is-pr"></span><div><p class="issue-title">没有待处理的拉取请求</p><p class="issue-sub">农场主把分支都收好了</p></div></li>';
     $('#action-list').innerHTML = repo.actions.length
       ? repo.actions.map(actionRowHtml).join('')
       : '<li><span class="action-dot"></span><div><p class="issue-title">尚未配置工作流</p><p class="issue-sub">纯硬件 / 仿真仓库，不需要 CI</p></div></li>';
@@ -649,7 +722,7 @@
         if (currentRepo === repo) {
           $('#issue-list').innerHTML = repo._issuesLive.length
             ? repo._issuesLive.map(issueRowHtml).join('')
-            : '<li><span class="issue-mark is-open"></span><div><p class="issue-title">还没有议题</p><p class="issue-sub">这片草丛非常安静</p></div></li>';
+            : '<li><span class="issue-mark is-open"></span><div><p class="issue-title">还没有议题</p><p class="issue-sub">这片田里非常安静</p></div></li>';
         }
       })
       .catch(function () { /* 保留内置数据 */ });
@@ -671,7 +744,7 @@
         if (currentRepo === repo) {
           $('#pull-list').innerHTML = repo._pullsLive.length
             ? repo._pullsLive.map(issueRowHtml).join('')
-            : '<li><span class="issue-mark is-pr"></span><div><p class="issue-title">没有待处理的拉取请求</p><p class="issue-sub">训练家把分支都收服了</p></div></li>';
+            : '<li><span class="issue-mark is-pr"></span><div><p class="issue-title">没有待处理的拉取请求</p><p class="issue-sub">农场主把分支都收好了</p></div></li>';
         }
       })
       .catch(function () { /* 保留内置数据 */ });
@@ -704,7 +777,7 @@
       if (repo) {
         renderRepo(repo);
         activateTab('code');
-        say('杰尼龟：翻开了 ' + repo.name + ' 的图鉴页！★ ' + repo.stars + '，' + repo.lang + ' 编写，' + repo.updated + '。');
+        say('祝尼魔：翻开了 ' + repo.name + ' 的档案！★ ' + repo.stars + '，' + repo.lang + ' 编写，' + repo.updated + '。');
       }
     });
 
@@ -722,8 +795,8 @@
       starBtn.setAttribute('aria-pressed', pressed ? 'false' : 'true');
       var count = $('#star-count');
       count.textContent = Number(count.textContent) + (pressed ? -1 : 1);
-      say(pressed ? '杰尼龟：取消了星标，宝可梦有点失落。'
-                  : '杰尼龟：★ 已点亮星标！去 GitHub 上给 ' + (currentRepo ? currentRepo.name : '它') + ' 点一个真的吧！');
+      say(pressed ? '祝尼魔：取消了星标，作物有点蔫了。'
+                  : '祝尼魔：★ 已点亮星标！去 GitHub 上给 ' + (currentRepo ? currentRepo.name : '它') + ' 点一个真的吧！');
     });
   }
 
@@ -734,27 +807,113 @@
     return findRepo(name);
   }
 
-  /* 左栏仓库列表渲染（实时数据到达后重建） */
+  /* 左栏仓库列表渲染（按分类分组；实时数据到达后重建） */
   function renderRepoList(repos) {
     var list = $('#repo-list');
     if (!list) return;
-    list.innerHTML = repos.map(function (r) {
-      return '<li><a class="repo-item" href="#" data-repo="' + esc(r.name) + '">' +
-        '<span class="repo-ic" data-sprite="' + r.sprite + '" data-scale="1"></span>' +
-        '<span class="repo-name">' + esc(r.name) + '</span>' +
-        '<span class="repo-star">★</span></a></li>';
-    }).join('');
+    var byCat = {};
+    repos.forEach(function (r) {
+      var c = r.cat || categorize(r);
+      r.cat = c;
+      (byCat[c] = byCat[c] || []).push(r);
+    });
+    var html = '';
+    CATEGORIES.forEach(function (c) {
+      var items = byCat[c.id];
+      if (!items || !items.length) return;
+      html += '<li class="cat-head" data-cat="' + c.id + '">' +
+        '<span class="cat-ic" data-sprite="' + c.icon + '" data-scale="1"></span>' +
+        '<span class="cat-name">' + esc(c.name) + '</span>' +
+        '<span class="cat-count">' + items.length + '</span></li>';
+      html += items.map(function (r) {
+        return '<li class="repo-li" data-cat="' + c.id + '"><a class="repo-item" href="#" data-repo="' +
+          esc(r.name) + '">' +
+          '<span class="repo-ic" data-sprite="' + r.sprite + '" data-scale="1"></span>' +
+          '<span class="repo-name">' + esc(r.name) + '</span>' +
+          '<span class="repo-star">★</span></a></li>';
+      }).join('');
+    });
+    list.innerHTML = html;
     var first = $('.repo-item', list);
     if (first) first.classList.add('is-active');
     if (typeof window.mountSprites === 'function') window.mountSprites(list);
     if (window._bindSpriteTips) window._bindSpriteTips(list);
+    renderCatFilter();
+    applyFilters();
   }
 
-  function updateHint() {
+  function updateHint(shown) {
     var hint = $('#repo-hint');
     if (!hint) return;
     var n = live.ok ? live.repos.length : REPOS.length;
+    if (typeof shown === 'number') {
+      var cat = filterState.cat === 'all' ? '' : '（' + catById(filterState.cat).name + '）';
+      hint.textContent = filterState.q
+        ? '匹配到 ' + shown + ' 个仓库' + cat
+        : '显示 ' + shown + ' / ' + n + ' 个仓库' + cat;
+      return;
+    }
     hint.textContent = n + ' 个公开仓库' + (live.ok ? ' · GitHub API 实时' : ' · 内置数据');
+  }
+
+  /* 分类筛选按钮 */
+  var filterState = { cat: 'all', q: '' };
+
+  function renderCatFilter() {
+    var host = $('#cat-filter');
+    if (!host) return;
+    var repos = live.ok ? live.repos : REPOS;
+    var counts = {};
+    repos.forEach(function (r) {
+      var c = r.cat || categorize(r);
+      counts[c] = (counts[c] || 0) + 1;
+    });
+    var html = '<option value="all" selected>全部仓库 (' + repos.length + ')</option>';
+    CATEGORIES.forEach(function (c) {
+      if (!counts[c.id]) return;
+      html += '<option value="' + c.id + '">' + esc(c.name) + ' (' + counts[c.id] + ')</option>';
+    });
+    host.innerHTML = html;
+
+    if (!host._bound) {
+      host._bound = true;
+      host.addEventListener('change', function () {
+        filterState.cat = host.value;
+        var n = applyFilters();
+        var name = filterState.cat === 'all' ? '全部' : catById(filterState.cat).name;
+        say('祝尼魔：翻到「' + name + '」这一畦，共 ' + n + ' 个仓库。');
+      });
+    }
+
+    // 如果当前已选某个分类，重新选中
+    host.value = filterState.cat || 'all';
+  }
+
+  /* 分类 + 关键词 双重过滤 */
+  function applyFilters() {
+    var list = $('#repo-list');
+    if (!list) return 0;
+    var shown = 0;
+    $$('.repo-li', list).forEach(function (li) {
+      var link = $('.repo-item', li);
+      var name = (link && link.getAttribute('data-repo') || '').toLowerCase();
+      var okCat = filterState.cat === 'all' || li.getAttribute('data-cat') === filterState.cat;
+      var okQ = !filterState.q || name.indexOf(filterState.q) > -1;
+      var hit = okCat && okQ;
+      li.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    CATEGORIES.forEach(function (c) {
+      var head = $('.cat-head[data-cat="' + c.id + '"]', list);
+      if (!head) return;
+      var any = false;
+      $$('.repo-li[data-cat="' + c.id + '"]', list).forEach(function (li) {
+        if (li.style.display !== 'none') any = true;
+      });
+      head.style.display = any ? '' : 'none';
+    });
+    updateHint(shown);
+    return shown;
   }
 
   /* 右上角星标徽章：全部公开仓库的星标总数（真实数据） */
@@ -770,21 +929,8 @@
 
   /* ------------------------------------- 4. 仓库搜索过滤（左栏与顶栏共用） */
   function filterRepos(q) {
-    var list = $('#repo-list');
-    if (!list) return 0;
-    var shown = 0;
-    $$('.repo-item', list).forEach(function (item) {
-      var name = (item.dataset.repo || '').toLowerCase();
-      var hit = !q || name.indexOf(q) > -1;
-      item.parentElement.style.display = hit ? '' : 'none';
-      if (hit) shown++;
-    });
-    var hint = $('#repo-hint');
-    if (hint) {
-      if (q) hint.textContent = '匹配到 ' + shown + ' 个仓库';
-      else updateHint();
-    }
-    return shown;
+    filterState.q = q || '';
+    return applyFilters();
   }
 
   function initRepoSearch() {
@@ -807,14 +953,14 @@
       event.preventDefault();
       var q = input.value.trim();
       if (!q) {
-        say('杰尼龟：请先输入要搜索的仓库或训练家名字。');
+        say('祝尼魔：请先输入要搜索的仓库或农场主名字。');
         return;
       }
       var shown = filterRepos(q.toLowerCase());
       if (shown > 0) {
-        say('杰尼龟：在草丛里找到了 ' + shown + ' 个匹配「' + q + '」的仓库，看左边！');
+        say('祝尼魔：在田里找到了 ' + shown + ' 个匹配「' + q + '」的仓库，看左边！');
       } else {
-        say('杰尼龟：本地没有「' + q + '」，去 GitHub 全站搜索看看！');
+        say('祝尼魔：本地没有「' + q + '」，去 GitHub 全站搜索看看！');
         window.open('https://github.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener');
       }
     });
@@ -830,9 +976,38 @@
   var liveEvents = [];
   var currentActivity = [];
 
+  /* 解析「更新于 2 天前」这类相对时间字符串 → Date（内置数据没有时间戳字段） */
+  function parseAgo(str) {
+    var m = String(str || '').match(/(\d+)\s*(分钟|小时|天|周|个月|月|年)/);
+    if (!m) return null;
+    var n = parseInt(m[1], 10);
+    var unit = m[2];
+    var ms = 0;
+    if (unit === '分钟') ms = n * 60000;
+    else if (unit === '小时') ms = n * 3600000;
+    else if (unit === '天') ms = n * 86400000;
+    else if (unit === '周') ms = n * 7 * 86400000;
+    else if (unit === '个月' || unit === '月') ms = n * 30 * 86400000;
+    else if (unit === '年') ms = n * 365 * 86400000;
+    return new Date(Date.now() - ms);
+  }
+
+  /* GitHub API 不可用（未认证限流 60 次/小时）时的兜底动态，
+     由内置仓库数据的更新时间与最近一次改动说明拼出，保证动态面板不会空白 */
+  function fallbackActivity() {
+    var items = REPOS.map(function (r) {
+      var msg = (r.files && r.files[0] && r.files[0].update) || '代码更新';
+      return { kind: 'push', repo: r.name, msg: msg, at: parseAgo(r.updated) || new Date() };
+    });
+    items.sort(function (a, b) { return b.at.getTime() - a.at.getTime(); });
+    return items.slice(0, 8);
+  }
+
   function spriteForRepo(name) {
     var r = findRepoLive(name);
-    return r && r.sprite ? r.sprite : 'pokeball';
+    if (r && r.sprite) return r.sprite;
+    var builtin = REPOS.filter(function (x) { return x.name === name; })[0];
+    return builtin && builtin.sprite ? builtin.sprite : 'parsnip';
   }
 
   function shortMsg(msg) {
@@ -914,7 +1089,7 @@
     var list = $('#activity-list');
     if (!list) return;
     if (!currentActivity.length) {
-      list.innerHTML = '<li><span class="act-sprite" data-sprite="pokeball" data-scale="2"></span>' +
+      list.innerHTML = '<li><span class="act-sprite" data-sprite="chest" data-scale="2"></span>' +
         '<p>最近没有公开动态<span class="act-time">—</span></p></li>';
     } else {
       list.innerHTML = currentActivity.map(function (it) {
@@ -961,16 +1136,43 @@
   }
 
   /* ----------------------------------------------------- 7. 对话气泡 */
-  var LINES = [
-    '一起探索宝可梦的世界，用代码收服无限可能！',
-    '欢迎来到 GitHub 草丛！页面数据直接来自 GitHub API。',
-    '这里是 yythlss 的图鉴：嵌入式系统、智能硬件、数字与模拟电路。',
-    '按 / 可以直接跳进搜索框，就像在野外使用「飞翔」。',
-    '心血来潮的时候，去草丛里 commit 一次，贡献图就会变绿。',
-    '仓库的星标、议题和 README 都是实时拉取的哦。'
-  ];
+  var SPEAKER_LINES = {
+    '农场主': [
+      '欢迎来到我的开发者农场！这里种着嵌入式、电路和 AI 的作物。',
+      '按 / 可以直接打开搜索框，跟在农场里按快捷键一样顺手。'
+    ],
+    '罗宾': [
+      '再复杂的东西也要从一块好木头开始。',
+      '每颗星标都是来年丰收的种子，别吝啬你的 Star。'
+    ],
+    '阿比盖尔': [
+      '小时候我喜欢一个人去森林探险，现在把好奇心写进代码里。',
+      'bug 就像矿洞里的石头，敲一敲总有惊喜。'
+    ],
+    '玛鲁': [
+      '喜欢在诊所和实验室之间穿梭，用小巧的工具解决实际问题。',
+      '这个农场里的电路和 AI 作物长得真不错。'
+    ],
+    '刘易斯': [
+      '每一颗星标都是来年丰收的种子。',
+      '镇长提醒：别忘了给喜欢的仓库点个 Star。'
+    ],
+    '哈维': [
+      '保持健康节奏，按时提交代码，不要熬夜修仙。',
+      '出现问题不要慌，先写个测试复现它。'
+    ],
+    '佩妮': [
+      '写注释和教别人一样重要，文档是代码最好的伙伴。',
+      '看不懂的代码，就像没有书签的书。'
+    ],
+    '法师': [
+      '代码即符文，优雅的结构自有魔力。',
+      '这片农场里的每一行代码，都是一颗会发芽的星之果实。'
+    ]
+  };
 
   var typing = null;
+  var currentSpeaker = '法师';
 
   function say(text, options) {
     var host = $('#dialogue-text');
@@ -1005,18 +1207,51 @@
   function initDialogue() {
     var text = $('#dialogue-text');
     if (!text) return;
-    say(LINES[0]);
+    var squirtle = $('.bubble-sprite');
+    var speakerName = $('#speaker-name');
 
-    var index = 0;
+    function setSpeaker(name, spriteKey) {
+      currentSpeaker = name;
+      if (speakerName) speakerName.textContent = name;
+      if (squirtle) {
+        squirtle.setAttribute('data-label', name);
+        if (typeof window.applySprite === 'function' && spriteKey) {
+          window.applySprite(squirtle, spriteKey, 1.5);
+        }
+      }
+      $$('.villager-face').forEach(function (face) {
+        face.classList.toggle('is-active', face.getAttribute('data-speaker') === name);
+      });
+    }
+
+    function sayBySpeaker(name, options) {
+      var lines = SPEAKER_LINES[name] || SPEAKER_LINES['法师'];
+      say(pick(lines), options);
+    }
+
+    // 初始化当前说话人
+    if (squirtle) {
+      currentSpeaker = squirtle.getAttribute('data-label') || '法师';
+    }
+    setSpeaker(currentSpeaker, squirtle ? squirtle.getAttribute('data-sprite') : 'bWizard');
+    sayBySpeaker(currentSpeaker, { instant: true });
+
+    // 底部居民头像点击切换
+    $$('.villager-face').forEach(function (face) {
+      face.addEventListener('click', function () {
+        var name = face.getAttribute('data-speaker') || face.getAttribute('data-label') || '法师';
+        var sprite = face.getAttribute('data-sprite') || 'bWizard';
+        setSpeaker(name, sprite);
+        sayBySpeaker(name);
+      });
+      face.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); face.click(); }
+      });
+    });
+
     $$('[data-dialogue]').forEach(function (button) {
       button.addEventListener('click', function () {
-        var mode = button.getAttribute('data-dialogue');
-        if (mode === 'next') {
-          index = (index + 1) % LINES.length;
-          say(LINES[index]);
-        } else {
-          say(pick(LINES));
-        }
+        sayBySpeaker(currentSpeaker);
       });
     });
 
@@ -1039,13 +1274,13 @@
     var addBtn = $('.btn-new-repo');
     if (addBtn) {
       addBtn.addEventListener('click', function () {
-        say('杰尼龟：要新建仓库？先想好名字，草丛里可不能随便插旗。');
+        say('祝尼魔：要新建仓库？先想好名字，田里可不能随便插旗。');
       });
     }
     var plusBtn = $('.btn-add');
     if (plusBtn) {
       plusBtn.addEventListener('click', function () {
-        say('杰尼龟：＋ 是留给下一只宝可梦的位置！');
+        say('祝尼魔：＋ 是留给下一只作物的位置！');
       });
     }
   }
@@ -1093,7 +1328,37 @@
     tryLiveHeatmap();
   }
 
-  /* --------------------------------------------------- 9. 年份与启动 */
+  /* --------------------------------------------------- 9. 居民面板渲染 */
+  function renderVillagers() {
+    var list = $('#villager-list');
+    if (!list) return;
+    var items = $$('li', list);
+    items.forEach(function (li) {
+      var name = li.getAttribute('data-name') || '';
+      var role = li.getAttribute('data-role') || '';
+      var sprite = li.getAttribute('data-sprite') || 'vFarmer';
+      li.innerHTML =
+        '<span class="v-ic" data-sprite="' + esc(sprite) + '" data-label="' + esc(name) + '" data-scale="2"></span>' +
+        '<span class="v-info"><span class="v-name">' + esc(name) + '</span>' +
+        '<span class="v-role">' + esc(role) + '</span></span>';
+    });
+    if (typeof window.mountSprites === 'function') window.mountSprites(list);
+    if (window._bindSpriteTips) window._bindSpriteTips(list);
+  }
+
+  /* 按真实月份显示星露谷季节 */
+  function initFarmCalendar() {
+    var nameEl = $('#season-name');
+    var dayEl = $('#season-day');
+    if (!nameEl || !dayEl) return;
+    var now = new Date();
+    var month = now.getMonth();
+    var season = month < 2 ? '冬季' : month < 5 ? '春季' : month < 8 ? '夏季' : month < 11 ? '秋季' : '冬季';
+    nameEl.textContent = season;
+    dayEl.textContent = '第 ' + now.getDate() + ' 天';
+  }
+
+  /* --------------------------------------------------- 10. 年份与启动 */
   function initYear() {
     var year = $('#gba-year');
     if (year) year.textContent = String(new Date().getFullYear());
@@ -1106,8 +1371,15 @@
     initRepoSearch();
     initNavSearch();
     initDialogue();
+    renderVillagers();
+    initFarmCalendar();
     initYear();
+    renderCatFilter();
+    renderRepoList(REPOS);
     renderRepo(REPOS[0]);
+    // 先用内置数据渲染动态，保证 API 限流/断网时右栏不会空白；实时数据到达后会被覆盖
+    currentActivity = fallbackActivity();
+    renderActivityList();
     loadLive(); // 异步接管为实时数据
   }
 

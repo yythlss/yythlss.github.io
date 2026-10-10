@@ -1,0 +1,1373 @@
+/* =====================================================================
+   github-stardew.css — 星露谷农场主题（干净、响应式）
+   ---------------------------------------------------------------------
+   配色参考《星露谷物语》：森林绿底色、奶油/木框面板、草地绿强调。
+   布局：桌面 260px 导航 | 1fr 项目 | 300px 右侧贡献图+动态。
+   手机：单列，导航横向滚动。
+   ===================================================================== */
+
+/* ------------------------------------------------------- 像素字体
+   Zpix（最像素）＝ 星露谷中文 wiki 与游戏本体使用的像素字体。
+   取自 SolidZORO/zpix-pixel-font@v3.1.9 原始 TTF（7.18MB），
+   按本页实际用到的 943 个字符子集化后 woff2 仅 37.6KB。
+   Zpix 设计字号 12px，字号请取 12 的整数倍（12/24/36）才最锐利。 */
+@font-face {
+  font-family: 'Zpix';
+  src: url('stardew/assets/fonts/zpix-subset.woff2') format('woff2'),
+       url('stardew/assets/fonts/zpix-subset.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* 星露谷调色板 —— 整体提亮，呼应游戏内明亮晴天与 HUD 浅木牌观感。
+     截图实测：天空 #38aaff / 云 #cce9ff / 草地 #7bc242 / 沙土 #fed46e / HUD 底色 #ffd688。
+     边框保持实测深棕 #853605，但大面积木色改浅，避免压抑。 */
+  --sd-forest:    #3d6236;
+  --sd-forest-dk: #2a4525;
+  --sd-grass:     #8fda4f;   /* 亮草绿 */
+  --sd-grass-dk:  #6bbf36;   /* 草地深（仍偏亮） */
+  --sd-sky:       #9ad4ff;
+  --sd-sky-btm:   #d7f0a8;
+  /* 木色：大面积用截图 HUD 浅木色，边框用实测深棕 */
+  --sd-wood:      #ffd688;   /* 浅木牌底（HUD 实测 #ffd688） */
+  --sd-wood-dk:   #853605;   /* 边框深棕（实测） */
+  --sd-wood-lt:   #ffebb3;   /* 木高光 */
+  --sd-wood-gold: #dc7b05;   /* 金色细高光（实测） */
+  --sd-paper:     #fffdf5;   /* 面板纸：更浅的奶油色 */
+  --sd-paper-dk:  #f8f0dc;
+  --sd-ink:       #3a2a1a;
+  --sd-ink-soft:  #6b4b2f;
+  --sd-line:      #e2d2a8;
+  --sd-line-dk:   #b9a072;
+  --sd-star:      #f7c948;
+  --sd-heart:     #ef6868;
+  --sd-accent:    #d6655c;
+  --sd-link:      #56963d;
+  --sd-link-h:    #3d6e2a;
+
+  /* 以下取自游戏本体：Maps/MenuTiles.png 的真实菜单配色（逐像素实测） */
+  --sd-frame-out:  #853605;  /* 外圈深棕 (133,54,5)   */
+  --sd-frame-gold: #dc7b05;  /* 金色高光 (220,123,5)  */
+  --sd-frame-mid:  #b14e05;  /* 中棕     (177,78,5)   */
+  --sd-menu:       #fdbc6e;  /* 菜单底色 (253,188,110)*/
+
+  /* 以下取自游戏 HUD 本体 LooseSprites/daybg.png、nightbg.png 实测像素。
+     整体提亮：白天天空更亮、草地更鲜；夜晚保持深蓝。 */
+  --sd-sky-real:   #5cbfff;  /* 亮天空   */
+  --sd-sky-lt:     #a3ddff;  /* 天空浅处 */
+  --sd-cloud:      #dff3ff;  /* 白云     */
+  --sd-horizon:    #8fda4f;  /* 地平线亮草 */
+  --sd-grass-real: #2a8a3a;  /* 鲜草地   */
+  --sd-grass-dk2:  #1b6128;  /* 草地深   */
+  --sd-frame-dark: #5b2b2a;  /* 框内暗棕 (91,43,42)    */
+  --sd-frame-hi:   #fa9305;  /* 框金高光 (250,147,5)   */
+  --sd-dial-face:  #ffd284;  /* 时钟盘面 (255,210,132) */
+  --sd-night:      #1b1a59;  /* 夜空     (27,26,89)    */
+  --sd-night-dk:   #050519;  /* 夜空深   (5,5,25)      */
+  --sd-night-lake: #004063;  /* 夜湖     (0,64,99)     */
+
+  /* 热力图草地色阶 */
+  --l0: #eef8d8;
+  --l1: #c9ee8e;
+  --l2: #8fda4f;
+  --l3: #5cb235;
+  --l4: #357a24;
+
+  --font-pixel: "Zpix", "DotGothic16", "VT323", "Silkscreen", "Press Start 2P",
+    "MS Gothic", "SimSun", "MingLiU", monospace;
+  --font-body: Inter, "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif;
+}
+
+/* ------------------------------------------------------- 基础 */
+html {
+  min-width: 320px;
+}
+
+body.gba-body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--sd-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.65;
+  /* 页面背景 = 明亮晴天：天空 → 白云 → 地平线 → 草地 */
+  background:
+    linear-gradient(180deg,
+      var(--sd-sky-real)   0%   18%,
+      var(--sd-sky-lt)    18%   30%,
+      var(--sd-cloud)     30%   40%,
+      #d9f0a8            40%   46%,
+      var(--sd-grass)     46%   72%,
+      var(--sd-grass-dk)  72%   88%,
+      var(--sd-grass-real) 88%  100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--sd-link);
+  text-decoration: none;
+}
+a:hover { color: var(--sd-link-h); text-decoration: underline; }
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--sd-wood-dk);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------- 根容器 */
+.game-root {
+  max-width: 1440px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: rgba(255,253,245,.96);
+  border-left: 5px solid var(--sd-wood-dk);
+  border-right: 5px solid var(--sd-wood-dk);
+  box-shadow: 0 0 0 3px var(--sd-wood-lt), 0 20px 60px rgba(0,0,0,.25);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.game-root > .pixel-grid { display: none; }
+
+/* ------------------------------------------------------- 顶部栏 */
+.stardew-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  /* 顶栏：游戏 HUD 浅木牌风格，明亮不压抑 */
+  background:
+    linear-gradient(180deg, var(--sd-wood-lt) 0%, var(--sd-wood) 50%, #f5c46a 100%);
+  border-bottom: 4px solid var(--sd-wood-dk);
+  box-shadow: inset 0 -2px 0 var(--sd-frame-gold), 0 4px 12px rgba(0,0,0,.15);
+  color: var(--sd-ink);
+  text-shadow: 1px 1px 0 rgba(255,255,255,.35);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.topbar-avatar {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border: 3px solid var(--sd-paper);
+  border-radius: 6px;
+  background: var(--sd-paper-dk);
+  box-shadow: 2px 2px 0 rgba(133,54,5,.25);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.topbar-avatar .avatar-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.topbar-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.topbar-brand strong {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+.topbar-brand span {
+  font-size: 12px;
+  opacity: .92;
+}
+
+/* 顶部搜索 */
+.nav-search {
+  position: relative;
+  flex: 1 1 220px;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+.nav-search input {
+  width: 100%;
+  height: 36px;
+  padding: 0 36px 0 32px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: var(--sd-paper);
+  color: var(--sd-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  box-shadow: inset 2px 2px 0 rgba(133,54,5,.08);
+  box-sizing: border-box;
+}
+.nav-search input::placeholder { color: #9a8a6a; }
+.nav-search .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  pointer-events: none;
+}
+.nav-search .search-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--sd-ink-soft);
+  border-radius: 50%;
+}
+.nav-search .search-icon::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 6px;
+  height: 2px;
+  background: var(--sd-ink-soft);
+  transform: rotate(45deg);
+}
+.nav-search .search-key {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 6px;
+  border: 1px solid var(--sd-ink-soft);
+  border-radius: 3px;
+  background: var(--sd-paper-dk);
+  color: var(--sd-ink-soft);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  text-shadow: none;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* ===== 星露谷 HUD 时钟盒（参考截图 DayTimeMoneyBox）=====
+   截图样式：浅木色横长牌，深棕细边框，左侧季节色块，
+   中间「星期 日期」，右侧「上午/下午 时间」，下方金钱 G。 */
+.sd-clock {
+  display: inline-flex;
+  align-items: center;
+  text-shadow: none;
+}
+.sd-clock-box {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0;
+  padding: 5px 10px;
+  border: 3px solid var(--sd-wood-dk);
+  border-radius: 6px;
+  background: linear-gradient(180deg, var(--sd-wood-lt) 0%, var(--sd-wood) 100%);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35), 0 2px 0 rgba(133,54,5,.25);
+  font-family: var(--font-pixel);
+  color: var(--sd-ink);
+}
+.sd-clock-season {
+  grid-row: 1 / 3;
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: #8fda4f;
+  color: #fff;
+  font-size: 14px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.35);
+}
+.sd-clock-season.summer { background: #ffcf4a; }
+.sd-clock-season.autumn { background: #e38b3a; }
+.sd-clock-season.winter { background: #6ec6ff; }
+.sd-clock-line {
+  grid-row: 1;
+  grid-column: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+.sd-clock-date {
+  font-size: 13px;
+  color: var(--sd-ink);
+}
+.sd-clock-ampm {
+  font-size: 11px;
+  color: var(--sd-ink-soft);
+}
+.sd-clock-time {
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--sd-ink);
+}
+.sd-clock-money {
+  grid-row: 2;
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  padding-top: 2px;
+  border-top: 1px dashed var(--sd-line-dk);
+  font-size: 12px;
+  color: var(--sd-ink);
+}
+.sd-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--sd-star);
+  border: 1px solid var(--sd-wood-dk);
+  color: var(--sd-wood-dk);
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.star-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 12px;
+  background: var(--sd-star);
+  color: var(--sd-wood-dk);
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: bold;
+  box-shadow: 0 2px 0 rgba(133,54,5,.25);
+  text-shadow: none;
+}
+.star-chip .icon-star {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: var(--sd-wood-dk);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* ------------------------------------------------------- 横幅场景条：全居民横向滚动 */
+.scene-strip {
+  position: relative;
+  height: 110px;
+  flex: none;
+  background: linear-gradient(180deg, #9ad4ff 0%, #dff3ff 60%, #8fda4f 100%);
+  border-bottom: 4px solid var(--sd-wood-dk);
+  overflow: hidden;
+}
+.scene-scroll {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  animation: scrollVillagers 36s linear infinite;
+}
+.scene-scroll:hover { animation-play-state: paused; }
+.scene-img {
+  display: block;
+  height: 100%;
+  width: auto;
+  image-rendering: pixelated;
+}
+@keyframes scrollVillagers {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ------------------------------------------------------- 主网格 */
+.gba-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr 340px;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  min-height: 0;
+  align-items: stretch;
+  /* 覆盖旧 gba.css 的绿色条纹背景，让内容区更干净明亮 */
+  background: transparent;
+}
+.gba-main > * { min-width: 0; }
+
+/* 面板基础 —— 边框直接用游戏本体素材。
+   panel-frame.png = Maps/MenuTiles.png 的 (0,256,60,60) 区域，
+   正是星露谷所有菜单/面板的九宫格源：12px 角块，圆角，
+   外圈深棕 #853605 + 金色 #dc7b05 + 中棕 #b14e05。
+   不带 fill，因此面板内部仍用原有的奶油底色，保证文字可读。 */
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--sd-paper);
+  border: 12px solid transparent;
+  border-image: url('stardew/assets/panel-frame.png') 12 / 12px / 0 stretch;
+  box-shadow: 4px 5px 0 rgba(40,24,12,.28);
+  clip-path: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+/* 强制覆盖旧 gba.css 中可能残留的绿色条纹 */
+.gba-main,
+.gba-main .panel,
+.gba-main .panel-body {
+  background-image: none !important;
+}
+.panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: linear-gradient(180deg, #f0b55a 0%, #d9973a 55%, #b87420 100%);
+  border-bottom: 3px solid var(--sd-frame-gold);
+  color: #fff8e8;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.35);
+}
+.panel-bar h2 {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 12px;   /* Zpix 设计字号 12px，取整数倍最锐利 */
+  font-weight: normal;
+  letter-spacing: .5px;
+}
+.panel-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.pokeball-mark {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  image-rendering: pixelated;
+}
+.btn-add {
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: var(--sd-paper);
+  color: var(--sd-ink);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.btn-add:hover { background: var(--sd-paper-dk); }
+
+/* ------------------------------------------------------- 左：仓库导航 */
+.panel-repos .panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.repo-search {
+  position: relative;
+}
+.repo-search input {
+  width: 100%;
+  height: 34px;
+  padding: 0 30px 0 28px;
+  /* 呼应游戏输入框 textBox.png 的双层结构：外深棕 + 内金色高光 */
+  border: 2px solid var(--sd-frame-out);
+  border-radius: 3px;
+  background: #fffdf3;
+  color: var(--sd-ink);
+  font-size: 13px;
+  box-shadow: inset 0 0 0 2px var(--sd-frame-gold);
+  box-sizing: border-box;
+}
+.repo-search input::placeholder { color: #9a8a6a; }
+.repo-search .search-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: transparent;
+  pointer-events: none;
+}
+.repo-search .search-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 50%;
+}
+.repo-search .search-icon::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 5px;
+  height: 2px;
+  background: var(--sd-wood-dk);
+  transform: rotate(45deg);
+}
+
+/* 分类下拉筛选 */
+.cat-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sd-wood-dk);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+.cat-select {
+  width: 100%;
+  height: 34px;
+  padding: 0 28px 0 8px;
+  border: 2px solid var(--sd-frame-out);
+  border-radius: 3px;
+  background: #fffdf3;
+  color: var(--sd-ink);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  cursor: pointer;
+  appearance: none;
+  box-shadow: inset 0 0 0 2px var(--sd-frame-gold);
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"%3E%3Cpath fill="%236b4523" d="M2 4h8l-4 4z"/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  box-sizing: border-box;
+}
+.cat-select:focus { border-color: var(--sd-grass-dk); outline: none; }
+.cat-select option { font-family: var(--font-body); }
+
+/* 仓库列表 */
+/* 必须覆盖旧 github-gba.css 的 `display:grid`：grid 的 align-content 默认 stretch，
+   项目少时行会被拉伸撑满整栏高度，导致分类筛选后两个项目之间出现巨大空隙。 */
+.repo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+.cat-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 5px;
+  padding: 3px 4px;
+  color: var(--sd-wood-dk);
+  font-size: 12px;
+  font-family: var(--font-pixel);
+  letter-spacing: .5px;
+  border-bottom: 2px dashed var(--sd-line);
+}
+.cat-head:first-child { margin-top: 0; }
+.cat-ic {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+}
+.cat-count {
+  margin-left: auto;
+  background: var(--sd-grass);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--sd-grass-dk);
+}
+
+.repo-li {
+  margin: 0 0 5px;
+  min-width: 0;
+  max-width: 100%;
+}
+.repo-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 4px 6px;
+  border: 2px solid var(--sd-line);
+  border-radius: 4px;
+  background: #fffdf5;
+  color: var(--sd-ink);
+  text-decoration: none;
+  transition: .12s;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.repo-item:hover {
+  background: var(--sd-paper);
+  border-color: var(--sd-wood);
+}
+.repo-item.is-active {
+  background: #eaf7d4;
+  border-color: var(--sd-grass-dk);
+  box-shadow: inset 3px 0 0 var(--sd-grass);
+}
+.repo-ic {
+  display: inline-block;
+  width: 16px;
+  height: 32px;
+  flex: none;
+  image-rendering: pixelated;
+}
+.repo-name {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-family: var(--font-pixel);
+  color: var(--sd-ink);
+  text-decoration: none;
+}
+.repo-star {
+  flex: none;
+  color: var(--sd-star);
+  text-shadow: 1px 1px 0 rgba(90,60,20,.25);
+  font-size: 11px;
+}
+
+.panel-hint {
+  margin: 0;
+  padding: 4px 2px;
+  color: var(--sd-ink-soft);
+  font-size: 11px;
+  text-align: center;
+}
+
+.btn-new-repo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 0;
+  border: 2px solid #3b5e24;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #9ed46f 0%, #6cb03d 100%);
+  color: #fff;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.25);
+  box-shadow: 0 3px 0 #3b5e24;
+  cursor: pointer;
+}
+.btn-new-repo span { display: inline-block; width: 16px; height: 32px; image-rendering: pixelated; }
+.btn-new-repo:hover { background: linear-gradient(180deg, #abe77c 0%, #7bc242 100%); }
+.btn-new-repo:active { transform: translateY(2px); box-shadow: 0 1px 0 #3b5e24; }
+
+/* ------------------------------------------------------- 中：仓库详情 */
+.panel-repo {
+  min-height: 0;
+}
+.repo-bar .repo-bar-sprite {
+  display: inline-block;
+  width: 32px;
+  height: 64px;
+  flex: none;
+  image-rendering: pixelated;
+}
+.repo-bar h2 {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pill {
+  padding: 2px 8px;
+  border: 2px solid var(--sd-line-dk);
+  border-radius: 10px;
+  background: var(--sd-paper-dk);
+  color: var(--sd-ink-soft);
+  font-size: 11px;
+}
+.panel-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #d7a86d 0%, #b07d46 100%);
+  color: var(--sd-ink);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  box-shadow: 0 3px 0 var(--sd-wood-dk), inset 0 1px 0 rgba(255,255,255,.25);
+  cursor: pointer;
+  text-shadow: none;
+}
+.btn:hover { background: linear-gradient(180deg, #e2b87a 0%, #c08a52 100%); }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--sd-wood-dk); }
+.btn-small { padding: 3px 8px; font-size: 11px; }
+.btn-ghost { background: transparent; box-shadow: none; color: var(--sd-ink); border-color: var(--sd-line-dk); }
+
+.repo-detail { display: flex; flex-direction: column; gap: 12px; }
+.repo-detail-desc {
+  margin: 0;
+  color: var(--sd-ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.tag-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  padding: 3px 10px;
+  border: 1px solid var(--sd-grass-dk);
+  border-radius: 12px;
+  background: var(--sd-grass);
+  color: #fff;
+  font-size: 11px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.2);
+}
+
+/* 标签页 */
+.repo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  border-bottom: 3px solid var(--sd-frame-out);
+}
+/* 标签页：方角 + 游戏菜单配色（#853605 外框 / #dc7b05 金色高光），
+   选中态用金色顶边并下沉盖住分隔线，做出"翻到这一页"的立体感 */
+.repo-tab {
+  padding: 5px 12px;
+  border: 3px solid var(--sd-frame-out);
+  border-bottom: none;
+  border-radius: 0;
+  background: linear-gradient(180deg, #e9c893 0%, #cf9f63 100%);
+  color: #7a4a1c;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.35);
+}
+.repo-tab:hover {
+  background: linear-gradient(180deg, #f4d9a6 0%, #ddae70 100%);
+}
+.repo-tab.is-active {
+  background: var(--sd-paper);
+  color: var(--sd-ink);
+  margin-bottom: -3px;
+  padding-bottom: 8px;
+  box-shadow: inset 0 3px 0 var(--sd-frame-gold);
+}
+.repo-tab .count {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 5px;
+  border-radius: 0;
+  background: var(--sd-frame-out);
+  color: #ffe9b8;
+  font-size: 12px;
+}
+
+.repo-tabpanel { display: none; }
+.repo-tabpanel.is-active { display: block; }
+
+.repo-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border: 2px solid var(--sd-line);
+  border-radius: 4px;
+  background: #fffdf5;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.repo-toolbar .m { color: var(--sd-ink-soft); }
+.repo-toolbar .m b { color: var(--sd-ink); }
+.toolbar-right { margin-left: auto; color: var(--sd-ink-soft); font-size: 11px; }
+.branch-chip {
+  padding: 2px 8px;
+  border: 1px solid var(--sd-line-dk);
+  border-radius: 4px;
+  background: var(--sd-paper-dk);
+}
+
+.file-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 2px solid var(--sd-line);
+  border-radius: 4px;
+  background: #fffdf5;
+  overflow: hidden;
+}
+.file-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px dashed var(--sd-line);
+  font-size: 12px;
+}
+.file-row:last-child { border-bottom: none; }
+.file-row.is-dir { background: var(--sd-paper); }
+.file-icon {
+  width: 14px;
+  height: 14px;
+  background: var(--sd-wood);
+  clip-path: polygon(0 0, 60% 0, 60% 30%, 100% 30%, 100% 100%, 0 100%);
+}
+.file-row.is-dir .file-icon { background: var(--sd-grass); }
+.file-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-update { color: var(--sd-ink-soft); font-size: 11px; white-space: nowrap; }
+.file-time { color: var(--sd-ink-soft); font-size: 11px; white-space: nowrap; }
+
+.readme-card {
+  padding: 12px;
+  border: 2px solid var(--sd-line);
+  border-radius: 4px;
+  background: #fffdf5;
+}
+.readme-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.readme-head h3 {
+  margin: 0;
+  font-size: 13px;
+}
+.readme-icon {
+  width: 16px;
+  height: 16px;
+  background: var(--sd-wood);
+}
+.readme-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  border: 1px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: var(--sd-wood-lt);
+  font-size: 10px;
+}
+.readme-lede { margin: 0 0 10px; color: var(--sd-ink-soft); font-size: 12px; line-height: 1.6; }
+.readme-list { margin: 0; padding-left: 18px; color: var(--sd-ink); font-size: 12px; line-height: 1.7; }
+.readme-list li { margin: 4px 0; }
+
+.issue-list, .action-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--sd-line);
+  border-radius: 4px;
+  background: #fffdf5;
+}
+.issue-list li, .action-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px dashed var(--sd-line);
+}
+.issue-list li:last-child, .action-list li:last-child { border-bottom: none; }
+.issue-title { margin: 0 0 3px; font-size: 12px; line-height: 1.4; }
+.issue-sub { margin: 0; color: var(--sd-ink-soft); font-size: 11px; }
+
+.issue-mark {
+  width: 12px;
+  height: 12px;
+  margin-top: 3px;
+  border-radius: 50%;
+  flex: none;
+}
+.issue-mark.is-open { background: var(--sd-grass); }
+.issue-mark.is-closed { background: var(--sd-line-dk); }
+.issue-mark.is-merged { background: #9b72cf; }
+.issue-mark.is-pr { background: var(--sd-sky); }
+
+.action-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--sd-line-dk);
+}
+.action-dot.is-pass { background: var(--sd-grass); }
+.action-dot.is-fail { background: var(--sd-accent); }
+
+/* ------------------------------------------------------- 右栏 */
+.right-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.panel-grass .panel-bar {
+  background: linear-gradient(180deg, #8fce54 0%, #6cb03d 100%);
+  border-color: #3b5e24;
+}
+.grass-year {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--sd-paper);
+}
+
+.heatmap-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.heat-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 1px;
+  color: var(--sd-ink-soft);
+  font-size: 9px;
+  line-height: 1;
+}
+.heat-rows i { display: block; width: 12px; height: 9px; text-align: center; font-style: normal; }
+.heatmap-wrap {
+  flex: 1;
+  overflow-x: hidden;
+  padding-bottom: 2px;
+}
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 9px);
+  gap: 2px;
+  min-width: 0;
+  width: 100%;
+}
+.heatmap .cell {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  border-radius: 1px;
+  border: 1px solid rgba(0,0,0,.08);
+}
+.cell.l0 { background: var(--l0); }
+.cell.l1 { background: var(--l1); }
+.cell.l2 { background: var(--l2); }
+.cell.l3 { background: var(--l3); }
+.cell.l4 { background: var(--l4); }
+
+.heat-months {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  margin-top: 4px;
+  color: var(--sd-ink-soft);
+  font-size: 9px;
+}
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 6px;
+  font-size: 9px;
+  color: var(--sd-ink-soft);
+}
+.heatmap-legend .cell { width: 8px; height: 8px; }
+
+/* 动态 */
+.activity-garden {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 4px;
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 2px dashed var(--sd-line);
+}
+.activity-garden span {
+  display: inline-block;
+  width: 16px;
+  height: 32px;
+  flex: none;
+  image-rendering: pixelated;
+}
+
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.activity-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--sd-line);
+}
+.activity-list li:last-child { border-bottom: none; }
+.act-sprite {
+  display: inline-block;
+  flex: none;
+  image-rendering: pixelated;
+}
+.activity-list li p {
+  margin: 0;
+  color: var(--sd-ink);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.activity-list li p b { color: var(--sd-wood-dk); }
+.act-time {
+  display: block;
+  margin-top: 2px;
+  color: var(--sd-ink-soft);
+  font-size: 10px;
+}
+
+/* ------------------------------------------------------- 底部对话 */
+.stardew-footer {
+  flex: none;
+  background:
+    linear-gradient(180deg, var(--sd-grass) 0 12px, var(--sd-grass-dk) 12px 100%);
+  border-top: 3px solid #4a7c2f;
+  padding-top: 16px;
+  overflow-x: hidden;
+}
+.footer-grass {
+  height: 10px;
+  background: linear-gradient(180deg, #8fce54 0%, var(--sd-grass-dk) 100%);
+  margin: -16px 0 12px;
+  border-bottom: 2px solid #4a7c2f;
+}
+.dialogue-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+.bubble-sprite {
+  display: inline-block;
+  width: 96px;
+  height: 96px;
+  flex: none;
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,.2));
+  cursor: pointer;
+}
+.speech-bubble {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--sd-paper);
+  /* 与面板同源的星露谷菜单边框 */
+  border: 12px solid transparent;
+  border-image: url('stardew/assets/panel-frame.png') 12 / 12px / 0 stretch;
+  padding: 12px 14px;
+  box-shadow: 4px 5px 0 rgba(40,24,12,.28);
+}
+.speech-bubble::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  bottom: 20px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid var(--sd-wood-dk);
+}
+.speaker-name {
+  display: inline-block;
+  margin: -18px 0 6px -2px;
+  padding: 2px 10px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 3px;
+  background: var(--sd-wood);
+  color: var(--sd-paper);
+  font-size: 12px;
+  font-family: var(--font-pixel);
+  text-shadow: 1px 1px 0 rgba(0,0,0,.3);
+  box-shadow: 2px 2px 0 rgba(0,0,0,.15);
+}
+.dialogue-text {
+  margin: 0 0 10px;
+  color: var(--sd-ink);
+  font-size: 13px;
+  line-height: 1.7;
+  min-height: 48px;
+}
+.dialogue-next {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid var(--sd-wood-dk);
+  animation: blinkArrow .9s steps(2, end) infinite;
+}
+.dialogue-actions { display: flex; gap: 8px; margin-top: 6px; }
+
+.gba-credit {
+  margin: 0;
+  padding: 12px 16px 16px;
+  color: var(--sd-ink-soft);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------- 工具提示 */
+.sprite-tip {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  padding: 4px 10px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: var(--sd-paper);
+  color: var(--sd-ink);
+  font-size: 11px;
+  font-family: var(--font-pixel);
+  box-shadow: 3px 3px 0 rgba(40,24,12,.2);
+  transform: translate(-50%, -100%);
+  opacity: 0;
+  transition: opacity .12s;
+}
+.sprite-tip.is-on { opacity: 1; }
+
+/* ------------------------------------------------------- 底部居民头像列 */
+.villager-lineup {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 16px 14px;
+}
+.villager-face {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 4px;
+  background: var(--sd-paper);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.15);
+  transition: .12s;
+  box-sizing: border-box;
+}
+.villager-face:hover {
+  border-color: var(--sd-grass-dk);
+  transform: translateY(-2px);
+}
+.villager-face.is-active {
+  border-color: var(--sd-grass);
+  box-shadow: 0 0 0 2px var(--sd-grass), 2px 2px 0 rgba(0,0,0,.15);
+}
+
+/* ------------------------------------------------------- 动画 */
+@keyframes cloudMove {
+  0%, 100% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+}
+@keyframes blinkArrow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+/* ------------------------------------------------------- 响应式 */
+@media (max-width: 1180px) {
+  .gba-main {
+    grid-template-columns: 230px 1fr 300px;
+  }
+}
+
+@media (max-width: 960px) {
+  .gba-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .panel-repos,
+  .panel-repo,
+  .right-rail {
+    min-height: auto;
+  }
+  .panel-repos .panel-body {
+    max-height: none;
+  }
+  .repo-list {
+    max-height: 240px;
+  }
+  .right-rail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .stardew-topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+  }
+  .topbar-left { flex: 1 1 auto; }
+  .topbar-avatar { width: 48px; height: 48px; }
+  .topbar-brand strong { font-size: 15px; }
+  .topbar-right { width: 100%; justify-content: space-between; }
+  .nav-search { order: 3; flex: 1 1 100%; max-width: none; margin: 4px 0 0; }
+
+  .sd-clock-box { padding: 4px 7px; }
+  .sd-clock-season { width: 22px; height: 22px; margin-right: 6px; font-size: 11px; }
+  .sd-clock-date { font-size: 11px; }
+  .sd-clock-time { font-size: 13px; }
+  .sd-clock-money { font-size: 10px; }
+  .sd-coin { width: 12px; height: 12px; font-size: 8px; }
+
+  .gba-main { padding: 10px; gap: 10px; }
+  .right-rail { grid-template-columns: 1fr; }
+
+  .panel-bar-actions { flex-wrap: wrap; justify-content: flex-end; }
+  .repo-bar { flex-wrap: wrap; }
+  .repo-bar h2 { order: 3; width: 100%; margin-top: 4px; }
+
+  .dialogue-row { flex-direction: column; align-items: flex-start; }
+  .bubble-sprite { width: 72px; height: 72px; }
+  .speech-bubble::before { display: none; }
+}
+
+@media (max-width: 420px) {
+  .game-root { border-left-width: 4px; border-right-width: 4px; }
+  .topbar-brand span { display: none; }
+  .repo-tabs { gap: 2px; }
+  .repo-tab { padding: 5px 8px; font-size: 11px; }
+  .file-row { grid-template-columns: 18px 1fr; }
+  .file-update, .file-time { display: none; }
+}
+
+/* ------------------------------------------------------- 滚动条
+   粗像素滑块，配色沿用游戏菜单实测色：轨道奶黄、滑块中棕、外框深棕、顶部金色高光 */
+* {
+  scrollbar-color: var(--sd-frame-mid) #e9d7b0;
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #e9d7b0;
+  border-left: 2px solid var(--sd-frame-out);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sd-frame-mid);
+  border: 2px solid var(--sd-frame-out);
+  box-shadow: inset 0 2px 0 var(--sd-frame-gold);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sd-frame-gold);
+}
+::-webkit-scrollbar-corner { background: #e9d7b0; }
+
+/* ------------------------------------------------------- 小祝尼魔点击特效 */
+.junimo-pop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  z-index: 9999;
+  image-rendering: pixelated;
+  transform: translate(-50%, -50%) scale(0);
+  animation: junimoBounce .9s ease-out forwards;
+}
+@keyframes junimoBounce {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+  15%  { transform: translate(-50%, -120%) scale(1.2) rotate(5deg); opacity: 1; }
+  40%  { transform: translate(-50%, -180%) scale(1) rotate(-5deg); }
+  70%  { transform: translate(-50%, -100%) scale(1.1) rotate(3deg); }
+  100% { transform: translate(-50%, 0%) scale(0) rotate(0deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

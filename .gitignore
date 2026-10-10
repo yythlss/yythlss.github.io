@@ -1,0 +1,11 @@
+# 本地私密配置：含 token，绝不提交
+config.local.js
+
+# 预览截图，不提交
+preview-*.png
+
+# 依赖与缓存
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store

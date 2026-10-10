@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#17110a}
+#game{display:block;width:100vw;height:100vh;image-rendering:pixelated}</style></head>
+<body>
+<canvas id="game"></canvas>
+<div id="loader"></div>
+<div class="sr-only"><ul id="repo-links"></ul></div>
+<pre id="out" style="position:fixed;left:0;top:0;z-index:99;color:#f66;font:12px monospace"></pre>
+<script>
+window.__errs = [];
+window.onerror = function (m, s, l, c, e) {
+  window.__errs.push(m + ' @' + s + ':' + l + ':' + c + (e && e.stack ? '\n' + e.stack : ''));
+  return false;
+};
+window.addEventListener('unhandledrejection', function (ev) {
+  window.__errs.push('unhandled: ' + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason));
+});
+</script>
+<script src="../stardew/sprites.js"></script>
+<script src="../stardew/engine.js"></script>
+<script src="../stardew/world.js"></script>
+<script src="../stardew/ui.js"></script>
+<script src="../stardew/main.js"></script>
+<script>
+setTimeout(function () {
+  var out = document.getElementById('out');
+  var info = [];
+  try {
+    info.push('SD keys: ' + Object.keys(window.SD || {}).join(','));
+    info.push('viewport: ' + SD.engine.viewport.width + 'x' + SD.engine.viewport.height);
+    info.push('entities: ' + (SD.engine && window.__world ? '' : ''));
+  } catch (e) { info.push('probe err ' + e.message); }
+  out.textContent = (window.__errs.length ? 'ERRORS:\n' + window.__errs.join('\n---\n') : 'NO_ERRORS') + '\n' + info.join('\n');
+  document.title = window.__errs.length ? 'HAS_ERRORS' : 'CLEAN';
+}, 2500);
+</script>
+</body></html>
