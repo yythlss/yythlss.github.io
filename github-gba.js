@@ -381,18 +381,6 @@
     // 动态渲染的节点也要挂提示
     window._bindSpriteTips = bindTips;
 
-    var squirtle = $('.bubble-sprite');
-    if (squirtle) {
-      squirtle.addEventListener('click', function () {
-        var who = squirtle.getAttribute('data-label') || '法师';
-        if (who === '法师') say('法师：这片农场里的每一行代码，都是一颗会发芽的星之果实。');
-        else if (who === '祝尼魔') say('祝尼魔：祝尼祝尼！（意思是——记得给项目点个 Star。）');
-        else say(who + '：欢迎来到鹈鹕镇，愿你的仓库年年丰收。');
-      });
-      squirtle.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); squirtle.click(); }
-      });
-    }
   }
 
   /* ------------------------------------------------- 2. 贡献热力图 */
@@ -550,13 +538,13 @@
     $('#stat-license').textContent = repo.license;
     $('#fork-count').textContent = repo.forks;
 
-    // 文件列表：实时数据 > 内置数据 > 占位（实时仓等待拉取；兜底仓提示离线）
+    // 文件列表：实时数据 > 内置数据 > 占位（实时仓等待拉取；兜底仓提示暂不可用）
     var files = repo._files || repo.filesCurated;
     $('#file-list').innerHTML = files
       ? files.map(fileRowHtml).join('')
       : repo.live
         ? '<li class="file-row"><span class="file-icon"></span><span class="file-name">正在从 GitHub 拉取文件列表…</span><span class="file-update"></span><span class="file-time"></span></li>'
-        : '<li class="file-row"><span class="file-icon"></span><span class="file-name">（离线兜底模式：实时文件列表暂不可用，刷新页面或稍后重试）</span><span class="file-update"></span><span class="file-time"></span></li>';
+        : '<li class="file-row"><span class="file-icon"></span><span class="file-name">（实时文件列表暂不可用，刷新页面或稍后重试）</span><span class="file-update"></span><span class="file-time"></span></li>';
 
     // README：实时数据 > 内置数据
     var readme = repo._readme || repo.readmeCurated;
@@ -580,10 +568,14 @@
       ? repo.actions.map(actionRowHtml).join('')
       : '<li><span class="action-dot"></span><div><p class="issue-title">尚未配置工作流</p><p class="issue-sub">纯硬件 / 仿真仓库，不需要 CI</p></div></li>';
 
-    // 星标按钮复位
+    /* 星标按钮复位：只有拉到真实数据才显示数字，否则保持「—」，不展示兜底编造值 */
     var starBtn = $('#btn-star');
     starBtn.setAttribute('aria-pressed', 'false');
-    $('#star-count').textContent = repo.stars;
+    var starCount = $('#star-count');
+    if (starCount) {
+      starCount.textContent = repo.live ? repo.stars : '—';
+      if (!repo.live) starCount.title = '暂未取到该仓库的真实星标数';
+    }
 
     // 实时仓库：懒加载文件列表与 README（一次请求，缓存）
     if (repo.live && !repo._files) fetchLiveFiles(repo);
@@ -916,15 +908,16 @@
     return shown;
   }
 
-  /* 右上角星标徽章：全部公开仓库的星标总数（真实数据） */
+  /* 右上角时钟里的星标总数：全部公开仓库的星标总数（真实数据）
+     仅在 GitHub API 成功返回后填充；未取到真实数据时保持占位符「—」，不显示编造数字。 */
   function updateStarChip() {
-    var chip = $('.star-chip');
-    if (!chip || !live.ok) return;
+    var el = $('#sd-clock-star');
+    if (!el) return;
+    if (!live.ok) { el.textContent = '—'; el.title = '暂未取到 GitHub 真实星标数据'; return; }
     var total = 0;
     live.repos.forEach(function (r) { total += r.stars || 0; });
-    chip.innerHTML = '<span class="icon-star" aria-hidden="true"></span>' + total +
-      '<span class="sr-only"> 颗星标</span>';
-    chip.title = '全部公开仓库共获得 ' + total + ' 颗星标';
+    el.textContent = total.toLocaleString();
+    el.title = '全部公开仓库共获得 ' + total + ' 颗星标';
   }
 
   /* ------------------------------------- 4. 仓库搜索过滤（左栏与顶栏共用） */
@@ -975,6 +968,9 @@
      全部按时间倒序合并、去重后渲染 */
   var liveEvents = [];
   var currentActivity = [];
+  /* 动态面板每条展示的植物图标，按条目顺序分配保证互不相同 */
+  var PLANTS = ['parsnip', 'cauliflower', 'pumpkin', 'corn', 'strawberry',
+    'blueberry', 'melon', 'hotpepper', 'starfruit', 'eggplant', 'sunflower'];
 
   /* 解析「更新于 2 天前」这类相对时间字符串 → Date（内置数据没有时间戳字段） */
   function parseAgo(str) {
@@ -1092,8 +1088,9 @@
       list.innerHTML = '<li><span class="act-sprite" data-sprite="chest" data-scale="2"></span>' +
         '<p>最近没有公开动态<span class="act-time">—</span></p></li>';
     } else {
-      list.innerHTML = currentActivity.map(function (it) {
-        return '<li><span class="act-sprite" data-sprite="' + spriteForRepo(it.repo) + '" data-scale="2"></span>' +
+      list.innerHTML = currentActivity.map(function (it, idx) {
+        var plant = PLANTS[idx % PLANTS.length];
+        return '<li><span class="act-sprite" data-sprite="' + plant + '" data-scale="2"></span>' +
           '<p>' + itemText(it) + '<span class="act-time">' + esc(relTime(it.at)) + '</span></p></li>';
       }).join('');
     }
@@ -1136,43 +1133,25 @@
   }
 
   /* ----------------------------------------------------- 7. 对话气泡 */
-  var SPEAKER_LINES = {
-    '农场主': [
-      '欢迎来到我的开发者农场！这里种着嵌入式、电路和 AI 的作物。',
-      '按 / 可以直接打开搜索框，跟在农场里按快捷键一样顺手。'
-    ],
-    '罗宾': [
-      '再复杂的东西也要从一块好木头开始。',
-      '每颗星标都是来年丰收的种子，别吝啬你的 Star。'
-    ],
-    '阿比盖尔': [
-      '小时候我喜欢一个人去森林探险，现在把好奇心写进代码里。',
-      'bug 就像矿洞里的石头，敲一敲总有惊喜。'
-    ],
-    '玛鲁': [
-      '喜欢在诊所和实验室之间穿梭，用小巧的工具解决实际问题。',
-      '这个农场里的电路和 AI 作物长得真不错。'
-    ],
-    '刘易斯': [
-      '每一颗星标都是来年丰收的种子。',
-      '镇长提醒：别忘了给喜欢的仓库点个 Star。'
-    ],
-    '哈维': [
-      '保持健康节奏，按时提交代码，不要熬夜修仙。',
-      '出现问题不要慌，先写个测试复现它。'
-    ],
-    '佩妮': [
-      '写注释和教别人一样重要，文档是代码最好的伙伴。',
-      '看不懂的代码，就像没有书签的书。'
-    ],
-    '法师': [
-      '代码即符文，优雅的结构自有魔力。',
-      '这片农场里的每一行代码，都是一颗会发芽的星之果实。'
-    ]
-  };
+  var VILLAGERS = (typeof window !== 'undefined' && window.VILLAGERS) || [];
+  var DEFAULT_SPEAKER = '塞巴斯蒂安';
+
+  function findVillager(name) {
+    for (var i = 0; i < VILLAGERS.length; i++) {
+      if (VILLAGERS[i].name === name) return VILLAGERS[i];
+    }
+    return null;
+  }
+
+  function findVillagerByKey(key) {
+    for (var i = 0; i < VILLAGERS.length; i++) {
+      if (VILLAGERS[i].key === key) return VILLAGERS[i];
+    }
+    return null;
+  }
 
   var typing = null;
-  var currentSpeaker = '法师';
+  var currentSpeaker = DEFAULT_SPEAKER;
 
   function say(text, options) {
     var host = $('#dialogue-text');
@@ -1207,47 +1186,105 @@
   function initDialogue() {
     var text = $('#dialogue-text');
     if (!text) return;
-    var squirtle = $('.bubble-sprite');
-    var speakerName = $('#speaker-name');
 
-    function setSpeaker(name, spriteKey) {
-      currentSpeaker = name;
-      if (speakerName) speakerName.textContent = name;
-      if (squirtle) {
-        squirtle.setAttribute('data-label', name);
-        if (typeof window.applySprite === 'function' && spriteKey) {
-          window.applySprite(squirtle, spriteKey, 1.5);
-        }
-      }
+    var portrait = $('#dialogue-portrait');
+    var portraitImg = portrait ? portrait.querySelector('img') : null;
+    var speakerName = $('#speaker-name');
+    var speakerRole = $('#speaker-role');
+    var lineup = $('#villager-lineup');
+    var pool = $('#villager-pool');
+
+    function setSpeaker(v) {
+      if (!v) return;
+      currentSpeaker = v.name;
+      if (speakerName) speakerName.textContent = v.name;
+      if (speakerRole) speakerRole.textContent = v.role;
+      if (portrait) portrait.setAttribute('data-key', v.key);
+      if (portraitImg) { portraitImg.src = v.portrait; portraitImg.alt = v.name; }
       $$('.villager-face').forEach(function (face) {
-        face.classList.toggle('is-active', face.getAttribute('data-speaker') === name);
+        face.classList.toggle('is-active', face.getAttribute('data-key') === v.key);
       });
     }
 
     function sayBySpeaker(name, options) {
-      var lines = SPEAKER_LINES[name] || SPEAKER_LINES['法师'];
-      say(pick(lines), options);
+      var v = findVillager(name) || findVillager(DEFAULT_SPEAKER);
+      if (v && v.lines && v.lines.length) say(pick(v.lines), options);
     }
 
-    // 初始化当前说话人
-    if (squirtle) {
-      currentSpeaker = squirtle.getAttribute('data-label') || '法师';
+    // 渲染居民卡池：右侧可上下滚动的卡牌列表
+    function faceHtml(v) {
+      return '<button class="villager-face" type="button" data-key="' + esc(v.key) +
+        '" data-label="' + esc(v.name) + '" aria-label="' + esc(v.name) + '">' +
+        '<img src="' + esc(v.portrait) + '" alt="" loading="lazy"></button>';
     }
-    setSpeaker(currentSpeaker, squirtle ? squirtle.getAttribute('data-sprite') : 'bWizard');
-    sayBySpeaker(currentSpeaker, { instant: true });
 
-    // 底部居民头像点击切换
-    $$('.villager-face').forEach(function (face) {
-      face.addEventListener('click', function () {
-        var name = face.getAttribute('data-speaker') || face.getAttribute('data-label') || '法师';
-        var sprite = face.getAttribute('data-sprite') || 'bWizard';
-        setSpeaker(name, sprite);
-        sayBySpeaker(name);
+    var host = pool || lineup;
+    if (host) {
+      host.innerHTML = VILLAGERS.map(faceHtml).join('');
+      $$('.villager-face', host).forEach(function (face) {
+        face.addEventListener('click', function () {
+          // 拖拽滑行刚结束时，忽略这一次 click，避免误切换说话人
+          if (face._justDragged) { face._justDragged = false; return; }
+          var key = face.getAttribute('data-key');
+          var v = findVillagerByKey(key);
+          if (v) { setSpeaker(v); sayBySpeaker(v.name); }
+        });
+        face.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); face.click(); }
+        });
       });
-      face.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); face.click(); }
+
+      /* 卡池只显示一行：把鼠标纵向滚轮映射为横向滚动 */
+      host.addEventListener('wheel', function (event) {
+        if (event.deltaY === 0) return;
+        var max = host.scrollWidth - host.clientWidth;
+        if (max <= 0) return;
+        var before = host.scrollLeft;
+        host.scrollLeft = before + event.deltaY;
+        // 横向已经滚到头/尾时，把事件交还页面，避免整页被"锁"住
+        if (host.scrollLeft !== before) event.preventDefault();
+      }, { passive: false });
+
+      /* 按住拖拽也能横向滑动 */
+      var drag = { on: false, x: 0, left: 0, moved: false };
+      host.addEventListener('pointerdown', function (event) {
+        if (event.pointerType === 'touch') return;
+        drag.on = true; drag.moved = false;
+        drag.x = event.clientX;
+        drag.left = host.scrollLeft;
+        host.classList.add('is-dragging');
       });
-    });
+      host.addEventListener('pointermove', function (event) {
+        if (!drag.on) return;
+        var dx = event.clientX - drag.x;
+        if (!drag.moved && Math.abs(dx) < 4) return;
+        if (!drag.moved) {
+          drag.moved = true;
+          try { host.setPointerCapture(event.pointerId); } catch (e) {}
+        }
+        host.scrollLeft = drag.left - dx;
+      });
+      function endDrag(event) {
+        if (!drag.on) return;
+        drag.on = false;
+        host.classList.remove('is-dragging');
+        if (event && event.pointerId != null && host.releasePointerCapture) {
+          try { host.releasePointerCapture(event.pointerId); } catch (e) {}
+        }
+        if (drag.moved) {
+          // 本轮是拖拽：先给所有卡片打标记，松手后的那一次 click 会被忽略
+          $$('.villager-face', host).forEach(function (f) { f._justDragged = true; });
+          drag.moved = false;
+        }
+      }
+      host.addEventListener('pointerup', endDrag);
+      host.addEventListener('pointercancel', endDrag);
+    }
+
+    // 初始化当前说话人：默认塞巴斯蒂安
+    var defaultV = findVillager(DEFAULT_SPEAKER) || VILLAGERS[0];
+    setSpeaker(defaultV);
+    sayBySpeaker(defaultV.name, { instant: true });
 
     $$('[data-dialogue]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -1328,23 +1365,8 @@
     tryLiveHeatmap();
   }
 
-  /* --------------------------------------------------- 9. 居民面板渲染 */
-  function renderVillagers() {
-    var list = $('#villager-list');
-    if (!list) return;
-    var items = $$('li', list);
-    items.forEach(function (li) {
-      var name = li.getAttribute('data-name') || '';
-      var role = li.getAttribute('data-role') || '';
-      var sprite = li.getAttribute('data-sprite') || 'vFarmer';
-      li.innerHTML =
-        '<span class="v-ic" data-sprite="' + esc(sprite) + '" data-label="' + esc(name) + '" data-scale="2"></span>' +
-        '<span class="v-info"><span class="v-name">' + esc(name) + '</span>' +
-        '<span class="v-role">' + esc(role) + '</span></span>';
-    });
-    if (typeof window.mountSprites === 'function') window.mountSprites(list);
-    if (window._bindSpriteTips) window._bindSpriteTips(list);
-  }
+  /* --------------------------------------------------- 9. 居民面板渲染（由 initDialogue 动态生成） */
+  function renderVillagers() {}
 
   /* 按真实月份显示星露谷季节 */
   function initFarmCalendar() {
@@ -1358,12 +1380,7 @@
     dayEl.textContent = '第 ' + now.getDate() + ' 天';
   }
 
-  /* --------------------------------------------------- 10. 年份与启动 */
-  function initYear() {
-    var year = $('#gba-year');
-    if (year) year.textContent = String(new Date().getFullYear());
-  }
-
+  /* --------------------------------------------------- 10. 启动 */
   function boot() {
     initSprites();
     initHeatmap();
@@ -1373,7 +1390,6 @@
     initDialogue();
     renderVillagers();
     initFarmCalendar();
-    initYear();
     renderCatFilter();
     renderRepoList(REPOS);
     renderRepo(REPOS[0]);

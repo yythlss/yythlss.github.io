@@ -37,20 +37,17 @@
         <div class="sd-clock-box">
           <span class="sd-clock-season" id="sd-clock-season" aria-hidden="true">春</span>
           <div class="sd-clock-line">
-            <span class="sd-clock-date" id="sd-board-date">星期五 12日</span>
+            <span class="sd-clock-date" id="sd-board-date">12日 星期五</span>
             <span class="sd-clock-ampm" id="sd-clock-ampm">上午</span>
             <span class="sd-clock-time" id="sd-board-time">7:10</span>
           </div>
-          <div class="sd-clock-money">
-            <span class="sd-coin" aria-hidden="true">G</span>
-            <span id="sd-clock-gold">0</span>
+          <div class="sd-clock-star">
+            <span class="sd-star-label">star</span>
+            <span class="sd-star" aria-hidden="true"></span>
+            <span id="sd-clock-star" title="等待 GitHub 数据…">&mdash;</span>
           </div>
         </div>
       </div>
-      <span class="star-chip" title="全部公开仓库共获得的星标">
-        <span class="icon-star" aria-hidden="true"></span>
-        <span id="top-star-count">9</span>
-      </span>
     </div>
   </header>
 
@@ -98,7 +95,7 @@
         <span class="pill">公开</span>
         <div class="panel-bar-actions">
           <button class="btn btn-small" type="button">关注 <span class="count">3</span></button>
-          <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">42</span></button>
+          <button class="btn btn-small" id="btn-star" type="button" aria-pressed="false">★ 星标 <span class="count" id="star-count">&mdash;</span></button>
           <button class="btn btn-small" type="button">⎇ 复刻 <span class="count" id="fork-count">6</span></button>
         </div>
       </div>
@@ -212,34 +209,43 @@
     </aside>
   </main>
 
-  <!-- ========================================================= 底部：人物对话气泡（人物故事） -->
+  <!-- ========================================================= 底部：星露谷 NPC 对话盒 -->
   <footer class="stardew-footer">
     <div class="footer-grass" aria-hidden="true"></div>
-    <div class="dialogue-row">
-      <span class="bubble-sprite" data-sprite="bWizard" data-label="法师" data-scale="1.5" tabindex="0"></span>
-      <div class="speech-bubble" id="dialogue" role="status" aria-live="polite">
-        <span class="speaker-name" id="speaker-name">法师</span>
-        <p class="dialogue-text" id="dialogue-text"></p>
-        <span class="dialogue-next" aria-hidden="true"></span>
-        <div class="dialogue-actions">
-          <button class="btn btn-small" type="button" data-dialogue="next">继续 ▶</button>
-          <button class="btn btn-small btn-ghost" type="button" data-dialogue="random">下一句</button>
+
+    <!-- 左：对话框；右：可上下滑动的居民卡池 -->
+    <div class="dialogue-layout">
+      <div class="dialogue-main" role="dialog" aria-live="polite" aria-label="居民对话">
+        <div class="speech-bubble" id="dialogue">
+          <!-- 左侧：立绘框 -->
+          <div class="dialogue-portrait" id="dialogue-portrait" data-key="sebastian">
+            <img src="stardew/assets/portraits/portrait-30.png" alt="塞巴斯蒂安" loading="eager">
+          </div>
+          <!-- 右侧：名字职业在上，台词在下 -->
+          <div class="dialogue-body">
+            <div class="speaker-head">
+              <span class="speaker-name" id="speaker-name">塞巴斯蒂安</span>
+              <span class="speaker-role" id="speaker-role">程序员</span>
+            </div>
+            <p class="dialogue-text" id="dialogue-text"></p>
+            <div class="dialogue-meta">
+              <span class="dialogue-next" aria-hidden="true"></span>
+              <div class="dialogue-actions">
+                <button class="btn btn-small" type="button" data-dialogue="next">继续 ▶</button>
+                <button class="btn btn-small btn-ghost" type="button" data-dialogue="random">下一句</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-pool-wrap">
+        <div class="card-pool-title">居民卡池</div>
+        <div class="card-pool" id="villager-pool" role="list" aria-label="星露谷居民卡池">
+          <!-- JS 注入全部居民卡牌，可上下滚动 -->
         </div>
       </div>
     </div>
-
-    <div class="villager-lineup" id="villager-lineup" role="list" aria-label="居民头像">
-      <button class="villager-face" data-sprite="bRobin" data-label="罗宾" data-scale="0.75" data-speaker="罗宾" type="button" aria-label="罗宾"></button>
-      <button class="villager-face" data-sprite="bAbigail" data-label="阿比盖尔" data-scale="0.75" data-speaker="阿比盖尔" type="button" aria-label="阿比盖尔"></button>
-      <button class="villager-face" data-sprite="bMaru" data-label="玛鲁" data-scale="0.75" data-speaker="玛鲁" type="button" aria-label="玛鲁"></button>
-      <button class="villager-face" data-sprite="bLewis" data-label="刘易斯" data-scale="0.75" data-speaker="刘易斯" type="button" aria-label="刘易斯"></button>
-      <button class="villager-face" data-sprite="bHarvey" data-label="哈维" data-scale="0.75" data-speaker="哈维" type="button" aria-label="哈维"></button>
-      <button class="villager-face" data-sprite="bPenny" data-label="佩妮" data-scale="0.75" data-speaker="佩妮" type="button" aria-label="佩妮"></button>
-      <button class="villager-face" data-sprite="bWizard" data-label="法师" data-scale="0.75" data-speaker="法师" type="button" aria-label="法师"></button>
-    </div>
-
-    <p class="gba-credit">© <span id="gba-year">2026</span> yythlss · 用 HTML / CSS / JavaScript 手搓的像素界面 ·
-      <a href="portfolio.html">旧版主页</a> · <a href="chat-lab/index.html">Chat Lab</a> · <a href="https://github.com/yythlss" target="_blank" rel="noreferrer">GitHub ↗</a></p>
   </footer>
 
   <div class="pixel-grid" aria-hidden="true"></div>
@@ -248,6 +254,7 @@
 <!-- 可选的本地令牌配置（已在 .gitignore 排除）；文件不存在时浏览器报 404 属正常，会回退为未认证请求 -->
 <script src="config.local.js"></script>
 <script src="sprites.js"></script>
+<script src="dialogue-data.js"></script>
 <script src="github-gba.js"></script>
 <script>
 /* 顶部星露谷 HUD 时钟盒 —— 参考截图 DayTimeMoneyBox 木牌样式
@@ -260,7 +267,6 @@
   var timeEl = document.getElementById('sd-board-time');
   var ampmEl = document.getElementById('sd-clock-ampm');
   var seasonEl = document.getElementById('sd-clock-season');
-  var goldEl = document.getElementById('sd-clock-gold');
 
   var week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -282,15 +288,10 @@
       seasonEl.className = 'sd-clock-season ' + season;
       seasonEl.textContent = seasonChars[season];
     }
-    if (dateEl) dateEl.textContent = week[now.getDay()] + ' ' + now.getDate() + '日';
+    /* 日期放在星期前面，例如「12日 星期五」 */
+    if (dateEl) dateEl.textContent = now.getDate() + '日 ' + week[now.getDay()];
     if (ampmEl) ampmEl.textContent = ampm;
     if (timeEl) timeEl.textContent = displayH + ':' + pad(m);
-    /* 金钱显示为 GitHub 总 star 数，更像“资产” */
-    var starEl = document.getElementById('top-star-count');
-    if (goldEl && starEl) {
-      var n = parseInt(starEl.textContent.replace(/\D/g,'') || '0', 10);
-      goldEl.textContent = n.toLocaleString();
-    }
   }
   tick();
   setInterval(tick, 1000);

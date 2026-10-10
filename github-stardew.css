@@ -301,7 +301,7 @@ input {
 .sd-clock-box {
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   align-items: center;
   gap: 0;
   padding: 5px 10px;
@@ -352,51 +352,28 @@ input {
   letter-spacing: 1px;
   color: var(--sd-ink);
 }
-.sd-clock-money {
-  grid-row: 2;
-  grid-column: 2;
+.sd-clock-star {
+  grid-row: 3;
+  grid-column: 1 / 3;
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 2px;
-  padding-top: 2px;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 3px;
+  padding-top: 3px;
   border-top: 1px dashed var(--sd-line-dk);
   font-size: 12px;
   color: var(--sd-ink);
 }
-.sd-coin {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--sd-star);
-  border: 1px solid var(--sd-wood-dk);
-  color: var(--sd-wood-dk);
-  font-size: 9px;
-  font-weight: bold;
+.sd-star-label {
+  font-size: 12px;
+  letter-spacing: .5px;
+  color: var(--sd-ink-soft);
 }
-
-.star-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border: 2px solid var(--sd-wood-dk);
-  border-radius: 12px;
-  background: var(--sd-star);
-  color: var(--sd-wood-dk);
-  font-family: var(--font-pixel);
-  font-size: 13px;
-  font-weight: bold;
-  box-shadow: 0 2px 0 rgba(133,54,5,.25);
-  text-shadow: none;
-}
-.star-chip .icon-star {
+.sd-star {
   display: inline-block;
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   background: var(--sd-wood-dk);
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
 }
@@ -404,9 +381,10 @@ input {
 /* ------------------------------------------------------- 横幅场景条：全居民横向滚动 */
 .scene-strip {
   position: relative;
-  height: 110px;
+  height: 98px;
   flex: none;
-  background: linear-gradient(180deg, #9ad4ff 0%, #dff3ff 60%, #8fda4f 100%);
+  /* 米色底与横幅素材背景一致，裁掉素材自带外框后不再露出天空渐变 */
+  background: #f2d9a4;
   border-bottom: 4px solid var(--sd-wood-dk);
   overflow: hidden;
 }
@@ -1106,91 +1084,109 @@ input {
   background:
     linear-gradient(180deg, var(--sd-grass) 0 12px, var(--sd-grass-dk) 12px 100%);
   border-top: 3px solid #4a7c2f;
-  padding-top: 16px;
+  padding-top: 10px;
+  padding-bottom: 12px;
   overflow-x: hidden;
 }
 .footer-grass {
   height: 10px;
   background: linear-gradient(180deg, #8fce54 0%, var(--sd-grass-dk) 100%);
-  margin: -16px 0 12px;
+  margin: -10px 0 8px;
   border-bottom: 2px solid #4a7c2f;
 }
-.dialogue-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  padding: 0 16px 16px;
-}
-.bubble-sprite {
-  display: inline-block;
-  width: 96px;
-  height: 96px;
-  flex: none;
-  image-rendering: pixelated;
-  filter: drop-shadow(3px 3px 0 rgba(0,0,0,.2));
-  cursor: pointer;
-}
+/* ============ 星露谷对话盒：左侧立绘 + 右侧（名字职业/台词） ============ */
 .speech-bubble {
   position: relative;
   flex: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
   min-width: 0;
-  background: var(--sd-paper);
-  /* 与面板同源的星露谷菜单边框 */
-  border: 12px solid transparent;
-  border-image: url('stardew/assets/panel-frame.png') 12 / 12px / 0 stretch;
-  padding: 12px 14px;
-  box-shadow: 4px 5px 0 rgba(40,24,12,.28);
+  width: 100%;
+  max-width: 100%;
+  min-height: 92px;
+  background: linear-gradient(180deg, #f7e9c8 0%, #f0dcae 100%);
+  border: 4px solid #8a5a2b;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 3px #d9b97e, 3px 4px 0 rgba(40, 24, 12, .25);
+  padding: 6px 10px;
+  box-sizing: border-box;
 }
-.speech-bubble::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  bottom: 20px;
-  width: 0;
-  height: 0;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
-  border-right: 12px solid var(--sd-wood-dk);
+/* 左侧立绘框 */
+.dialogue-portrait {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  width: clamp(84px, 8.5vw, 112px);
+  height: clamp(74px, 7.6vw, 100px);
+  overflow: hidden;
+  border: 3px solid #8a5a2b;
+  border-radius: 3px;
+  background: #fdf6e3;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .6);
+}
+.dialogue-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  image-rendering: pixelated;
+}
+/* 右侧：名字职业 + 台词，高度按内容 */
+.dialogue-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  justify-content: flex-start;
+}
+.speaker-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
 }
 .speaker-name {
-  display: inline-block;
-  margin: -18px 0 6px -2px;
-  padding: 2px 10px;
-  border: 2px solid var(--sd-wood-dk);
+  font-size: clamp(13px, 0.68vw + 8px, 17px);
+  color: #1a1008;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.speaker-role {
+  font-size: clamp(9px, 0.4vw + 6px, 12px);
+  padding: 0 5px;
+  border: 1px solid #8a5a2b;
   border-radius: 3px;
-  background: var(--sd-wood);
-  color: var(--sd-paper);
-  font-size: 12px;
-  font-family: var(--font-pixel);
-  text-shadow: 1px 1px 0 rgba(0,0,0,.3);
-  box-shadow: 2px 2px 0 rgba(0,0,0,.15);
+  background: #fff6e0;
+  color: #3a2a16;
+  white-space: nowrap;
 }
 .dialogue-text {
-  margin: 0 0 10px;
+  flex: 1;
+  margin: 0;
   color: var(--sd-ink);
-  font-size: 13px;
-  line-height: 1.7;
-  min-height: 48px;
+  font-size: clamp(13px, 1vw + 8px, 18px);
+  line-height: 1.5;
+  font-weight: 600;
+}
+.dialogue-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+  min-height: 22px;
 }
 .dialogue-next {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
   width: 0; height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 7px solid var(--sd-wood-dk);
   animation: blinkArrow .9s steps(2, end) infinite;
 }
-.dialogue-actions { display: flex; gap: 8px; margin-top: 6px; }
-
-.gba-credit {
-  margin: 0;
-  padding: 12px 16px 16px;
-  color: var(--sd-ink-soft);
-  font-size: 11px;
-  text-align: center;
-}
+.dialogue-actions { display: flex; gap: 8px; }
 
 /* ------------------------------------------------------- 工具提示 */
 .sprite-tip {
@@ -1211,34 +1207,140 @@ input {
 }
 .sprite-tip.is-on { opacity: 1; }
 
-/* ------------------------------------------------------- 底部居民头像列 */
-.villager-lineup {
+/* --------------------------------- 对话区：左对话框 + 右侧剩余空间的卡池（单行，滚轮横滑） */
+.dialogue-layout {
+  display: grid;
+  /* 左列固定对话框宽度，右列吃掉剩下的全部空间 */
+  grid-template-columns: minmax(0, 620px) minmax(0, 1fr);
+  justify-content: start;
+  align-items: start;
+  gap: 14px;
+  padding: 0 16px 12px;
+}
+/* 对话框高度完全由内容决定，压到最矮 */
+.dialogue-main {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  min-width: 0;
+}
+.speech-bubble {
+  flex: 1;
+  min-height: 0;
+  align-self: flex-start;
+}
+
+.card-pool-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.card-pool-title {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: #3a2a16;
+  text-align: center;
+  padding: 4px 0 6px;
+  letter-spacing: 1px;
+}
+.card-pool {
+  display: flex;
+  /* 单行横向排列：不换行，超出部分靠滚轮/滚动条横向滑动 */
+  flex-wrap: nowrap;
+  align-items: flex-start;
   gap: 10px;
-  padding: 0 16px 14px;
+  flex: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 8px 10px;
+  border: 3px solid var(--sd-wood-dk);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .15)),
+    var(--sd-paper);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .5);
+  scrollbar-width: thin;
+  /* 鼠标纵向滚轮 -> 横向滚动（由JS 处理 deltaY -> scrollLeft），此处仅关闭原生纵向回滚 */
+  overscroll-behavior-x: contain;
+  cursor: grab;
+}
+.card-pool.is-dragging { cursor: grabbing; }
+.card-pool .villager-face {
+  /* 单行内不压缩、不换行 */
+  flex: 0 0 68px;
+  width: 68px;
+  height: 96px;
+  padding: 3px;
+  border: 2px solid var(--sd-wood-dk);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #fffdf5, #f6e7c4);
+  cursor: pointer;
+  transition: transform .12s;
+}
+.card-pool .villager-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  image-rendering: pixelated;
+}
+.card-pool .villager-face:hover {
+  transform: translateY(-3px);
+  border-color: #8a5a2b;
 }
 .villager-face {
-  width: 48px;
-  height: 48px;
-  padding: 0;
+  position: relative;
+  width: 50px;
+  height: 74px;
+  padding: 2px;
   border: 2px solid var(--sd-wood-dk);
   border-radius: 4px;
   background: var(--sd-paper);
   overflow: hidden;
+  flex: none;
   cursor: pointer;
   box-shadow: 2px 2px 0 rgba(0,0,0,.15);
   transition: .12s;
   box-sizing: border-box;
 }
+.villager-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 立绘已抠成透明 PNG，用 contain 完整显示不裁切 */
+  object-fit: contain;
+  object-position: bottom center;
+  image-rendering: pixelated;
+}
 .villager-face:hover {
   border-color: var(--sd-grass-dk);
   transform: translateY(-2px);
 }
+/* 选中态：浅棕底 + 深棕粗描边 + 上浮 + 金色角标，视觉上明确区分。
+   缩放控制在 1.03 并只上浮 3px，避免相邻头像互相压边、底部排溢出。 */
 .villager-face.is-active {
-  border-color: var(--sd-grass);
-  box-shadow: 0 0 0 2px var(--sd-grass), 2px 2px 0 rgba(0,0,0,.15);
+  border-color: #5a3410;
+  border-width: 3px;
+  background: #e8c89a;
+  box-shadow:
+    0 0 0 2px #ffd98a,
+    0 0 0 4px rgba(90, 52, 16, .55),
+    0 6px 0 rgba(40, 24, 12, .3);
+  transform: translateY(-3px) scale(1.03);
+  z-index: 2;
+}
+.villager-face.is-active::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 0;
+  height: 0;
+  border-top: 12px solid #ffd257;
+  border-left: 12px solid transparent;
+  filter: drop-shadow(0 0 1px rgba(40, 24, 12, .6));
+}
+.villager-face.is-active img {
+  filter: drop-shadow(0 0 3px rgba(255, 210, 87, .9));
 }
 
 /* ------------------------------------------------------- 动画 */
@@ -1276,7 +1378,7 @@ input {
   }
   .right-rail {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;   /* 960px 以下右栏改成单列堆叠，避免 2 列时一侧留白 */
     gap: 12px;
   }
 }
@@ -1297,8 +1399,8 @@ input {
   .sd-clock-season { width: 22px; height: 22px; margin-right: 6px; font-size: 11px; }
   .sd-clock-date { font-size: 11px; }
   .sd-clock-time { font-size: 13px; }
-  .sd-clock-money { font-size: 10px; }
-  .sd-coin { width: 12px; height: 12px; font-size: 8px; }
+  .sd-clock-star { font-size: 10px; }
+  .sd-star { width: 11px; height: 11px; }
 
   .gba-main { padding: 10px; gap: 10px; }
   .right-rail { grid-template-columns: 1fr; }
@@ -1307,9 +1409,14 @@ input {
   .repo-bar { flex-wrap: wrap; }
   .repo-bar h2 { order: 3; width: 100%; margin-top: 4px; }
 
-  .dialogue-row { flex-direction: column; align-items: flex-start; }
-  .bubble-sprite { width: 72px; height: 72px; }
-  .speech-bubble::before { display: none; }
+  /* 窄屏改为上下堆叠：对话框在上，卡池在下 */
+  .dialogue-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 0 10px 10px; }
+  .speech-bubble { width: 100%; max-width: none; min-height: 96px; }
+  /* 窄屏改为上下堆叠：立绘在上、台词在下 */
+  .speech-bubble { flex-direction: column; align-items: stretch; }
+  .dialogue-portrait { width: clamp(80px, 20vw, 100px); height: 88px; }
+  .card-pool { gap: 8px; }
+  .card-pool .villager-face { flex-basis: 56px; width: 56px; height: 80px; }
 }
 
 @media (max-width: 420px) {
@@ -1369,5 +1476,11 @@ input {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  /* 顶部居民横幅的无缝滚动是页面核心装饰，不受「减少动画」影响。
+     必须完整覆盖 animation 简写：github-gba.css 里用 `animation: none !important`
+     把 animation-name 也清空了，只覆盖 duration 无效。 */
+  .scene-scroll {
+    animation: scrollVillagers 36s linear infinite !important;
   }
 }
