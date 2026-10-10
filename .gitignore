@@ -25,3 +25,7 @@ __pycache__/
 
 # 立绘切图中间产物
 stardew/assets/portraits/_grid.png
+
+# 移动端调试临时文件
+_m.html
+_m2.html
